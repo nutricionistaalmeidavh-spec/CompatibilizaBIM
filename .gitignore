@@ -1,0 +1,29 @@
+# Dependências restauradas pelo gerenciador de pacotes
+node_modules/
+app/node_modules/
+
+# Runtimes Python distribuídos apenas no instalador
+runtime/
+runtime_min/
+
+# Saídas de compilação, instaladores e arquivos temporários
+app/dist/
+app/release/
+app/release-final/
+output/
+tmp/
+
+# Dados e caches locais gerados durante testes/auditorias
+docs/ux-audit-*/chrome*/
+*.log
+*.db
+*.db-journal
+*.db-wal
+*.pma
+__pycache__/
+*.py[cod]
+
+# Sistema operacional e editor
+.DS_Store
+Thumbs.db
+.vscode/

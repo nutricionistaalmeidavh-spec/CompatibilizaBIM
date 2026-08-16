@@ -1,0 +1,20 @@
+import assert from 'node:assert/strict';
+import test from 'node:test';
+import { calcularFundacaoIntegrada } from '../src/calculators/foundationIntegrated.js';
+import { calcularDetalhamentoArmadura, gerarListaAco, gerarQuadroFormas } from '../src/calculators/detailing.js';
+import { calcularParedeConcreto, calcularProtensao, calcularAlvenariaEstrutural, calcularElementoPremoldado, calcularAncoragem } from '../src/calculators/specialties.js';
+import { exportarDetalhamentoCsv, exportarDetalhamentoJson, exportarDetalhamentoDxf } from '../src/export/detailingExport.js';
+import { validarPerfilNormativo } from '../src/norms/registry.js';
+import { validarMemoriaNormativa } from '../src/norms/validation.js';
+import { validarContratoBackup } from '../src/storage/backupContract.js';
+
+test('verifica fundação integrada, contato e recalque', () => { const result = calcularFundacaoIntegrada({ cargaVertical: 400, areaBase: 4, tensaoAdmissivelSolo: 180, moduloReacao: 20000, recalqueLimite: 0.025 }); assert.equal(result.verificacoes.capacidade, true); assert.equal(result.verificacoes.contato, true); assert.equal(result.verificacoes.recalque, true); });
+test('calcula quantitativo preliminar de armadura', () => { const result = calcularDetalhamentoArmadura({ comprimento: 6, quantidadeBarras: 4, diametroMm: 16, espacamentoEstribosMm: 200 }); assert.ok(result.resultados.massa > 0); assert.equal(result.resultados.quantidadeEstribos, 31); });
+test('gera lista de aço e quadro de formas', () => { assert.equal(gerarListaAco([{ quantidade: 4, diametroMm: 12.5, comprimentoM: 3 }])[0].comprimentoTotalM, 12); assert.equal(gerarQuadroFormas([{ comprimento: 2, largura: 0.2, altura: 0.4 }])[0].volumeM3, 0.16000000000000003); });
+test('calcula parede e força efetiva de protensão', () => { assert.equal(calcularParedeConcreto({ comprimento: 5, altura: 3, espessura: 0.2, fck: 30 }).resultados.volume, 3); assert.equal(calcularProtensao({ areaCabo: 100, tensaoInicial: 1200, perdasPercentual: 20 }).resultados.forcaEfetiva, 96000); });
+test('cobre alvenaria, pré-moldado e ancoragem preliminares', () => { assert.equal(calcularAlvenariaEstrutural({ comprimento: 5, altura: 3, espessura: 0.14, cargaVertical: 100, resistenciaBloco: 200 }).verificacoes.compressao, true); assert.equal(calcularElementoPremoldado({ comprimento: 2, largura: 0.2, altura: 0.3 }).resultados.volume, 0.12); assert.equal(calcularAncoragem({ forcaKN: 10, resistenciaAcoMPa: 400, areaAcoMm2: 100 }).verificacoes.resistencia, true); });
+test('exporta detalhamento em JSON e CSV', () => { const json = exportarDetalhamentoJson({ massa: 12 }, { obra: 'D-001' }); const csv = exportarDetalhamentoCsv({ massa: 12 }); assert.match(json, /D-001/); assert.match(csv, /"massa";"12"/); });
+test('exporta detalhamento CAD em DXF R12', () => { const dxf = exportarDetalhamentoDxf({ massa: 12, quantidade: 4 }, { titulo: 'Armadura' }); assert.match(dxf, /SECTION/); assert.match(dxf, /ENTITIES/); assert.match(dxf, /Armadura/); assert.match(dxf, /EOF/); });
+test('sinaliza revisão quando perfil normativo não está reconciliado', () => { assert.equal(validarPerfilNormativo('NBR 6118:2014').requerRevisao, true); assert.equal(validarPerfilNormativo('NBR 5626:2020', { exigirVigente: true }).valido, true); });
+test('valida contrato de backup local', () => { assert.equal(validarContratoBackup({ versao: 1, bancoBase64: 'QUJDREVGR0g=', exportadoEm: '2026-08-15' }).valido, true); assert.equal(validarContratoBackup('{"versao":9}').valido, false); });
+test('bloqueia aprovacao quando a norma requer reconciliacao', () => { const resultado = validarMemoriaNormativa({ normaDeclarada: 'NBR 6118:2014', entradas: { fck: 25 }, resultado: { area: 1.2 } }); assert.equal(resultado.aprovado, false); assert.equal(resultado.requerRevisao, true); assert.ok(resultado.avisos.length > 0); });

@@ -1,0 +1,5 @@
+export function criarManifestoEstruturalViewer(modelo = {}) {
+  const nodes = new Map((modelo.nos ?? []).map((node) => [node.id, node]));
+  const elements = (modelo.elementos ?? []).map((element, index) => { const nodeI = element.nodeI ?? element.geometria?.nodeI; const nodeJ = element.nodeJ ?? element.geometria?.nodeJ; const a = nodes.get(nodeI); const b = nodes.get(nodeJ); if (!a || !b) return null; const min = [Math.min(Number(a.x) || 0, Number(b.x) || 0), Math.min(Number(a.y) || 0, Number(b.y) || 0), Math.min(Number(a.z) || 0, Number(b.z) || 0)]; const max = [Math.max(Number(a.x) || 0, Number(b.x) || 0), Math.max(Number(a.y) || 0, Number(b.y) || 0), Math.max(Number(a.z) || 0, Number(b.z) || 0)]; const padding = 0.03; return { globalId: element.id ?? `elemento-${index + 1}`, name: element.nome ?? element.id ?? `Elemento ${index + 1}`, ifcClass: element.tipo === 'pilar' ? 'IfcColumn' : 'IfcBeam', disciplina: 'Estrutural', bbox: { min: min.map((v) => v - padding), max: max.map((v) => v + padding) } }; }).filter(Boolean);
+  return { nome: modelo.nome ?? 'Modelo estrutural', disciplina: 'Estrutural', elementos: elements };
+}

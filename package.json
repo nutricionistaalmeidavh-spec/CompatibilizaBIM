@@ -1,0 +1,13 @@
+{
+  "name": "engenharia360-core",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Núcleo isolado do Engenharia 360 para cálculos e gestão de obras.",
+  "scripts": {
+    "test": "node --test"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}

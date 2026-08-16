@@ -1,0 +1,5 @@
+export function calcularPilar(values = {}) {
+  const i = { menorDimensaoCM: 20, maiorDimensaoCM: 40, comprimentoFlambagemM: 3, cargaKN: 600, fckMPa: 25, fykMPa: 500, ...values };
+  const a = i.menorDimensaoCM * i.maiorDimensaoCM; const nd = i.cargaKN * 1.4; const lambda = i.comprimentoFlambagemM * 100 * Math.sqrt(12) / i.menorDimensaoCM; const fcd = i.fckMPa / 10 / 1.4; const fyd = i.fykMPa / 10 / 1.15; const asMin = Math.max(0.15 * nd / fyd, 0.004 * a); const asMax = 0.08 * a; const classe = lambda <= 35 ? 'CURTO' : lambda <= 90 ? 'MÉDIO' : 'ESBELTO';
+  return { entrada: i, resultados: { areaCM2: a, nd, lambda, fcd, fyd, asCalc: Math.max((nd - 0.85 * fcd * a) / (fyd - 0.85 * fcd), 0), asMin, asMax, barras12_5: Math.ceil(asMin / 1.227), barras16: Math.ceil(asMin / 2.01), barras20: Math.ceil(asMin / 3.15) }, verificacoes: { esbeltez: classe, secao: asMin <= asMax ? 'OK' : 'SEÇÃO INSUFICIENTE' }, metadados: { referencia: 'Planilha_Calculo_Pilares_NBR6118.xlsx', normaDeclarada: 'NBR 6118:2014' } };
+}

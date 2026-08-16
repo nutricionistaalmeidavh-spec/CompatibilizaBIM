@@ -1,0 +1,9 @@
+import assert from 'node:assert/strict';
+import test from 'node:test';
+import { analisarPorticoEspacial3D } from '../src/analysis/portal3d.js';
+import { combinarCasosEstruturais } from '../src/analysis/combinations.js';
+import { integrarFundacoesAoModelo } from '../src/analysis/foundationAdapter.js';
+test('resolve deslocamento axial de pórtico espacial', () => { const r = analisarPorticoEspacial3D({ nos: [{ id: 'a', x: 0, y: 0, z: 0, supports: { ux: true, uy: true, uz: true, rx: true, ry: true, rz: true } }, { id: 'b', x: 3, y: 0, z: 0, supports: { uy: true, uz: true, rx: true, ry: true, rz: true }, loads: { fx: 1000 } }], elementos: [{ id: 'e', nodeI: 'a', nodeJ: 'b', E: 200e9, A: 0.01, I: 1e-5, J: 2e-5 }] }); assert.ok(Math.abs(r.displacement.b.ux - 1.5e-6) < 1e-12); assert.equal(r.dofCount, 12); });
+test('aceita barra espacial inclinada com transformação local', () => { const r = analisarPorticoEspacial3D({ nos: [{ id: 'a', x: 0, y: 0, z: 0, supports: { ux: true, uy: true, uz: true, rx: true, ry: true, rz: true } }, { id: 'b', x: 1, y: 0, z: 1, supports: { uy: true, uz: true, rx: true, ry: true, rz: true }, loads: { fx: 100 } }], elementos: [{ id: 'inclinado', nodeI: 'a', nodeJ: 'b', E: 200e9, A: 0.01, I: 1e-5, J: 2e-5 }] }); assert.equal(r.elements[0].id, 'inclinado'); });
+test('gera combinações ELU, ELS e amplificação de segunda ordem', () => { const r = combinarCasosEstruturais({ permanente: 100, acidental: 50, vento: 20 }, { cargaCritica: 500 }); assert.equal(r.elu, 238); assert.equal(r.verificacoes.estabilidade, true); assert.ok(r.segundaOrdem > r.elu); });
+test('integra apoio do modelo com verificação preliminar de fundação', () => { const result = integrarFundacoesAoModelo({ nos: [{ id: 'base-1', supports: { uz: true }, loads: { fz: -400 } }] }); assert.equal(result.length, 1); assert.equal(result[0].noId, 'base-1'); assert.equal(result[0].verificacao.verificacoes.recalque, true); });
