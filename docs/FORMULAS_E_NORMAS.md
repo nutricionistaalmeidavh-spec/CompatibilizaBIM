@@ -2,7 +2,7 @@
 
 ## Escopo
 
-As fórmulas dos módulos novos foram transcritas das planilhas originais e verificadas por testes automatizados de sanidade (valores finitos, limites básicos e oráculo independente da viga biapoiada). A suíte atual possui 32 testes aprovados.
+As fórmulas dos módulos novos foram transcritas das planilhas originais e verificadas por testes automatizados de sanidade (valores finitos, limites básicos e oráculo independente da viga biapoiada). A suíte atual possui 62 testes aprovados.
 
 O Formula Genius foi acionado para uma segunda conferência, mas a conexão do aplicativo solicitou reautenticação. Portanto, não foi usado como fonte de alteração automática.
 

@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "type": "module",
-  "description": "Núcleo isolado do Engenharia 360 para cálculos e gestão de obras.",
+  "description": "Engenharia 360 / CompatibilizaBIM — plataforma offline para gestão de obras, cálculos e coordenação BIM.",
   "scripts": {
     "test": "node --test"
   },

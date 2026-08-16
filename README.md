@@ -1,91 +1,88 @@
-# Engenharia 360 — núcleo inicial
+# Engenharia 360 / CompatibilizaBIM
 
-Este diretório é uma implementação isolada para iniciar a transformação das
-planilhas de engenharia em software, sem alterar os projetos existentes.
+Plataforma desktop offline para gestão de obras, cálculos de engenharia e coordenação BIM. O software combina o acompanhamento operacional da obra com leitura de modelos IFC, compatibilização, quantitativos, planejamento e orçamento, mantendo os dados no computador do usuário.
 
-## Módulos implementados
+## Principais recursos
 
-`src/calculators/vigaBiapoiada.js` reproduz a estrutura de cálculo da
-`Planilha_Viga_Biapoiada_Completa.xlsx`, incluindo:
+### CompatibilizaBIM
 
-- esforços solicitantes;
-- flexão e armadura longitudinal;
-- cisalhamento e estribos;
-- comprimento de ancoragem;
-- flecha em ELS-DEF;
-- estabilidade lateral e verificações gerais.
+- importação e pré-validação de arquivos IFC;
+- identificação de disciplinas e formação de federação de modelos;
+- compatibilização entre disciplinas, com regras para interferências e afastamentos;
+- registro, classificação, responsáveis, prazos, comentários e histórico de pendências;
+- comparação entre revisões;
+- visualização local em 3D;
+- relatórios de pré-validação, compatibilização e quantitativos em JSON e CSV, além de exportações de relatório e BCF quando aplicável.
 
-As unidades dos campos seguem os nomes da planilha: metros, kN/m, cm, MPa e
-mm. O retorno é organizado por blocos para ser consumido por uma futura API,
-tela web ou relatório de memória de cálculo.
+### BIM 4D, 5D e medições
 
-`src/calculators/insumosConcreto.js` reproduz a planilha de insumos pelo
-método da massa unitária, calculando cimento, areia, brita, água, sacos de
-cimento e estimativas de volume para compra/transporte.
+- extração de quantitativos IFC, com alternativa geométrica quando a propriedade não está disponível;
+- orçamento 5D com composições, perdas, BDI e integração de referências SINAPI;
+- importação de cronograma CSV, vínculo entre atividades e elementos IFC e simulação 4D;
+- medições BIM, aprovação, exportação CSV e relatório financeiro.
 
-Também estão integradas as calculadoras de viga por flexão, laje em uma e duas
-direções, pilar, sapata, escada e muro de arrimo. Cada uma mantém seus próprios
-metadados, resultados e verificações para permitir revisão técnica isolada.
+### Gestão de obras e engenharia
 
-## Obra 360 e RDO
+- cadastro de obras, etapas, frentes de serviço, pendências e avanço físico;
+- RDO com equipes, serviços, materiais, ocorrências, impedimentos e fotos;
+- contratos, compras, contas e controles operacionais locais;
+- backup e restauração da base SQLite;
+- geração local de PDF;
+- calculadoras de pré-dimensionamento e verificação para elementos estruturais, fundações, instalações e infraestrutura.
 
-`src/domain/obras.js` define o cadastro de obras, etapas ponderadas,
-pendências, status e resumo de progresso. `src/domain/rdo.js` define o
-Relatório Diário de Obra com clima, equipes, serviços executados, materiais,
-ocorrências, impedimentos, fotos e observações.
+> Os cálculos e verificações são apoio técnico. A aprovação de projeto, a definição normativa aplicável e a responsabilidade técnica permanecem com profissional habilitado.
 
-As funções são puras e retornam novos objetos. Isso mantém as regras
-independentes do armazenamento e prepara a integração futura com SQLite,
-API e sincronização em nuvem.
+## Arquitetura
 
-## Aplicativo offline
+- `app/` — interface desktop Electron/Vite e persistência local;
+- `modules/compatibilizabim/` — motor Python para IFC, compatibilização, quantitativos, planejamento, orçamento e relatórios;
+- `src/` — regras de domínio e calculadoras de engenharia;
+- `storage/` — schema e acesso SQLite;
+- `references/` — planilhas de referência usadas para rastreabilidade e regressão;
+- `test/` — testes automatizados do núcleo.
 
-`app/` contém a primeira interface local do Engenharia 360. Ela usa SQLite
-compilado em WebAssembly, salvo como base64 no `localStorage`, e inclui:
+O aplicativo é orientado ao uso offline. No Electron, a base de dados é gravada em `Documentos/Engenharia360/engenharia360.sqlite`.
 
-- cadastro e seleção de obras;
-- painel Obra 360 com avanço, etapas, RDOs e pendências;
-- criação de RDO sem internet;
-- exportação e importação de backup completo;
-- geração local de PDF do último RDO;
-- arquivos do `sql.js` servidos localmente, sem CDN.
+## Executar em desenvolvimento
 
-Quando executado pelo Electron, o banco é salvo fisicamente em
-`Documentos/Engenharia360/engenharia360.sqlite`. No navegador puro, o
-`localStorage` continua sendo usado apenas como fallback de desenvolvimento.
-Antes de salvar uma memória de cálculo, o resultado passa por um oráculo
-independente e por invariantes numéricos.
-
-Para executar em desenvolvimento:
+Pré-requisitos: Node.js 18 ou superior e, para os recursos BIM fora do instalador, Python compatível com as dependências em `modules/compatibilizabim-requirements.txt`.
 
 ```powershell
-cd "C:\Users\vh_al\Desktop\Projetos\Engenharia360\app"
+cd app
+npm install
+npm run electron:dev
+```
+
+Para abrir apenas a interface Vite no navegador:
+
+```powershell
+cd app
 npm run dev
 ```
 
-Para gerar a distribuição offline:
+## Gerar o aplicativo Windows
 
 ```powershell
-npm run build
+cd app
+npm install
+npm run dist:win
 ```
 
-O resultado fica em `app/dist`, incluindo o WebAssembly necessário para abrir
-o banco sem conexão.
+O processo gera o instalador NSIS e inclui o runtime Python definido na configuração do Electron Builder. Runtimes, dependências instaladas e artefatos de release não são versionados neste repositório.
 
-## Executar os testes
+## Testes
 
 ```powershell
-cd "C:\Users\vh_al\Desktop\Projetos\Engenharia360"
 npm test
 ```
 
-Os testes comparam os valores principais com os resultados armazenados na
-planilha original e preservam cenários de alerta, como ancoragem insuficiente
-e flecha excessiva.
+A suíte cobre cálculos, persistência e fluxos principais do núcleo. Para validar a interface, execute também:
 
-## Próximas calculadoras
+```powershell
+cd app
+npm run build
+```
 
-Depois da validação deste motor, as demais planilhas entram como calculadoras
-independentes com o mesmo contrato de entrada, saída, verificações e
-metadados normativos. As planilhas originais permanecem como referência de
-regressão e não são sobrescritas.
+## Limites e conformidade
+
+As planilhas e normas de origem são mantidas para rastreabilidade. Quando uma edição normativa requer reconciliação, o sistema a sinaliza; ele não declara conformidade automática sem revisão técnica.

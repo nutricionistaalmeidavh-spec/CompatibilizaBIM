@@ -6,7 +6,7 @@ O `Engenharia360` permanece um software independente. Nenhum componente foi inco
 
 ## Módulos aproveitados no próprio núcleo
 
-- `src/calculators/`: oito calculadoras originais, mantidas como módulos independentes.
+- `src/calculators/`: calculadoras estruturais, de fundações, instalações e infraestrutura, mantidas como módulos independentes.
 - `src/domain/obras.js`: cadastro e resumo de obras.
 - `src/domain/rdo.js`: RDO, ocorrências e validações de campo.
 - `storage/sqliteStore.js`: persistência local, backup e histórico.
