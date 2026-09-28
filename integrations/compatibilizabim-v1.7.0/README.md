@@ -1,0 +1,523 @@
+# CompatibilizaBIM — PoC do motor de compatibilização
+
+## Status v1.3 — Fase 2 concluída
+
+A v1.3 fecha a Fase 2 do roadmap: **Quantitativos BIM + Orçamento 5D + ciclo de atualização/auditoria SINAPI**.
+
+A referência SINAPI mais recente verificada em 15/08/2026 é **07/2026**, divulgada em **11/08/2026**. A aplicação não embute preços fictícios como se fossem oficiais. O pacote inclui apenas bases demo identificadas como fictícias e um manifesto em `samples/sinapi-latest-official.json`.
+
+### Ver a referência oficial conhecida
+
+```bash
+compatibilizabim-sinapi latest
+```
+
+### Baixar e importar a publicação oficial
+
+```bash
+compatibilizabim-sinapi update ~/.compatibilizabim/sinapi.sqlite3 \
+  --competence 2026-07 \
+  --download-dir ~/.compatibilizabim/sinapi-downloads
+```
+
+O atualizador:
+
+- aceita somente host CAIXA confiável por padrão;
+- usa HTTPS para o host oficial;
+- valida o ZIP antes de publicá-lo;
+- exige ao menos um XLSX;
+- rejeita path traversal, ZIP criptografado e tamanhos anormais;
+- calcula SHA-256;
+- registra URL/provedor/competência/datas no SQLite;
+- não usa espelho de terceiros se o download oficial falhar.
+
+O mesmo fluxo está disponível no desktop em **Base SINAPI → Baixar oficial mais recente (07/2026)**.
+
+### Validar se o orçamento está realmente completo
+
+Após executar Quantitativos e Orçamento 5D, use **Validar Fase 2** no desktop. O diagnóstico mede cobertura dos grupos e elementos, aponta itens não precificados, ambiguidades, unidades incompatíveis e fallback geométrico, além de verificar a procedência da publicação SINAPI.
+
+A procedência da base ativa também é incorporada ao `pricebook.json` e ao relatório de orçamento (`cost_provenance`).
+
+> Observação da entrega: o runtime usado para construir v1.3 não conseguiu baixar o arquivo binário oficial da CAIXA, embora tenha confirmado a competência 07/2026 nas fontes oficiais. Por isso o ZIP oficial não é redistribuído junto da aplicação; execute o comando `update` em uma máquina com acesso normal à CAIXA.
+
+Prova de conceito local para comparar dois modelos IFC e gerar uma lista estruturada de conflitos BIM.
+
+## O que esta versão faz
+
+- abre dois arquivos `.ifc`;
+- permite filtrar cada lado por classe IFC, como `IfcPipeSegment`, `IfcBeam`, `IfcColumn` ou `IfcElement`;
+- executa três análises: `intersection`, `collision` e `clearance`;
+- retorna GlobalId, classe IFC, nome dos elementos, tipo do clash, ponto XYZ e profundidade/distância;
+- gera relatórios JSON e CSV;
+- possui workspace desktop local com tela de projetos, drag-and-drop de IFC, jobs em background e recuperação de estado;
+- mantém cache geométrico persistente por hash dos modelos;
+- gera um visualizador 3D WebGL federado em arquivo HTML autocontido;
+- permite orbit, pan, zoom, visibilidade por disciplina, transparência, seleção pela lista, foco em clash e exportação de viewpoint;
+- roda localmente e não envia o modelo para a nuvem; o viewer exportado é autocontido e o workspace desktop usa apenas um servidor loopback local.
+
+## O que ainda não faz
+
+A v0.9 já cobre o núcleo desktop local, incluindo projetos persistentes, importação de IFC, processamento em background, cancelamento cooperativo, recuperação de jobs interrompidos, cache geométrico, logs e configuração de empacotamento Windows. Ainda não possui banco de dados multiusuário, importação BCF de terceiros, instalador Windows assinado/validado em máquina Windows nem integração com o FluxoDRE.
+
+## Requisitos
+
+- Python 3.10 a 3.14
+- IfcOpenShell 0.8.5
+- ReportLab 4+ para relatórios PDF
+
+## Instalação no Windows
+
+Abra o Prompt de Comando ou PowerShell dentro da pasta do projeto:
+
+```powershell
+py -m venv .venv
+.venv\Scripts\activate
+py -m pip install --upgrade pip
+pip install -e .
+```
+
+Depois teste:
+
+```powershell
+compatibilizabim --help
+```
+
+## Instalação no Linux/macOS
+
+```bash
+python3 -m venv .venv
+source .venv/bin/activate
+python -m pip install --upgrade pip
+pip install -e .
+compatibilizabim --help
+```
+
+
+## Workspace desktop local — v0.9
+
+Depois da instalação, inicie o aplicativo local:
+
+```bash
+compatibilizabim-desktop
+```
+
+O comando abre uma interface local em `127.0.0.1:8787`. O servidor recusa bind em interfaces externas e não envia IFCs para a nuvem. Por padrão, os projetos ficam em `~/.compatibilizabim/projects` no Linux/macOS e em `%LOCALAPPDATA%\CompatibilizaBIM\projects` no Windows.
+
+O workspace permite:
+
+- criar e reabrir projetos persistentes;
+- registrar `obra_id` opcional para a futura integração com o FluxoDRE;
+- importar IFC por seletor de arquivo ou drag-and-drop;
+- rejeitar arquivos que não apresentam cabeçalho IFC/STEP básico;
+- deduplicar importações pelo SHA-256 do arquivo;
+- executar preflight em background;
+- escolher dois modelos e executar presets de compatibilização em background;
+- gerar o viewer 3D em background;
+- acompanhar progresso e erros dos jobs;
+- solicitar cancelamento cooperativo;
+- recuperar como `interrupted` jobs que estavam em execução quando o app foi fechado;
+- consultar logs diagnósticos por projeto;
+- reutilizar o manifesto geométrico do viewer por cache de conteúdo.
+
+Estrutura de cada projeto:
+
+```text
+<project_id>/
+├── project.json
+├── models/
+├── cache/
+├── reports/
+├── logs/app.jsonl
+├── issues.json
+├── revisions.json
+└── jobs.json
+```
+
+### Build Windows
+
+A entrega inclui `packaging/compatibilizabim.spec`, `packaging/CompatibilizaBIM.iss` e `scripts/build_windows_desktop.ps1`. Em uma máquina Windows com Python, o script gera primeiro um executável PyInstaller e, se o Inno Setup estiver instalado, também gera o `Setup.exe`. Esse instalador não é considerado validado até ser construído e testado em Windows real.
+
+## Teste mais simples
+
+Coloque, por exemplo, `hidraulica.ifc` e `estrutura.ifc` na pasta do projeto:
+
+```bash
+compatibilizabim hydraulica.ifc estrutura.ifc
+```
+
+Por padrão, os dois lados usam `IfcElement` e o modo é `intersection` com tolerância de 2 mm.
+
+Os relatórios serão criados em `./reports`.
+
+## Teste direcionado: tubos x vigas
+
+```bash
+compatibilizabim hydraulica.ifc estrutura.ifc \
+  --class-a IfcPipeSegment \
+  --class-b IfcBeam \
+  --mode intersection \
+  --tolerance 0.002
+```
+
+## Teste: tubos x pilares
+
+```bash
+compatibilizabim hydraulica.ifc estrutura.ifc \
+  --class-a IfcPipeSegment \
+  --class-b IfcColumn
+```
+
+## Verificação de afastamento mínimo
+
+Exemplo: sinalizar elementos a menos de 100 mm:
+
+```bash
+compatibilizabim instalacoes.ifc estrutura.ifc \
+  --mode clearance \
+  --clearance 0.10
+```
+
+## Modos
+
+### intersection
+
+Procura interseções e penetrações. É o modo recomendado para tubos atravessando vigas, pilares e outros elementos.
+
+### collision
+
+Procura colisões de superfícies. É mais simples e rápido, mas não fornece a mesma interpretação de profundidade da interseção.
+
+### clearance
+
+Procura elementos mais próximos do que uma distância mínima definida.
+
+## Saída JSON
+
+Exemplo simplificado:
+
+```json
+{
+  "summary": {
+    "mode": "intersection",
+    "count": 1
+  },
+  "clashes": [
+    {
+      "index": 1,
+      "a_global_id": "...",
+      "b_global_id": "...",
+      "a_ifc_class": "IfcPipeSegment",
+      "b_ifc_class": "IfcBeam",
+      "clash_type": "pierce",
+      "point": [10.2, 5.4, 3.1],
+      "depth_m": 0.08,
+      "depth_mm": 80.0
+    }
+  ]
+}
+```
+
+## Próxima evolução prevista
+
+1. Validar o fluxo completo em múltiplos conjuntos IFC reais.
+2. Fechar seleção direta, clipping e screenshot automático no visualizador.
+3. Validar BCF em consumidores externos e adicionar importação BCF.
+4. Adicionar cache, persistência de projeto e instalador desktop.
+5. Criar o contrato local de integração por `obra_id`.
+6. Integrar o módulo às obras cadastradas no FluxoDRE.
+7. Relacionar conflitos/retrabalhos aos centros de custo e DRE da obra.
+
+## Desenvolvimento
+
+Sem instalar o pacote em modo editável, os testes também podem ser executados diretamente da raiz:
+
+```bash
+pytest -q
+```
+
+## Autoteste com resposta conhecida
+
+A v0.2 inclui três IFCs sintéticos pequenos em `samples/synthetic`. Eles formam um caso que obrigatoriamente deve colidir e outro que obrigatoriamente não deve colidir.
+
+Depois de instalar as dependências:
+
+```bash
+compatibilizabim-selftest
+```
+
+O autoteste só passa quando o caso sobreposto gera clash e o caso separado gera zero clashes.
+
+## Baixar modelos públicos de Arquitetura + Estrutura + MEP
+
+Para validar em um conjunto maior:
+
+```bash
+python scripts/download_public_samples.py
+```
+
+Os arquivos são salvos em `samples/public/revit/`. Depois podem ser comparados pela CLI normalmente.
+
+## Roadmap até o módulo 1.0
+
+Consulte `ROADMAP.md`. Ele define as fases de federação/preflight, regras, visualizador 3D, issues, revisões, BCF, produto desktop e integração posterior ao FluxoDRE.
+
+## Preflight e federação — v0.3
+
+Antes de executar clashes em múltiplas disciplinas, rode o diagnóstico:
+
+```bash
+compatibilizabim-preflight arquitetura.ifc estrutura.ifc mep.ifc
+```
+
+Por padrão, o relatório é salvo em `preflight.json` e contém:
+
+- hash SHA-256 de cada arquivo;
+- schema IFC;
+- escala da unidade de comprimento;
+- contagem de elementos e geometrias processadas;
+- pavimentos encontrados;
+- disciplina inferida (`Architecture`, `Structure`, `MEP` ou `Unknown`);
+- bounding box global de cada modelo;
+- avisos de arquivo duplicado, schema/unidade divergentes, ausência de geometria e possível desalinhamento espacial.
+
+A tolerância espacial do diagnóstico pode ser ajustada:
+
+```bash
+compatibilizabim-preflight arquitetura.ifc estrutura.ifc mep.ifc \
+  --alignment-tolerance 2.0 \
+  --out reports/preflight.json
+```
+
+O preflight não move nem corrige modelos automaticamente. Ele apenas sinaliza riscos antes da compatibilização, preservando os IFCs originais.
+
+## Matriz de regras — v0.4
+
+A v0.4 adiciona execução de várias regras de compatibilização sobre o mesmo par de modelos sem reabrir os IFCs a cada regra.
+
+Preset padrão MEP x Estrutura:
+
+```bash
+compatibilizabim-rules mep.ifc estrutura.ifc
+```
+
+Preset focado em hidráulica x estrutura:
+
+```bash
+compatibilizabim-rules hidraulica.ifc estrutura.ifc \
+  --preset hydraulics-structure \
+  --out reports/hydraulics-structure.json
+```
+
+Os presets atuais cobrem tubos, dutos e eletrocalhas contra vigas, pilares e lajes. O resultado:
+
+- registra a regra que originou cada clash;
+- atribui severidade inicial;
+- contabiliza clashes brutos;
+- deduplica clashes pelo par de GUIDs dos elementos;
+- quando o mesmo par aparece em mais de uma regra, preserva a ocorrência de maior severidade.
+
+A deduplicação desta versão é deliberadamente conservadora. Agrupamento espacial avançado, exceções por tipo/sistema e regras configuráveis pelo usuário continuam como evolução da fase 5.
+
+
+## Visualizador 3D federado — v0.5
+
+Gere um único HTML autocontido a partir de um ou mais modelos IFC:
+
+```bash
+compatibilizabim-viewer arquitetura.ifc estrutura.ifc mep.ifc \
+  --out reports/viewer.html
+```
+
+Para carregar no viewer os clashes já encontrados pela matriz de regras:
+
+```bash
+compatibilizabim-rules mep.ifc estrutura.ifc \
+  --out reports/rules-report.json
+
+compatibilizabim-viewer arquitetura.ifc estrutura.ifc mep.ifc \
+  --clashes reports/rules-report.json \
+  --out reports/viewer.html
+```
+
+O arquivo `viewer.html` não usa CDN nem servidor. As geometrias são recentradas em uma origem local para reduzir perda de precisão em modelos georreferenciados, enquanto a origem global fica registrada no manifesto.
+
+Controles atuais:
+
+- arrastar: orbit;
+- Shift + arrastar: pan;
+- roda do mouse: zoom;
+- mostrar/ocultar disciplinas;
+- transparência global;
+- selecionar elemento pela lista;
+- clicar em um clash para focar e realçar os dois GUIDs;
+- exportar `viewpoint.json`.
+
+Para testar a interface sem instalar IfcOpenShell, a entrega inclui `samples/viewer-demo.html`. Ele contém uma viga e uma tubulação propositalmente em conflito.
+
+Limites conhecidos do visualizador: seleção diretamente pelo clique na malha, clipping/section box e screenshot automático ainda não foram implementados. O viewpoint exportado pelo viewer já pode ser associado a uma issue e convertido para BCF na v0.8.
+
+
+## Gestão de pendências — v0.6
+
+Transforme os clashes do relatório de regras em pendências persistentes:
+
+```bash
+compatibilizabim-issues import reports/rules-report.json \
+  --project RES-001 \
+  --obra-id OBRA-42 \
+  --store reports/issues.json
+```
+
+A importação gera IDs estáveis e não duplica a mesma interferência quando o mesmo relatório é importado novamente.
+
+Liste pendências abertas:
+
+```bash
+compatibilizabim-issues list --store reports/issues.json --status open
+```
+
+Atualize responsável, prazo e status:
+
+```bash
+compatibilizabim-issues update CBIM-XXXXXXXXXX \
+  --store reports/issues.json \
+  --status in_review \
+  --assignee "Projetista hidráulico" \
+  --due-date 2026-08-21 \
+  --storey "3º Pavimento"
+```
+
+Associe um `viewpoint.json` exportado pelo visualizador:
+
+```bash
+compatibilizabim-issues update CBIM-XXXXXXXXXX \
+  --store reports/issues.json \
+  --viewpoint viewpoint.json
+```
+
+Adicione histórico de comentários:
+
+```bash
+compatibilizabim-issues comment CBIM-XXXXXXXXXX \
+  --store reports/issues.json \
+  --author "Coordenação BIM" \
+  --text "Alterar rota da tubulação"
+```
+
+Estados atuais: `open`, `in_review`, `resolved` e `ignored`. Ao marcar como `ignored`, `--ignored-reason` é obrigatório. O arquivo `issues.json` usa schema versionado e escrita por substituição atômica. Concorrência multiusuário e banco de dados continuam fora do escopo desta versão.
+
+
+## Revisões e evolução dos clashes — v0.7
+
+Registre cada resultado da matriz de regras como um snapshot imutável:
+
+```bash
+compatibilizabim-revisions add reports/rules-R01.json \
+  --revision R01 \
+  --label "Coordenação inicial" \
+  --store reports/revisions.json
+
+compatibilizabim-revisions add reports/rules-R02.json \
+  --revision R02 \
+  --label "Revisão dos projetistas" \
+  --store reports/revisions.json
+```
+
+Compare duas revisões:
+
+```bash
+compatibilizabim-revisions compare R01 R02 \
+  --store reports/revisions.json \
+  --out reports/R01-R02.json
+```
+
+O resultado separa interferências em `new`, `persistent` e `resolved`. Quando os dois GUIDs existem, a identidade do clash é baseada no par de elementos e independe da ordem A/B ou da regra que o encontrou; assim uma mudança de severidade ou preset não transforma artificialmente um clash persistente em um clash novo. Sem GUIDs, o fallback usa classes IFC e ponto arredondado.
+
+O histórico de snapshots não é sobrescrito. Cada revisão também guarda hash SHA-256 do relatório de origem para rastreabilidade.
+
+## Exportações profissionais - v0.8
+
+A v0.8 adiciona exportação das pendências persistidas em três formatos:
+
+```bash
+compatibilizabim-export all reports/issues.json reports/export \
+  --author coord@example.com
+```
+
+O comando cria:
+
+- `issues.bcf`: pacote BCF 3.0 com um tópico por pendência, comentários, viewpoint e seleção dos GUIDs IFC conflitantes;
+- `issues.csv`: tabela detalhada para conferência, filtros e integração com outros fluxos;
+- `issues.pdf`: relatório técnico com resumo por status/severidade e tabela das pendências.
+
+Também é possível exportar os formatos separadamente:
+
+```bash
+compatibilizabim-export bcf reports/issues.json reports/issues.bcf --author coord@example.com
+compatibilizabim-export csv reports/issues.json reports/issues.csv
+compatibilizabim-export pdf reports/issues.json reports/issues.pdf
+```
+
+O BCF usa apenas o subconjunto interoperável necessário para clash coordination nesta fase: tópico, comentários, arquivos de referência, viewpoint, câmera e seleção dos componentes por `IfcGuid`. O modelo IFC não é embutido no BCF.
+
+## v1.1 — Quantitativos BIM e Orçamento 5D
+
+### Quantitativos
+
+```bash
+compatibilizabim-quantities arquitetura.ifc estrutura.ifc \
+  --output quantities.json --csv quantities.csv
+```
+
+O motor prioriza QTOs nativos do IFC. Área/volume derivados da malha são marcados como `geometry_fallback`; essa origem não é precificada automaticamente no orçamento.
+
+### Orçamento 5D
+
+```bash
+compatibilizabim-budget samples/quantities-demo.json samples/pricebook-demo.json \
+  --output budget.json --csv budget.csv --pdf budget.pdf
+```
+
+O catálogo suporta composições com insumos/componentes, coeficientes, perdas, BDI e regras de mapeamento por classe IFC, tipo, material e nome do quantitativo. Se um IFC possuir, por exemplo, `NetArea` e `GrossArea` e a regra não especificar qual usar, o grupo fica **não precificado** para evitar dupla contagem silenciosa.
+
+Os valores de `samples/pricebook-demo.json` são exclusivamente demonstrativos; não são uma base oficial de preços.
+
+
+## Fase 3 — Planejamento 4D e Medição BIM
+
+### Planejamento 4D
+- Importe cronogramas CSV ou cadastre atividades no desktop.
+- Defina predecessoras, datas, disciplina, pavimento e composição 5D.
+- Associe GUIDs IFC às atividades.
+- Registre avanço com data para manter histórico auditável.
+- Gere simulação previsto x realizado e viewer 4D com linha do tempo.
+
+CLI principal:
+```bash
+compatibilizabim-4d schedule.json import cronograma.csv
+compatibilizabim-4d schedule.json simulate 2026-09-15
+```
+
+### Medição BIM
+- Medição cumulativa por GUID e QTO IFC.
+- Rascunho, aprovação e rejeição.
+- Nova medição calcula apenas o incremento sobre o percentual já aprovado.
+- Quantidades provenientes de fallback geométrico não entram por padrão.
+
+```bash
+compatibilizabim-measurements measurements.json create quantities.json \
+  --period 2026-09 --percent 50 --kind area --quantity-name NetArea --guid GUID_IFC
+```
+
+### Medição financeira
+Somente medições aprovadas são valorizadas pelo orçamento 5D. Correspondências ambíguas permanecem sem preço.
+
+```bash
+compatibilizabim-measurement-report measurements.json budget.json \
+  --schedule schedule.json --out-dir reports/medicao
+```
+
+A saída inclui JSON, CSV e PDF com orçamento, valor medido, saldo e previsto x medido por período.
+
+**A integração com o FluxoDRE não faz parte desta versão.**

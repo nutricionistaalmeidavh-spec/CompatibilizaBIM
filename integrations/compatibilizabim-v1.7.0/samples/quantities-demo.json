@@ -1,0 +1,12 @@
+{
+  "schema_version": 1,
+  "models": ["demo.ifc"],
+  "record_count": 3,
+  "group_count": 3,
+  "records": [],
+  "groups": [
+    {"discipline":"Architecture","source":"ifc_qto","storey":"Térreo","ifc_class":"IfcWall","type_name":"Parede 14cm","material":"Cerâmica","quantity_name":"NetArea","kind":"area","unit":"m2","value":100.0,"element_count":12},
+    {"discipline":"Structure","source":"ifc_qto","storey":"Térreo","ifc_class":"IfcSlab","type_name":"Laje 15cm","material":"Concreto","quantity_name":"NetVolume","kind":"volume","unit":"m3","value":20.0,"element_count":2},
+    {"discipline":"MEP","source":"ifc_qto","storey":"Térreo","ifc_class":"IfcPipeSegment","type_name":"PVC DN100","material":"PVC","quantity_name":"Length","kind":"length","unit":"m","value":50.0,"element_count":8}
+  ]
+}
