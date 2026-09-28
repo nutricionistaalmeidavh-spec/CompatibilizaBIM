@@ -1,0 +1,16 @@
+[
+  {
+    "composition_code": "103328",
+    "ifc_class": "IfcWall",
+    "quantity_kind": "area",
+    "quantity_name_contains": "NetArea",
+    "allow_geometry_fallback": false
+  },
+  {
+    "composition_code": "94965",
+    "ifc_class": "IfcSlab",
+    "quantity_kind": "volume",
+    "quantity_name_contains": "NetVolume",
+    "allow_geometry_fallback": false
+  }
+]
