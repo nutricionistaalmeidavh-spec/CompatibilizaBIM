@@ -1,0 +1,48 @@
+from __future__ import annotations
+import json
+from pathlib import Path
+from ..dwg import DWGToCBIMPipeline
+from ..ifc import IFCBridge
+from .engine import ProjectValidationEngine
+from .federation import FederationEngine
+from .models import ValidationCase,RealDWGValidationBatch
+
+class RealDWGValidationRunner:
+    def __init__(self, importer, *, output_dir:str|Path, progress=None, ifc_backend:str='legacy', project_datum_elevation_m:float|None=None):
+        self.importer=importer;self.output_dir=Path(output_dir);self.output_dir.mkdir(parents=True,exist_ok=True);self.validator=ProjectValidationEngine();self.federation=FederationEngine();self.progress=progress;self.ifc_backend=ifc_backend;self.project_datum_elevation_m=project_datum_elevation_m
+    def _kwargs(self,discipline):
+        if discipline=='architecture': return {'include_hydraulic':False,'include_fire':False}
+        if discipline=='structure': return {'include_hydraulic':False,'include_fire':False}
+        if discipline=='hydraulic': return {'include_hydraulic':True,'include_fire':False,'project_datum_elevation_m':self.project_datum_elevation_m}
+        if discipline=='fire': return {'include_hydraulic':False,'include_fire':True,'project_datum_elevation_m':self.project_datum_elevation_m}
+        return {}
+    def run_case(self,case:ValidationCase):
+        src=Path(case.source_path); ifc=self.output_dir/f'{case.name}.ifc'
+        pipe=DWGToCBIMPipeline(self.importer,ifc_bridge=IFCBridge(backend=self.ifc_backend))
+        result=pipe.run(src,resolve_xrefs=case.resolve_xrefs,export_ifc=ifc,project_name=case.project_name or case.name,progress=self.progress,**self._kwargs(case.discipline))
+        report=self.validator.validate(case,result.diagnostics,result.project,canonical_entity_count=len(result.canonical_document.entities),canonical_document=result.canonical_document,xref_missing=result.xref_missing,ifc_exported=bool(result.ifc_path),ifc_sanity=result.ifc_sanity)
+        result.project.metadata['pipeline_timings_s']=json.dumps({k:round(v,4) for k,v in result.timings.items()},sort_keys=True)
+        (self.output_dir/f'{case.name}.cbim.json').write_text(result.project.model_dump_json(indent=2,exclude_none=True,ensure_ascii=True),encoding='utf-8')
+        (self.output_dir/f'{case.name}.validation.json').write_text(report.model_dump_json(indent=2,ensure_ascii=True),encoding='utf-8')
+        (self.output_dir/f'{case.name}.timings.json').write_text(json.dumps(result.timings,indent=2,sort_keys=True),encoding='utf-8')
+        return report,result.project
+    def run_batch(self,cases:list[ValidationCase],*,federate:bool=True)->RealDWGValidationBatch:
+        reports=[];projects={};blockers=[]
+        for case in cases:
+            try:
+                report,project=self.run_case(case);reports.append(report);projects[case.discipline]=project
+            except Exception as exc:
+                blockers.append(f'{case.name}: {type(exc).__name__}: {exc}')
+        federation=self.federation.federate(projects) if federate and len(projects)>1 else None
+        all_passed=len(reports)==len(cases) and all(r.passed for r in reports) and not blockers and (federation is None or federation.passed)
+        # Real production evidence requires the sources to have actually been read by a native provider, not fixtures.
+        native=bool(reports) and all(r.provider=='acadsharp' for r in reports)
+        real=bool(reports) and all(r.evidence_kind=='real_project' for r in reports)
+        eligible=all_passed and native and real and len({r.discipline for r in reports})>=4
+        if not native:blockers.append('native_acadsharp_execution_not_proven_for_all_cases')
+        if not real:blockers.append('real_project_sources_not_provided_for_all_cases')
+        if len({r.discipline for r in reports})<4:blockers.append('all_four_disciplines_not_validated')
+        batch=RealDWGValidationBatch(reports=reports,federation=federation,all_passed=all_passed,production_evidence_eligible=eligible,blockers=blockers)
+        (self.output_dir/'validation-batch.json').write_text(batch.model_dump_json(indent=2,ensure_ascii=True),encoding='utf-8')
+        if federation:(self.output_dir/'federation.json').write_text(federation.model_dump_json(indent=2,ensure_ascii=True),encoding='utf-8')
+        return batch

@@ -1,0 +1,7 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <AssemblyName>CBIM.Library.Contracts</AssemblyName>
+    <RootNamespace>CBIM.Library.Contracts</RootNamespace>
+  </PropertyGroup>
+</Project>

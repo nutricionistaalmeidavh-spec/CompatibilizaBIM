@@ -1,0 +1,11 @@
+C:\tmp\CompatibilizaBIM_Entregas_01-50\revit-plugins\CBIM.Revit.Contracts\bin\Release\net8.0-windows\CBIM.Revit.Contracts.deps.json
+C:\tmp\CompatibilizaBIM_Entregas_01-50\revit-plugins\CBIM.Revit.Contracts\bin\Release\net8.0-windows\CBIM.Revit.Contracts.dll
+C:\tmp\CompatibilizaBIM_Entregas_01-50\revit-plugins\CBIM.Revit.Contracts\bin\Release\net8.0-windows\CBIM.Revit.Contracts.pdb
+C:\tmp\CompatibilizaBIM_Entregas_01-50\revit-plugins\CBIM.Revit.Contracts\obj\Release\net8.0-windows\CBIM.Revit.Contracts.GeneratedMSBuildEditorConfig.editorconfig
+C:\tmp\CompatibilizaBIM_Entregas_01-50\revit-plugins\CBIM.Revit.Contracts\obj\Release\net8.0-windows\CBIM.Revit.Contracts.AssemblyInfoInputs.cache
+C:\tmp\CompatibilizaBIM_Entregas_01-50\revit-plugins\CBIM.Revit.Contracts\obj\Release\net8.0-windows\CBIM.Revit.Contracts.AssemblyInfo.cs
+C:\tmp\CompatibilizaBIM_Entregas_01-50\revit-plugins\CBIM.Revit.Contracts\obj\Release\net8.0-windows\CBIM.Revit.Contracts.csproj.CoreCompileInputs.cache
+C:\tmp\CompatibilizaBIM_Entregas_01-50\revit-plugins\CBIM.Revit.Contracts\obj\Release\net8.0-windows\CBIM.Revit.Contracts.dll
+C:\tmp\CompatibilizaBIM_Entregas_01-50\revit-plugins\CBIM.Revit.Contracts\obj\Release\net8.0-windows\refint\CBIM.Revit.Contracts.dll
+C:\tmp\CompatibilizaBIM_Entregas_01-50\revit-plugins\CBIM.Revit.Contracts\obj\Release\net8.0-windows\CBIM.Revit.Contracts.pdb
+C:\tmp\CompatibilizaBIM_Entregas_01-50\revit-plugins\CBIM.Revit.Contracts\obj\Release\net8.0-windows\ref\CBIM.Revit.Contracts.dll

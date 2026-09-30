@@ -1,0 +1,17 @@
+CompatibilizaBIM cumulative 01-40 verification
+- Core tests: 60/60 PASS
+- CBIM SDK tests: 6/6 PASS
+- Core coverage: 92%
+- CBIM coverage: 96%
+- compileall: PASS
+- Core wheel 1.27.0: PASS
+- CBIM wheel 0.3.0: PASS
+- clean wheel installation: PASS
+- cbim-validate-dwg CLI load/help: PASS
+- fixture discipline validation: PASS (architecture/structure/hydraulic/fire)
+- fixture production evidence eligibility: FALSE by design
+- federation ID collision check: PASS
+- federation cross-discipline candidates: PASS
+- IFC MEP visible pipe/fitting entities: PASS
+- ACadSharp C# bridge compilation: NOT EXECUTED (environment has no .NET SDK/NuGet/outbound DNS)
+- real-project DWG evidence: NOT EXECUTED (no actual project DWGs supplied)

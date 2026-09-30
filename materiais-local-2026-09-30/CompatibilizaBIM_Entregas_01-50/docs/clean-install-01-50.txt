@@ -1,0 +1,5 @@
+Processing /mnt/data/CompatibilizaBIM_01_50_work/CompatibilizaBIM_Entregas_01-50/dist-01-50/cbim_sdk-0.3.0-py3-none-any.whl
+Processing /mnt/data/CompatibilizaBIM_01_50_work/CompatibilizaBIM_Entregas_01-50/dist-01-50/compatibilizabim_core-1.37.0-py3-none-any.whl
+Installing collected packages: compatibilizabim-core, cbim-sdk
+
+Successfully installed cbim-sdk-0.3.0 compatibilizabim-core-1.37.0

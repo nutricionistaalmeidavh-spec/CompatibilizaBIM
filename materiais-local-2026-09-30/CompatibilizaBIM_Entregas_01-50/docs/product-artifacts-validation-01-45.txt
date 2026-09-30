@@ -1,0 +1,8 @@
+CBIM reload: PASS
+Import plan reload: PASS
+Learned profile reload: PASS
+Conversion report reload: PASS
+HTML parse: PASS
+Embedded JS node --check: PASS
+Persistent CBIM excludes computed fields: PASS
+Studio size: 26412

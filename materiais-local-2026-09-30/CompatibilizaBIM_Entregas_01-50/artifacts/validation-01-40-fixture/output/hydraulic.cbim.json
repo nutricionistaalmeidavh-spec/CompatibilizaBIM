@@ -1,0 +1,144 @@
+{
+  "id": "project_60d30fe6f194431c",
+  "schema": "CBIM",
+  "schema_version": "0.2.0",
+  "name": "hydraulic",
+  "created_at": "2026-08-16T18:00:57.279992Z",
+  "units": "m",
+  "coordinate_reference": "local",
+  "sites": [
+    {
+      "id": "site_6200cb1df8cc4c5c",
+      "name": "Local Site",
+      "elevation": 0.0,
+      "properties": {}
+    }
+  ],
+  "buildings": [
+    {
+      "id": "building_9273c55488d74b2b",
+      "name": "Building",
+      "properties": {}
+    }
+  ],
+  "storeys": [
+    {
+      "id": "storey_8fa90f164b884bd0",
+      "name": "Térreo",
+      "building_id": "building_9273c55488d74b2b",
+      "elevation": 0.0,
+      "height": 2.8,
+      "properties": {}
+    }
+  ],
+  "materials": [],
+  "systems": [
+    {
+      "id": "system_b3ad09ebe4484c4e",
+      "name": "Água fria",
+      "discipline": "plumbing",
+      "classification": "cold_water",
+      "properties": {}
+    }
+  ],
+  "elements": [
+    {
+      "id": "pipe_2993c193a5e34431",
+      "type": "pipe",
+      "storey_id": "storey_8fa90f164b884bd0",
+      "confidence": 0.995,
+      "review_state": "auto",
+      "source_refs": [
+        {
+          "source_id": "dwg:hydraulic",
+          "entity_id": "h1",
+          "source_type": "cad",
+          "layer": "AGUA_FRIA_DN25",
+          "metadata": {}
+        }
+      ],
+      "material_ids": [],
+      "properties": {
+        "service": "cold_water",
+        "catalog_item_id": "amanco-ppr-pipe",
+        "catalog_manufacturer": "Amanco Wavin",
+        "catalog_line": "PPR",
+        "catalog_match_score": 0.8,
+        "catalog_material": "PPR",
+        "intelligence_action": "auto_confirm_candidate",
+        "intelligence_evidence_count": 2
+      },
+      "path": [
+        {
+          "x": 2.0,
+          "y": -1.0,
+          "z": 1.0
+        },
+        {
+          "x": 2.0,
+          "y": 2.0,
+          "z": 1.0
+        }
+      ],
+      "diameter": 0.025,
+      "system_id": "system_b3ad09ebe4484c4e"
+    },
+    {
+      "id": "pipe_91a3c12a3fed4bcb",
+      "type": "pipe",
+      "storey_id": "storey_8fa90f164b884bd0",
+      "confidence": 0.995,
+      "review_state": "auto",
+      "source_refs": [
+        {
+          "source_id": "dwg:hydraulic",
+          "entity_id": "h2",
+          "source_type": "cad",
+          "layer": "AGUA_FRIA_DN25",
+          "metadata": {}
+        }
+      ],
+      "material_ids": [],
+      "properties": {
+        "service": "cold_water",
+        "catalog_item_id": "amanco-ppr-pipe",
+        "catalog_manufacturer": "Amanco Wavin",
+        "catalog_line": "PPR",
+        "catalog_match_score": 0.8,
+        "catalog_material": "PPR",
+        "intelligence_action": "auto_confirm_candidate",
+        "intelligence_evidence_count": 2
+      },
+      "path": [
+        {
+          "x": 2.0,
+          "y": 2.0,
+          "z": 1.0
+        },
+        {
+          "x": 4.0,
+          "y": 2.0,
+          "z": 1.0
+        }
+      ],
+      "diameter": 0.025,
+      "system_id": "system_b3ad09ebe4484c4e"
+    }
+  ],
+  "relations": [
+    {
+      "id": "relation_a803397871d948c1",
+      "type": "connects",
+      "from_id": "pipe_2993c193a5e34431",
+      "to_id": "pipe_91a3c12a3fed4bcb",
+      "metadata": {
+        "system_id": "system_b3ad09ebe4484c4e",
+        "network_node_id": "system_b3ad09ebe4484c4e:N00002",
+        "tolerance_m": 0.03
+      }
+    }
+  ],
+  "metadata": {
+    "recognition_intelligence": "deterministic_evidence_v1"
+  }
+}

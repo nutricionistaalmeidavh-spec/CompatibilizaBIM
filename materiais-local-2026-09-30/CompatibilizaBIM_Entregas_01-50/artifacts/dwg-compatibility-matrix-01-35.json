@@ -1,0 +1,92 @@
+[
+  {
+    "path": "artifacts/compat_AC1009.dwg",
+    "signature": "AC1009",
+    "label": null,
+    "declared_supported": false,
+    "attempted": false,
+    "imported": false,
+    "coverage": null,
+    "error": null
+  },
+  {
+    "path": "artifacts/compat_AC1012.dwg",
+    "signature": "AC1012",
+    "label": null,
+    "declared_supported": false,
+    "attempted": false,
+    "imported": false,
+    "coverage": null,
+    "error": null
+  },
+  {
+    "path": "artifacts/compat_AC1014.dwg",
+    "signature": "AC1014",
+    "label": "R14",
+    "declared_supported": true,
+    "attempted": false,
+    "imported": false,
+    "coverage": null,
+    "error": null
+  },
+  {
+    "path": "artifacts/compat_AC1015.dwg",
+    "signature": "AC1015",
+    "label": "2000/2000i/2002",
+    "declared_supported": true,
+    "attempted": false,
+    "imported": false,
+    "coverage": null,
+    "error": null
+  },
+  {
+    "path": "artifacts/compat_AC1018.dwg",
+    "signature": "AC1018",
+    "label": "2004/2005/2006",
+    "declared_supported": true,
+    "attempted": false,
+    "imported": false,
+    "coverage": null,
+    "error": null
+  },
+  {
+    "path": "artifacts/compat_AC1021.dwg",
+    "signature": "AC1021",
+    "label": "2007/2008/2009",
+    "declared_supported": true,
+    "attempted": false,
+    "imported": false,
+    "coverage": null,
+    "error": null
+  },
+  {
+    "path": "artifacts/compat_AC1024.dwg",
+    "signature": "AC1024",
+    "label": "2010/2011/2012",
+    "declared_supported": true,
+    "attempted": false,
+    "imported": false,
+    "coverage": null,
+    "error": null
+  },
+  {
+    "path": "artifacts/compat_AC1027.dwg",
+    "signature": "AC1027",
+    "label": "2013-2017",
+    "declared_supported": true,
+    "attempted": false,
+    "imported": false,
+    "coverage": null,
+    "error": null
+  },
+  {
+    "path": "artifacts/compat_AC1032.dwg",
+    "signature": "AC1032",
+    "label": "2018+",
+    "declared_supported": true,
+    "attempted": false,
+    "imported": false,
+    "coverage": null,
+    "error": null
+  }
+]

@@ -1,0 +1,746 @@
+{
+  "nodes": [
+    {
+      "id": "N_0_0",
+      "x": 0.0,
+      "y": 0.0,
+      "degree": 3,
+      "kind": "t_junction",
+      "source_entity_ids": [
+        "2F",
+        "41"
+      ]
+    },
+    {
+      "id": "N_0_1400",
+      "x": 0.0,
+      "y": 0.14,
+      "degree": 4,
+      "kind": "cross",
+      "source_entity_ids": [
+        "30",
+        "33",
+        "41"
+      ]
+    },
+    {
+      "id": "N_0_38600",
+      "x": 0.0,
+      "y": 3.86,
+      "degree": 4,
+      "kind": "cross",
+      "source_entity_ids": [
+        "32",
+        "33",
+        "41"
+      ]
+    },
+    {
+      "id": "N_0_40000",
+      "x": 0.0,
+      "y": 4.0,
+      "degree": 3,
+      "kind": "t_junction",
+      "source_entity_ids": [
+        "31",
+        "41"
+      ]
+    },
+    {
+      "id": "N_1400_1400",
+      "x": 0.14,
+      "y": 0.14,
+      "degree": 3,
+      "kind": "t_junction",
+      "source_entity_ids": [
+        "30",
+        "34"
+      ]
+    },
+    {
+      "id": "N_1400_38600",
+      "x": 0.14,
+      "y": 3.86,
+      "degree": 3,
+      "kind": "t_junction",
+      "source_entity_ids": [
+        "32",
+        "34"
+      ]
+    },
+    {
+      "id": "N_5000_20000",
+      "x": 0.5,
+      "y": 2.0,
+      "degree": 1,
+      "kind": "endpoint",
+      "source_entity_ids": [
+        "3F"
+      ]
+    },
+    {
+      "id": "N_5000_22000",
+      "x": 0.5,
+      "y": 2.2,
+      "degree": 1,
+      "kind": "endpoint",
+      "source_entity_ids": [
+        "40"
+      ]
+    },
+    {
+      "id": "N_10000_10000",
+      "x": 1.0,
+      "y": 1.0,
+      "degree": 2,
+      "kind": "pass",
+      "source_entity_ids": [
+        "37"
+      ]
+    },
+    {
+      "id": "N_10000_14000",
+      "x": 1.0,
+      "y": 1.4,
+      "degree": 2,
+      "kind": "pass",
+      "source_entity_ids": [
+        "37"
+      ]
+    },
+    {
+      "id": "N_12000_10000",
+      "x": 1.2,
+      "y": 1.0,
+      "degree": 2,
+      "kind": "pass",
+      "source_entity_ids": [
+        "37"
+      ]
+    },
+    {
+      "id": "N_12000_14000",
+      "x": 1.2,
+      "y": 1.4,
+      "degree": 2,
+      "kind": "pass",
+      "source_entity_ids": [
+        "37"
+      ]
+    },
+    {
+      "id": "N_45000_20000",
+      "x": 4.5,
+      "y": 2.0,
+      "degree": 1,
+      "kind": "endpoint",
+      "source_entity_ids": [
+        "3F"
+      ]
+    },
+    {
+      "id": "N_45000_22000",
+      "x": 4.5,
+      "y": 2.2,
+      "degree": 1,
+      "kind": "endpoint",
+      "source_entity_ids": [
+        "40"
+      ]
+    },
+    {
+      "id": "N_48600_1400",
+      "x": 4.86,
+      "y": 0.14,
+      "degree": 3,
+      "kind": "t_junction",
+      "source_entity_ids": [
+        "30",
+        "36"
+      ]
+    },
+    {
+      "id": "N_48600_38600",
+      "x": 4.86,
+      "y": 3.86,
+      "degree": 3,
+      "kind": "t_junction",
+      "source_entity_ids": [
+        "32",
+        "36"
+      ]
+    },
+    {
+      "id": "N_50000_0",
+      "x": 5.0,
+      "y": 0.0,
+      "degree": 3,
+      "kind": "t_junction",
+      "source_entity_ids": [
+        "2F",
+        "41"
+      ]
+    },
+    {
+      "id": "N_50000_1400",
+      "x": 5.0,
+      "y": 0.14,
+      "degree": 4,
+      "kind": "cross",
+      "source_entity_ids": [
+        "30",
+        "35",
+        "41"
+      ]
+    },
+    {
+      "id": "N_50000_38600",
+      "x": 5.0,
+      "y": 3.86,
+      "degree": 4,
+      "kind": "cross",
+      "source_entity_ids": [
+        "32",
+        "35",
+        "41"
+      ]
+    },
+    {
+      "id": "N_50000_40000",
+      "x": 5.0,
+      "y": 4.0,
+      "degree": 3,
+      "kind": "t_junction",
+      "source_entity_ids": [
+        "31",
+        "41"
+      ]
+    },
+    {
+      "id": "N_55000_0",
+      "x": 5.5,
+      "y": 0.0,
+      "degree": 2,
+      "kind": "pass",
+      "source_entity_ids": [
+        "42"
+      ]
+    },
+    {
+      "id": "N_55000_10000",
+      "x": 5.5,
+      "y": 1.0,
+      "degree": 2,
+      "kind": "pass",
+      "source_entity_ids": [
+        "42"
+      ]
+    },
+    {
+      "id": "N_65000_0",
+      "x": 6.5,
+      "y": 0.0,
+      "degree": 2,
+      "kind": "pass",
+      "source_entity_ids": [
+        "42"
+      ]
+    },
+    {
+      "id": "N_65000_10000",
+      "x": 6.5,
+      "y": 1.0,
+      "degree": 2,
+      "kind": "pass",
+      "source_entity_ids": [
+        "42"
+      ]
+    }
+  ],
+  "edges": [
+    {
+      "id": "E00001",
+      "start_node_id": "N_0_0",
+      "end_node_id": "N_50000_0",
+      "source_entity_id": "41",
+      "layer": "LAJE",
+      "length": 5.0,
+      "synthetic": false
+    },
+    {
+      "id": "E00002",
+      "start_node_id": "N_50000_0",
+      "end_node_id": "N_50000_1400",
+      "source_entity_id": "41",
+      "layer": "LAJE",
+      "length": 0.14,
+      "synthetic": false
+    },
+    {
+      "id": "E00003",
+      "start_node_id": "N_50000_1400",
+      "end_node_id": "N_50000_38600",
+      "source_entity_id": "41",
+      "layer": "LAJE",
+      "length": 3.7199999999999998,
+      "synthetic": false
+    },
+    {
+      "id": "E00004",
+      "start_node_id": "N_50000_38600",
+      "end_node_id": "N_50000_40000",
+      "source_entity_id": "41",
+      "layer": "LAJE",
+      "length": 0.14000000000000012,
+      "synthetic": false
+    },
+    {
+      "id": "E00005",
+      "start_node_id": "N_50000_40000",
+      "end_node_id": "N_0_40000",
+      "source_entity_id": "41",
+      "layer": "LAJE",
+      "length": 5.0,
+      "synthetic": false
+    },
+    {
+      "id": "E00006",
+      "start_node_id": "N_0_40000",
+      "end_node_id": "N_0_38600",
+      "source_entity_id": "41",
+      "layer": "LAJE",
+      "length": 0.14000000000000012,
+      "synthetic": false
+    },
+    {
+      "id": "E00007",
+      "start_node_id": "N_0_38600",
+      "end_node_id": "N_0_1400",
+      "source_entity_id": "41",
+      "layer": "LAJE",
+      "length": 3.7199999999999998,
+      "synthetic": false
+    },
+    {
+      "id": "E00008",
+      "start_node_id": "N_0_1400",
+      "end_node_id": "N_0_0",
+      "source_entity_id": "41",
+      "layer": "LAJE",
+      "length": 0.14,
+      "synthetic": false
+    },
+    {
+      "id": "E00009",
+      "start_node_id": "N_10000_10000",
+      "end_node_id": "N_12000_10000",
+      "source_entity_id": "37",
+      "layer": "PILAR",
+      "length": 0.19999999999999996,
+      "synthetic": false
+    },
+    {
+      "id": "E00010",
+      "start_node_id": "N_12000_10000",
+      "end_node_id": "N_12000_14000",
+      "source_entity_id": "37",
+      "layer": "PILAR",
+      "length": 0.3999999999999999,
+      "synthetic": false
+    },
+    {
+      "id": "E00011",
+      "start_node_id": "N_12000_14000",
+      "end_node_id": "N_10000_14000",
+      "source_entity_id": "37",
+      "layer": "PILAR",
+      "length": 0.19999999999999996,
+      "synthetic": false
+    },
+    {
+      "id": "E00012",
+      "start_node_id": "N_10000_14000",
+      "end_node_id": "N_10000_10000",
+      "source_entity_id": "37",
+      "layer": "PILAR",
+      "length": 0.3999999999999999,
+      "synthetic": false
+    },
+    {
+      "id": "E00013",
+      "start_node_id": "N_55000_0",
+      "end_node_id": "N_65000_0",
+      "source_entity_id": "42",
+      "layer": "SAPATA",
+      "length": 1.0,
+      "synthetic": false
+    },
+    {
+      "id": "E00014",
+      "start_node_id": "N_65000_0",
+      "end_node_id": "N_65000_10000",
+      "source_entity_id": "42",
+      "layer": "SAPATA",
+      "length": 1.0,
+      "synthetic": false
+    },
+    {
+      "id": "E00015",
+      "start_node_id": "N_65000_10000",
+      "end_node_id": "N_55000_10000",
+      "source_entity_id": "42",
+      "layer": "SAPATA",
+      "length": 1.0,
+      "synthetic": false
+    },
+    {
+      "id": "E00016",
+      "start_node_id": "N_55000_10000",
+      "end_node_id": "N_55000_0",
+      "source_entity_id": "42",
+      "layer": "SAPATA",
+      "length": 1.0,
+      "synthetic": false
+    },
+    {
+      "id": "E00017",
+      "start_node_id": "N_5000_20000",
+      "end_node_id": "N_45000_20000",
+      "source_entity_id": "3F",
+      "layer": "VIGA",
+      "length": 4.0,
+      "synthetic": false
+    },
+    {
+      "id": "E00018",
+      "start_node_id": "N_5000_22000",
+      "end_node_id": "N_45000_22000",
+      "source_entity_id": "40",
+      "layer": "VIGA",
+      "length": 4.0,
+      "synthetic": false
+    },
+    {
+      "id": "E00019",
+      "start_node_id": "N_0_0",
+      "end_node_id": "N_50000_0",
+      "source_entity_id": "2F",
+      "layer": "WALL",
+      "length": 5.0,
+      "synthetic": false
+    },
+    {
+      "id": "E00020",
+      "start_node_id": "N_0_1400",
+      "end_node_id": "N_1400_1400",
+      "source_entity_id": "30",
+      "layer": "WALL",
+      "length": 0.14,
+      "synthetic": false
+    },
+    {
+      "id": "E00021",
+      "start_node_id": "N_1400_1400",
+      "end_node_id": "N_48600_1400",
+      "source_entity_id": "30",
+      "layer": "WALL",
+      "length": 4.720000000000001,
+      "synthetic": false
+    },
+    {
+      "id": "E00022",
+      "start_node_id": "N_48600_1400",
+      "end_node_id": "N_50000_1400",
+      "source_entity_id": "30",
+      "layer": "WALL",
+      "length": 0.13999999999999968,
+      "synthetic": false
+    },
+    {
+      "id": "E00023",
+      "start_node_id": "N_0_40000",
+      "end_node_id": "N_50000_40000",
+      "source_entity_id": "31",
+      "layer": "WALL",
+      "length": 5.0,
+      "synthetic": false
+    },
+    {
+      "id": "E00024",
+      "start_node_id": "N_0_38600",
+      "end_node_id": "N_1400_38600",
+      "source_entity_id": "32",
+      "layer": "WALL",
+      "length": 0.14,
+      "synthetic": false
+    },
+    {
+      "id": "E00025",
+      "start_node_id": "N_1400_38600",
+      "end_node_id": "N_48600_38600",
+      "source_entity_id": "32",
+      "layer": "WALL",
+      "length": 4.720000000000001,
+      "synthetic": false
+    },
+    {
+      "id": "E00026",
+      "start_node_id": "N_48600_38600",
+      "end_node_id": "N_50000_38600",
+      "source_entity_id": "32",
+      "layer": "WALL",
+      "length": 0.13999999999999968,
+      "synthetic": false
+    },
+    {
+      "id": "E00027",
+      "start_node_id": "N_0_1400",
+      "end_node_id": "N_0_38600",
+      "source_entity_id": "33",
+      "layer": "WALL",
+      "length": 3.7199999999999998,
+      "synthetic": false
+    },
+    {
+      "id": "E00028",
+      "start_node_id": "N_1400_1400",
+      "end_node_id": "N_1400_38600",
+      "source_entity_id": "34",
+      "layer": "WALL",
+      "length": 3.7199999999999998,
+      "synthetic": false
+    },
+    {
+      "id": "E00029",
+      "start_node_id": "N_50000_1400",
+      "end_node_id": "N_50000_38600",
+      "source_entity_id": "35",
+      "layer": "WALL",
+      "length": 3.7199999999999998,
+      "synthetic": false
+    },
+    {
+      "id": "E00030",
+      "start_node_id": "N_48600_1400",
+      "end_node_id": "N_48600_38600",
+      "source_entity_id": "36",
+      "layer": "WALL",
+      "length": 3.7199999999999998,
+      "synthetic": false
+    }
+  ],
+  "faces": [
+    {
+      "id": "F0005",
+      "boundary": [
+        [
+          1.2,
+          1.0
+        ],
+        [
+          1.0,
+          1.0
+        ],
+        [
+          1.0,
+          1.4
+        ],
+        [
+          1.2,
+          1.4
+        ]
+      ],
+      "area": 0.07999999999999996,
+      "source_entity_ids": [
+        "37"
+      ]
+    },
+    {
+      "id": "F0002",
+      "boundary": [
+        [
+          5.0,
+          3.86
+        ],
+        [
+          5.0,
+          0.14
+        ],
+        [
+          4.86,
+          0.14
+        ],
+        [
+          4.86,
+          3.86
+        ]
+      ],
+      "area": 0.5207999999999988,
+      "source_entity_ids": [
+        "30",
+        "32",
+        "35",
+        "36",
+        "41"
+      ]
+    },
+    {
+      "id": "F0004",
+      "boundary": [
+        [
+          0.0,
+          0.14
+        ],
+        [
+          0.0,
+          3.86
+        ],
+        [
+          0.14,
+          3.86
+        ],
+        [
+          0.14,
+          0.14
+        ]
+      ],
+      "area": 0.5208,
+      "source_entity_ids": [
+        "30",
+        "32",
+        "33",
+        "34",
+        "41"
+      ]
+    },
+    {
+      "id": "F0001",
+      "boundary": [
+        [
+          5.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.14
+        ],
+        [
+          0.14,
+          0.14
+        ],
+        [
+          4.86,
+          0.14
+        ],
+        [
+          5.0,
+          0.14
+        ]
+      ],
+      "area": 0.7000000000000001,
+      "source_entity_ids": [
+        "2F",
+        "30",
+        "41"
+      ]
+    },
+    {
+      "id": "F0003",
+      "boundary": [
+        [
+          5.0,
+          4.0
+        ],
+        [
+          5.0,
+          3.86
+        ],
+        [
+          4.86,
+          3.86
+        ],
+        [
+          0.14,
+          3.86
+        ],
+        [
+          0.0,
+          3.86
+        ],
+        [
+          0.0,
+          4.0
+        ]
+      ],
+      "area": 0.7000000000000006,
+      "source_entity_ids": [
+        "31",
+        "32",
+        "41"
+      ]
+    },
+    {
+      "id": "F0006",
+      "boundary": [
+        [
+          6.5,
+          0.0
+        ],
+        [
+          5.5,
+          0.0
+        ],
+        [
+          5.5,
+          1.0
+        ],
+        [
+          6.5,
+          1.0
+        ]
+      ],
+      "area": 1.0,
+      "source_entity_ids": [
+        "42"
+      ]
+    },
+    {
+      "id": "F0007",
+      "boundary": [
+        [
+          4.86,
+          0.14
+        ],
+        [
+          0.14,
+          0.14
+        ],
+        [
+          0.14,
+          3.86
+        ],
+        [
+          4.86,
+          3.86
+        ]
+      ],
+      "area": 17.478400000000004,
+      "source_entity_ids": [
+        "30",
+        "32",
+        "34",
+        "36",
+        "37"
+      ]
+    }
+  ],
+  "metadata": {
+    "tolerance_m": 0.0001,
+    "gap_tolerance_m": 0.02,
+    "gaps_repaired": 0
+  }
+}

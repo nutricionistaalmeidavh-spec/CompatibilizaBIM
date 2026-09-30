@@ -1,0 +1,11 @@
+{
+  "provider": "contract-demo",
+  "elements": 9,
+  "ifc_sanity": {
+    "has_step_header": true,
+    "has_ifc4_schema": true,
+    "has_end_marker": true,
+    "entity_count": 87
+  },
+  "note": "pipeline contract demo; source .dwg fixture is header-only, not a semantic ACadSharp read"
+}

@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RevitAddIns>
+  <AddIn Type="Application">
+    <Name>CBIM Library</Name>
+    <Assembly>__ASSEMBLY_PATH__</Assembly>
+    <FullClassName>CBIM.Library.Revit2027.App</FullClassName>
+    <ClientId>58A58C63-927D-4A0A-BF1E-66FF11A67C20</ClientId>
+    <VendorId>CBIM</VendorId>
+    <VendorDescription>CBIM Library — Revit 2027 — Learning Ready</VendorDescription>
+  </AddIn>
+</RevitAddIns>

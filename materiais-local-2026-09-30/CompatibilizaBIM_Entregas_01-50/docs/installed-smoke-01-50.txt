@@ -1,0 +1,42 @@
+core 1.37.0 /mnt/data/cbim_01_50_clean_target/compatibilizabim_core/__init__.py
+cbim 0.3.0 /mnt/data/cbim_01_50_clean_target/cbim_sdk/__init__.py
+usage: cbim-desktop [-h] {create,serve,status,autosave,recover} ...
+
+CompatibilizaBIM local desktop/workspace tools (deliveries 46-50)
+
+positional arguments:
+  {create,serve,status,autosave,recover}
+
+options:
+  -h, --help            show this help message and exit
+usage: cbim-commercial [-h] {keygen,customer,issue,verify,pilot-gate} ...
+
+CompatibilizaBIM customer licensing and commercial pilot gate
+
+positional arguments:
+  {keygen,customer,issue,verify,pilot-gate}
+
+options:
+  -h, --help            show this help message and exit
+{
+  "root": "/mnt/data/cbim_01_50_installed_workspace",
+  "project_id": "project_dc5b4663e31d452c",
+  "project_name": "Demo Entregas 01-10",
+  "revision": 0,
+  "project_sha256": "7208280b87d240e88ae5759157cb53af2facb8d0254c70114f2d2f82db5e6292",
+  "source_count": 4,
+  "has_profile": false,
+  "has_report": false
+}
+{
+  "valid": true,
+  "reason": "ok",
+  "customer_id": "demo-pilot",
+  "edition": "pilot",
+  "features": [
+    "cad_to_cbim",
+    "ifc_export",
+    "quantities",
+    "desktop"
+  ]
+}

@@ -1,0 +1,28 @@
+usage: cbim-validate-dwg [-h] [--architecture ARCHITECTURE]
+                         [--structure STRUCTURE] [--hydraulic HYDRAULIC]
+                         [--fire FIRE] [--output OUTPUT]
+                         [--bridge-exe BRIDGE_EXE]
+                         [--bridge-project BRIDGE_PROJECT]
+                         [--min-import-coverage MIN_IMPORT_COVERAGE]
+                         [--min-recognition-rate MIN_RECOGNITION_RATE]
+                         [--min-confidence MIN_CONFIDENCE] [--no-xref]
+
+Validate real DWG disciplines through ACadSharp -> CBIM -> IFC and federate
+results.
+
+options:
+  -h, --help            show this help message and exit
+  --architecture ARCHITECTURE
+                        architecture DWG file
+  --structure STRUCTURE
+                        structure DWG file
+  --hydraulic HYDRAULIC
+                        hydraulic DWG file
+  --fire FIRE           fire DWG file
+  --output OUTPUT
+  --bridge-exe BRIDGE_EXE
+  --bridge-project BRIDGE_PROJECT
+  --min-import-coverage MIN_IMPORT_COVERAGE
+  --min-recognition-rate MIN_RECOGNITION_RATE
+  --min-confidence MIN_CONFIDENCE
+  --no-xref

@@ -1,0 +1,6 @@
+WARNING: The directory '/home/oai/.cache/pip' or its parent directory is not owned or is not writable by the current user. The cache has been disabled. Check the permissions and owner of that directory. If executing pip with sudo, you should use sudo's -H flag.
+Processing /mnt/data/CompatibilizaBIM_01_40_work/CompatibilizaBIM_Entregas_01-35/dist-01-40/cbim_sdk-0.3.0-py3-none-any.whl
+Processing /mnt/data/CompatibilizaBIM_01_40_work/CompatibilizaBIM_Entregas_01-35/dist-01-40/compatibilizabim_core-1.27.0-py3-none-any.whl
+Installing collected packages: compatibilizabim-core, cbim-sdk
+
+Successfully installed cbim-sdk-0.3.0 compatibilizabim-core-1.27.0

@@ -1,0 +1,9 @@
+{
+  "provider": "ACadSharp",
+  "pinned_version": "3.6.51",
+  "license": "MIT",
+  "source_present": true,
+  "dotnet_available": false,
+  "compiled_in_this_environment": false,
+  "reason": "dotnet SDK and NuGet restore unavailable in container"
+}

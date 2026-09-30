@@ -1,0 +1,84 @@
+{
+  "source_id": "xref:MASTER",
+  "source_format": "canonical",
+  "source_path": null,
+  "units": "m",
+  "entities": [
+    {
+      "id": "MASTER::M1",
+      "kind": "line",
+      "layer": "SITE",
+      "metadata": {
+        "xref_path": "MASTER",
+        "xref_source_entity_id": "M1",
+        "xref_depth": 0
+      },
+      "start": {
+        "x": 0.0,
+        "y": 0.0,
+        "z": -612.3
+      },
+      "end": {
+        "x": 99.90482215818578,
+        "y": -4.3619387365336,
+        "z": -612.3
+      }
+    },
+    {
+      "id": "MASTER/ARQ_TORREA::A1",
+      "kind": "line",
+      "layer": "WALL",
+      "metadata": {
+        "xref_path": "MASTER/ARQ_TORREA",
+        "xref_source_entity_id": "A1",
+        "xref_depth": 1
+      },
+      "start": {
+        "x": 44.96472215560855,
+        "y": 26.59197603533894,
+        "z": -612.3
+      },
+      "end": {
+        "x": 64.49064229799525,
+        "y": 30.920768313648118,
+        "z": -612.3
+      }
+    },
+    {
+      "id": "MASTER/MEP_TORREA::P1",
+      "kind": "line",
+      "layer": "AF_DN25",
+      "metadata": {
+        "xref_path": "MASTER/MEP_TORREA",
+        "xref_source_entity_id": "P1",
+        "xref_depth": 1
+      },
+      "start": {
+        "x": 44.53184292771971,
+        "y": 28.54456804945196,
+        "z": -612.3
+      },
+      "end": {
+        "x": 64.05776307014703,
+        "y": 32.873360328691575,
+        "z": -612.3
+      }
+    }
+  ],
+  "blocks": {},
+  "layers": [
+    "AF_DN25",
+    "SITE",
+    "WALL"
+  ],
+  "metadata": {
+    "xref_root": "MASTER",
+    "xref_document_count": 3,
+    "xref_composed": true,
+    "coordinate_reference": "SIRGAS2000 / UTM 23S",
+    "coordinate_mode": "local",
+    "survey_origin_easting": 203456.238,
+    "survey_origin_northing": 7658291.472,
+    "survey_rotation_deg": 2.5
+  }
+}

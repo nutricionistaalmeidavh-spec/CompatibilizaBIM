@@ -1,0 +1,25 @@
+{
+  "evidence_kind": "fixture",
+  "production_evidence_eligible": false,
+  "native_dwg_backend_validated": false,
+  "disciplines_validated": [
+    "architecture",
+    "structure",
+    "hydraulic",
+    "fire"
+  ],
+  "import_coverage": 1.0,
+  "recognition_coverage": 0.95,
+  "pending_review_ratio": 0.05,
+  "ifc_export_passed": true,
+  "federation_passed": true,
+  "quantities_passed": true,
+  "persistence_passed": true,
+  "recovery_passed": true,
+  "desktop_smoke_passed": true,
+  "license_validation_passed": true,
+  "real_element_count": 11,
+  "notes": [
+    "Synthetic/product fixture; cannot unlock commercial pilot gate."
+  ]
+}

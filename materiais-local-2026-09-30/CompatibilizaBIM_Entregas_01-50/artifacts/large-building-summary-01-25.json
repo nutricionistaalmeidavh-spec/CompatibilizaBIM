@@ -1,0 +1,33 @@
+{
+  "complex_building": {
+    "buildings": 2,
+    "storeys": 80,
+    "elements": 280,
+    "repeat_patterns": 3,
+    "largest_repeat_group": 70
+  },
+  "xref_georef": {
+    "source_documents": 3,
+    "entities": 3,
+    "coordinate_reference": "SIRGAS2000 / UTM 23S",
+    "max_local_abs_coordinate": 99.90482215818578
+  },
+  "revision_diff": {
+    "added": 1,
+    "removed": 0,
+    "modified": 1
+  },
+  "benchmark_50k": {
+    "entity_count": 50000,
+    "tile_count": 40,
+    "elapsed_ms": 48.741116000201146,
+    "entities_per_second": 1025827.9683172142
+  },
+  "incremental_change": {
+    "changed": [
+      "L12345"
+    ],
+    "affected_tile_count": 9,
+    "requires_global_rebuild": false
+  }
+}

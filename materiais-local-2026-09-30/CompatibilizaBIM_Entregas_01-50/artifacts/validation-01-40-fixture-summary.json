@@ -1,0 +1,53 @@
+{
+  "evidence_kind": "fixture",
+  "production_evidence_eligible": false,
+  "all_passed": true,
+  "disciplines": [
+    "architecture",
+    "structure",
+    "hydraulic",
+    "fire"
+  ],
+  "reports": {
+    "architecture": {
+      "passed": true,
+      "import_coverage": 1.0,
+      "recognition_rate": 1.0,
+      "relevant_elements": 10,
+      "network_count": 0,
+      "ifc_sanity_passed": true
+    },
+    "structure": {
+      "passed": true,
+      "import_coverage": 1.0,
+      "recognition_rate": 1.0,
+      "relevant_elements": 2,
+      "network_count": 0,
+      "ifc_sanity_passed": true
+    },
+    "hydraulic": {
+      "passed": true,
+      "import_coverage": 1.0,
+      "recognition_rate": 1.0,
+      "relevant_elements": 2,
+      "network_count": 1,
+      "ifc_sanity_passed": true
+    },
+    "fire": {
+      "passed": true,
+      "import_coverage": 1.0,
+      "recognition_rate": 1.0,
+      "relevant_elements": 2,
+      "network_count": 1,
+      "ifc_sanity_passed": true
+    }
+  },
+  "federation": {
+    "total_elements": 16,
+    "cross_discipline_candidates": 9,
+    "id_collisions": []
+  },
+  "blockers": [
+    "real_project_sources_not_provided_for_all_cases"
+  ]
+}

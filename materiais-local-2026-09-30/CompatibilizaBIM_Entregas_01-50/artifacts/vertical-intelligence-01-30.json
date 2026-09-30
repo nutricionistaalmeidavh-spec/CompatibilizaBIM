@@ -1,0 +1,81 @@
+{
+  "repeated_groups": [
+    {
+      "building_id": "tower",
+      "fingerprint": "80048892393ea7ad8b9eb8f145955cf057b91762072c260e7a7f489ca13eab76",
+      "storey_ids": [
+        "floor01",
+        "floor02",
+        "floor03"
+      ],
+      "storey_names": [
+        "01",
+        "02",
+        "03"
+      ],
+      "confidence": 1.0
+    }
+  ],
+  "vertical_stacks": [
+    {
+      "stack_type": "vertical_alignment",
+      "building_id": "tower",
+      "element_ids": [
+        "doorA",
+        "doorA__floor02",
+        "doorA__floor03"
+      ],
+      "storey_ids": [
+        "floor01",
+        "floor02",
+        "floor03"
+      ],
+      "xy_key": [
+        40,
+        0
+      ],
+      "confidence": 0.9099999999999999
+    },
+    {
+      "stack_type": "wall_alignment",
+      "building_id": "tower",
+      "element_ids": [
+        "wallA",
+        "wallA__floor02",
+        "wallA__floor03"
+      ],
+      "storey_ids": [
+        "floor01",
+        "floor02",
+        "floor03"
+      ],
+      "xy_key": [
+        50,
+        0
+      ],
+      "confidence": 0.9099999999999999
+    }
+  ],
+  "propagation_proposals": [
+    {
+      "source_storey_id": "floor01",
+      "target_storey_id": "floor02",
+      "source_element_ids": [
+        "wallA",
+        "doorA"
+      ],
+      "delta_z": 3.0,
+      "reason": "repeated_storey"
+    },
+    {
+      "source_storey_id": "floor01",
+      "target_storey_id": "floor03",
+      "source_element_ids": [
+        "wallA",
+        "doorA"
+      ],
+      "delta_z": 6.0,
+      "reason": "repeated_storey"
+    }
+  ]
+}

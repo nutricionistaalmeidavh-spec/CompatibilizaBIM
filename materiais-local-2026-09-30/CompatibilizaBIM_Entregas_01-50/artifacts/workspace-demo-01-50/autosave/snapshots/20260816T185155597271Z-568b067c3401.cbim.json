@@ -1,0 +1,504 @@
+{
+  "id": "project_dc5b4663e31d452c",
+  "schema": "CBIM",
+  "schema_version": "0.2.0",
+  "name": "Demo Entregas 01-10 - Autosave",
+  "created_at": "2026-08-16T16:28:46.979883Z",
+  "units": "m",
+  "coordinate_reference": "local",
+  "sites": [
+    {
+      "id": "site_098ce7f0d0234b29",
+      "name": "Local Site",
+      "latitude": null,
+      "longitude": null,
+      "elevation": 0.0,
+      "properties": {}
+    }
+  ],
+  "buildings": [
+    {
+      "id": "building_75450d600fe74b2c",
+      "name": "Building",
+      "site_id": null,
+      "properties": {}
+    }
+  ],
+  "storeys": [
+    {
+      "id": "storey_12041bd5546c4c48",
+      "name": "Térreo",
+      "building_id": "building_75450d600fe74b2c",
+      "elevation": 0.0,
+      "height": 2.8,
+      "properties": {}
+    }
+  ],
+  "materials": [],
+  "systems": [],
+  "elements": [
+    {
+      "id": "wall_51e91ab479ed4d05",
+      "type": "wall",
+      "name": null,
+      "storey_id": "storey_12041bd5546c4c48",
+      "confidence": 0.96,
+      "review_state": "confirmed",
+      "source_refs": [
+        {
+          "source_id": "dxf:cad-to-cbim-demo.dxf:33f4767a",
+          "entity_id": "2F",
+          "source_type": "cad",
+          "layer": "WALL",
+          "metadata": {}
+        },
+        {
+          "source_id": "dxf:cad-to-cbim-demo.dxf:33f4767a",
+          "entity_id": "30",
+          "source_type": "cad",
+          "layer": "WALL",
+          "metadata": {}
+        }
+      ],
+      "material_ids": [],
+      "properties": {},
+      "start": {
+        "x": 0.0,
+        "y": 0.07,
+        "z": 0.0
+      },
+      "end": {
+        "x": 5.0,
+        "y": 0.07,
+        "z": 0.0
+      },
+      "thickness": 0.14,
+      "height": 2.8
+    },
+    {
+      "id": "wall_b60a62b4c2fb410a",
+      "type": "wall",
+      "name": null,
+      "storey_id": "storey_12041bd5546c4c48",
+      "confidence": 0.96,
+      "review_state": "confirmed",
+      "source_refs": [
+        {
+          "source_id": "dxf:cad-to-cbim-demo.dxf:33f4767a",
+          "entity_id": "31",
+          "source_type": "cad",
+          "layer": "WALL",
+          "metadata": {}
+        },
+        {
+          "source_id": "dxf:cad-to-cbim-demo.dxf:33f4767a",
+          "entity_id": "32",
+          "source_type": "cad",
+          "layer": "WALL",
+          "metadata": {}
+        }
+      ],
+      "material_ids": [],
+      "properties": {},
+      "start": {
+        "x": 0.0,
+        "y": 3.9299999999999997,
+        "z": 0.0
+      },
+      "end": {
+        "x": 5.0,
+        "y": 3.9299999999999997,
+        "z": 0.0
+      },
+      "thickness": 0.14000000000000012,
+      "height": 2.8
+    },
+    {
+      "id": "wall_39af2eb5b8ed4ef4",
+      "type": "wall",
+      "name": null,
+      "storey_id": "storey_12041bd5546c4c48",
+      "confidence": 0.96,
+      "review_state": "confirmed",
+      "source_refs": [
+        {
+          "source_id": "dxf:cad-to-cbim-demo.dxf:33f4767a",
+          "entity_id": "33",
+          "source_type": "cad",
+          "layer": "WALL",
+          "metadata": {}
+        },
+        {
+          "source_id": "dxf:cad-to-cbim-demo.dxf:33f4767a",
+          "entity_id": "34",
+          "source_type": "cad",
+          "layer": "WALL",
+          "metadata": {}
+        }
+      ],
+      "material_ids": [],
+      "properties": {},
+      "start": {
+        "x": 0.07,
+        "y": 0.14,
+        "z": 0.0
+      },
+      "end": {
+        "x": 0.07,
+        "y": 3.86,
+        "z": 0.0
+      },
+      "thickness": 0.14,
+      "height": 2.8
+    },
+    {
+      "id": "wall_ed60ea61c58c46f0",
+      "type": "wall",
+      "name": null,
+      "storey_id": "storey_12041bd5546c4c48",
+      "confidence": 0.96,
+      "review_state": "confirmed",
+      "source_refs": [
+        {
+          "source_id": "dxf:cad-to-cbim-demo.dxf:33f4767a",
+          "entity_id": "35",
+          "source_type": "cad",
+          "layer": "WALL",
+          "metadata": {}
+        },
+        {
+          "source_id": "dxf:cad-to-cbim-demo.dxf:33f4767a",
+          "entity_id": "36",
+          "source_type": "cad",
+          "layer": "WALL",
+          "metadata": {}
+        }
+      ],
+      "material_ids": [],
+      "properties": {},
+      "start": {
+        "x": 4.93,
+        "y": 0.14,
+        "z": 0.0
+      },
+      "end": {
+        "x": 4.93,
+        "y": 3.86,
+        "z": 0.0
+      },
+      "thickness": 0.13999999999999968,
+      "height": 2.8
+    },
+    {
+      "id": "column_c2656150ba3c491d",
+      "type": "column",
+      "name": null,
+      "storey_id": "storey_12041bd5546c4c48",
+      "confidence": 0.97,
+      "review_state": "confirmed",
+      "source_refs": [
+        {
+          "source_id": "dxf:cad-to-cbim-demo.dxf:33f4767a",
+          "entity_id": "37",
+          "source_type": "cad",
+          "layer": "PILAR",
+          "metadata": {}
+        }
+      ],
+      "material_ids": [],
+      "properties": {
+        "structural": true
+      },
+      "center": {
+        "x": 1.1,
+        "y": 1.2,
+        "z": 0.0
+      },
+      "width": 0.19999999999999996,
+      "depth": 0.3999999999999999,
+      "height": 2.8,
+      "rotation_deg": 0.0
+    },
+    {
+      "id": "door_7853f4b640d34502",
+      "type": "door",
+      "name": null,
+      "storey_id": "storey_12041bd5546c4c48",
+      "confidence": 0.95,
+      "review_state": "confirmed",
+      "source_refs": [
+        {
+          "source_id": "dxf:cad-to-cbim-demo.dxf:33f4767a",
+          "entity_id": "3C",
+          "source_type": "cad",
+          "layer": "PORTA",
+          "metadata": {}
+        }
+      ],
+      "material_ids": [],
+      "properties": {},
+      "position": {
+        "x": 2.5,
+        "y": 0.07,
+        "z": 0.0
+      },
+      "width": 0.9,
+      "height": 2.1,
+      "host_id": "wall_51e91ab479ed4d05",
+      "rotation_deg": 0.0
+    },
+    {
+      "id": "space_b5949b185ef445ab",
+      "type": "space",
+      "name": "SALA",
+      "storey_id": "storey_12041bd5546c4c48",
+      "confidence": 0.92,
+      "review_state": "confirmed",
+      "source_refs": [
+        {
+          "source_id": "dxf:cad-to-cbim-demo.dxf:33f4767a",
+          "entity_id": "2F",
+          "source_type": "cad",
+          "layer": "WALL",
+          "metadata": {}
+        },
+        {
+          "source_id": "dxf:cad-to-cbim-demo.dxf:33f4767a",
+          "entity_id": "30",
+          "source_type": "cad",
+          "layer": "WALL",
+          "metadata": {}
+        },
+        {
+          "source_id": "dxf:cad-to-cbim-demo.dxf:33f4767a",
+          "entity_id": "31",
+          "source_type": "cad",
+          "layer": "WALL",
+          "metadata": {}
+        },
+        {
+          "source_id": "dxf:cad-to-cbim-demo.dxf:33f4767a",
+          "entity_id": "32",
+          "source_type": "cad",
+          "layer": "WALL",
+          "metadata": {}
+        },
+        {
+          "source_id": "dxf:cad-to-cbim-demo.dxf:33f4767a",
+          "entity_id": "33",
+          "source_type": "cad",
+          "layer": "WALL",
+          "metadata": {}
+        },
+        {
+          "source_id": "dxf:cad-to-cbim-demo.dxf:33f4767a",
+          "entity_id": "34",
+          "source_type": "cad",
+          "layer": "WALL",
+          "metadata": {}
+        },
+        {
+          "source_id": "dxf:cad-to-cbim-demo.dxf:33f4767a",
+          "entity_id": "35",
+          "source_type": "cad",
+          "layer": "WALL",
+          "metadata": {}
+        },
+        {
+          "source_id": "dxf:cad-to-cbim-demo.dxf:33f4767a",
+          "entity_id": "36",
+          "source_type": "cad",
+          "layer": "WALL",
+          "metadata": {}
+        }
+      ],
+      "material_ids": [],
+      "properties": {},
+      "boundary": [
+        {
+          "x": 4.86,
+          "y": 0.14,
+          "z": 0.0
+        },
+        {
+          "x": 0.14,
+          "y": 0.14,
+          "z": 0.0
+        },
+        {
+          "x": 0.14,
+          "y": 3.86,
+          "z": 0.0
+        },
+        {
+          "x": 4.86,
+          "y": 3.86,
+          "z": 0.0
+        }
+      ],
+      "height": 2.8
+    },
+    {
+      "id": "beam_935389ca9cec4b5a",
+      "type": "beam",
+      "name": null,
+      "storey_id": "storey_12041bd5546c4c48",
+      "confidence": 0.9,
+      "review_state": "confirmed",
+      "source_refs": [
+        {
+          "source_id": "dxf:cad-to-cbim-demo.dxf:33f4767a",
+          "entity_id": "3F",
+          "source_type": "cad",
+          "layer": "VIGA",
+          "metadata": {}
+        },
+        {
+          "source_id": "dxf:cad-to-cbim-demo.dxf:33f4767a",
+          "entity_id": "40",
+          "source_type": "cad",
+          "layer": "VIGA",
+          "metadata": {}
+        }
+      ],
+      "material_ids": [],
+      "properties": {
+        "structural": true
+      },
+      "start": {
+        "x": 0.5,
+        "y": 2.1,
+        "z": 2.8
+      },
+      "end": {
+        "x": 4.5,
+        "y": 2.1,
+        "z": 2.8
+      },
+      "width": 0.20000000000000018,
+      "height": 0.4
+    },
+    {
+      "id": "opening_5c6c4dac2234488f",
+      "type": "opening",
+      "name": null,
+      "storey_id": "storey_12041bd5546c4c48",
+      "confidence": 0.9,
+      "review_state": "confirmed",
+      "source_refs": [
+        {
+          "source_id": "dxf:cad-to-cbim-demo.dxf:33f4767a",
+          "entity_id": "43",
+          "source_type": "cad",
+          "layer": "ABERTURA",
+          "metadata": {}
+        }
+      ],
+      "material_ids": [],
+      "properties": {
+        "shape": "circular"
+      },
+      "position": {
+        "x": 3.0,
+        "y": 3.0,
+        "z": 0.0
+      },
+      "width": 0.4,
+      "height": 3.0,
+      "depth": 0.4,
+      "host_id": null
+    },
+    {
+      "id": "slab_9cae66c40ba44f3a",
+      "type": "slab",
+      "name": null,
+      "storey_id": "storey_12041bd5546c4c48",
+      "confidence": 0.95,
+      "review_state": "confirmed",
+      "source_refs": [
+        {
+          "source_id": "dxf:cad-to-cbim-demo.dxf:33f4767a",
+          "entity_id": "41",
+          "source_type": "cad",
+          "layer": "LAJE",
+          "metadata": {}
+        }
+      ],
+      "material_ids": [],
+      "properties": {
+        "structural": true,
+        "structural_role": "slab"
+      },
+      "boundary": [
+        {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        {
+          "x": 5.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        {
+          "x": 5.0,
+          "y": 4.0,
+          "z": 0.0
+        },
+        {
+          "x": 0.0,
+          "y": 4.0,
+          "z": 0.0
+        }
+      ],
+      "thickness": 0.12
+    },
+    {
+      "id": "slab_8c5826891d9e43f9",
+      "type": "slab",
+      "name": null,
+      "storey_id": "storey_12041bd5546c4c48",
+      "confidence": 0.95,
+      "review_state": "confirmed",
+      "source_refs": [
+        {
+          "source_id": "dxf:cad-to-cbim-demo.dxf:33f4767a",
+          "entity_id": "42",
+          "source_type": "cad",
+          "layer": "SAPATA",
+          "metadata": {}
+        }
+      ],
+      "material_ids": [],
+      "properties": {
+        "structural": true,
+        "structural_role": "foundation"
+      },
+      "boundary": [
+        {
+          "x": 5.5,
+          "y": 0.0,
+          "z": 0.0
+        },
+        {
+          "x": 6.5,
+          "y": 0.0,
+          "z": 0.0
+        },
+        {
+          "x": 6.5,
+          "y": 1.0,
+          "z": 0.0
+        },
+        {
+          "x": 5.5,
+          "y": 1.0,
+          "z": 0.0
+        }
+      ],
+      "thickness": 0.4
+    }
+  ],
+  "relations": [],
+  "metadata": {}
+}

@@ -1,0 +1,9 @@
+Processing ./cbim-sdk/python
+  Preparing metadata (pyproject.toml): started
+  Preparing metadata (pyproject.toml): finished with status 'done'
+Building wheels for collected packages: cbim-sdk
+  Building wheel for cbim-sdk (pyproject.toml): started
+  Building wheel for cbim-sdk (pyproject.toml): finished with status 'done'
+  Created wheel for cbim-sdk: filename=cbim_sdk-0.3.0-py3-none-any.whl size=5569 sha256=ffaf69d66f3866d67653624d4b4fdcb7e9621d163b09bbb74e5dc4c678109582
+  Stored in directory: /tmp/pip-ephem-wheel-cache-ptaz6lm2/wheels/65/d2/10/05766834a70d3a2a0a51131786df9bfd766589af1ae6281726
+Successfully built cbim-sdk

@@ -1,0 +1,10 @@
+WARNING: The directory '/home/oai/.cache/pip' or its parent directory is not owned or is not writable by the current user. The cache has been disabled. Check the permissions and owner of that directory. If executing pip with sudo, you should use sudo's -H flag.
+Processing /mnt/data/CompatibilizaBIM_01_40_work/CompatibilizaBIM_Entregas_01-35/cbim-sdk/python
+  Preparing metadata (pyproject.toml): started
+  Preparing metadata (pyproject.toml): finished with status 'done'
+Building wheels for collected packages: cbim-sdk
+  Building wheel for cbim-sdk (pyproject.toml): started
+  Building wheel for cbim-sdk (pyproject.toml): finished with status 'done'
+  Created wheel for cbim-sdk: filename=cbim_sdk-0.3.0-py3-none-any.whl size=5569 sha256=e1c424bc4a32b1665d3e7e04706a83f464bf4c95cba22f6dd9a5b29f9d8b0331
+  Stored in directory: /tmp/pip-ephem-wheel-cache-d0p5w1eq/wheels/71/dc/fe/3b180756ecdf15a1d6c9b15de1f7e7ddb40c0ba2e596ecf74e
+Successfully built cbim-sdk

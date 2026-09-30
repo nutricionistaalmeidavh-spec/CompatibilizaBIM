@@ -1,0 +1,93 @@
+{
+  "element_counts": {
+    "wall": 4,
+    "column": 1,
+    "door": 1,
+    "space": 1,
+    "beam": 1,
+    "slab": 1,
+    "fitting": 1,
+    "pipe": 3,
+    "equipment": 1
+  },
+  "systems": [
+    {
+      "name": "Água fria",
+      "discipline": "plumbing",
+      "classification": "cold_water"
+    },
+    {
+      "name": "Combate a incêndio",
+      "discipline": "fire",
+      "classification": "fire_protection"
+    }
+  ],
+  "relation_count": 4,
+  "network_count": 2,
+  "open_ends": 5,
+  "catalog_matches": 3,
+  "qto_types": {
+    "beam": {
+      "length_m": 6.0,
+      "area_m2": 0.0,
+      "volume_m3": 0.48,
+      "count": 1.0
+    },
+    "column": {
+      "length_m": 0.0,
+      "area_m2": 0.0,
+      "volume_m3": 0.336,
+      "count": 1.0
+    },
+    "door": {
+      "length_m": 0.0,
+      "area_m2": 1.89,
+      "volume_m3": 0.0,
+      "count": 1.0
+    },
+    "equipment": {
+      "length_m": 0.0,
+      "area_m2": 0.0,
+      "volume_m3": 0.0,
+      "count": 1.0
+    },
+    "fitting": {
+      "length_m": 0.0,
+      "area_m2": 0.0,
+      "volume_m3": 0.0,
+      "count": 1.0
+    },
+    "pipe": {
+      "length_m": 11.3,
+      "area_m2": 0.0,
+      "volume_m3": 0.019684,
+      "count": 3.0
+    },
+    "slab": {
+      "length_m": 0.0,
+      "area_m2": 24.0,
+      "volume_m3": 2.88,
+      "count": 1.0
+    },
+    "space": {
+      "length_m": 0.0,
+      "area_m2": 21.2784,
+      "volume_m3": 59.57952,
+      "count": 1.0
+    },
+    "wall": {
+      "length_m": 19.44,
+      "area_m2": 54.432,
+      "volume_m3": 7.62048,
+      "count": 4.0
+    }
+  },
+  "viewer_primitives": 14,
+  "clash_candidates": 11,
+  "ifc": {
+    "has_step_header": true,
+    "has_ifc4_schema": true,
+    "has_end_marker": true,
+    "entity_count": 146
+  }
+}

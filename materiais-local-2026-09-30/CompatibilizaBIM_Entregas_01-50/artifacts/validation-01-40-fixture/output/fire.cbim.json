@@ -1,0 +1,144 @@
+{
+  "id": "project_f17183ba104b451b",
+  "schema": "CBIM",
+  "schema_version": "0.2.0",
+  "name": "fire",
+  "created_at": "2026-08-16T18:00:57.282020Z",
+  "units": "m",
+  "coordinate_reference": "local",
+  "sites": [
+    {
+      "id": "site_5e85bdd7f0eb4e24",
+      "name": "Local Site",
+      "elevation": 0.0,
+      "properties": {}
+    }
+  ],
+  "buildings": [
+    {
+      "id": "building_2c1f3e61760341c9",
+      "name": "Building",
+      "properties": {}
+    }
+  ],
+  "storeys": [
+    {
+      "id": "storey_0022937d2cc94c2f",
+      "name": "Térreo",
+      "building_id": "building_2c1f3e61760341c9",
+      "elevation": 0.0,
+      "height": 2.8,
+      "properties": {}
+    }
+  ],
+  "materials": [],
+  "systems": [
+    {
+      "id": "system_162c792fb3e94e41",
+      "name": "Combate a incêndio",
+      "discipline": "fire",
+      "classification": "fire_protection",
+      "properties": {}
+    }
+  ],
+  "elements": [
+    {
+      "id": "pipe_0f11ee6fb17141a9",
+      "type": "pipe",
+      "storey_id": "storey_0022937d2cc94c2f",
+      "confidence": 0.995,
+      "review_state": "auto",
+      "source_refs": [
+        {
+          "source_id": "dwg:fire",
+          "entity_id": "f1",
+          "source_type": "cad",
+          "layer": "FIRE_SPRINK_DN50",
+          "metadata": {}
+        }
+      ],
+      "material_ids": [],
+      "properties": {
+        "service": "fire",
+        "catalog_item_id": "amanco-fireblazer-system",
+        "catalog_manufacturer": "Amanco Wavin",
+        "catalog_line": "CPVC Fireblazer Master",
+        "catalog_match_score": 0.6,
+        "catalog_material": "CPVC",
+        "intelligence_action": "auto_confirm_candidate",
+        "intelligence_evidence_count": 2
+      },
+      "path": [
+        {
+          "x": 3.0,
+          "y": -1.0,
+          "z": 2.0
+        },
+        {
+          "x": 3.0,
+          "y": 2.0,
+          "z": 2.0
+        }
+      ],
+      "diameter": 0.05,
+      "system_id": "system_162c792fb3e94e41"
+    },
+    {
+      "id": "pipe_b2bfa6b5b8d8496f",
+      "type": "pipe",
+      "storey_id": "storey_0022937d2cc94c2f",
+      "confidence": 0.995,
+      "review_state": "auto",
+      "source_refs": [
+        {
+          "source_id": "dwg:fire",
+          "entity_id": "f2",
+          "source_type": "cad",
+          "layer": "FIRE_SPRINK_DN50",
+          "metadata": {}
+        }
+      ],
+      "material_ids": [],
+      "properties": {
+        "service": "fire",
+        "catalog_item_id": "amanco-fireblazer-system",
+        "catalog_manufacturer": "Amanco Wavin",
+        "catalog_line": "CPVC Fireblazer Master",
+        "catalog_match_score": 0.6,
+        "catalog_material": "CPVC",
+        "intelligence_action": "auto_confirm_candidate",
+        "intelligence_evidence_count": 2
+      },
+      "path": [
+        {
+          "x": 3.0,
+          "y": 2.0,
+          "z": 2.0
+        },
+        {
+          "x": 5.0,
+          "y": 2.0,
+          "z": 2.0
+        }
+      ],
+      "diameter": 0.05,
+      "system_id": "system_162c792fb3e94e41"
+    }
+  ],
+  "relations": [
+    {
+      "id": "relation_acc2521a54584d72",
+      "type": "connects",
+      "from_id": "pipe_0f11ee6fb17141a9",
+      "to_id": "pipe_b2bfa6b5b8d8496f",
+      "metadata": {
+        "system_id": "system_162c792fb3e94e41",
+        "network_node_id": "system_162c792fb3e94e41:N00002",
+        "tolerance_m": 0.03
+      }
+    }
+  ],
+  "metadata": {
+    "recognition_intelligence": "deterministic_evidence_v1"
+  }
+}

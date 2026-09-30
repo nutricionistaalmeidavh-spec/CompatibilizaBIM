@@ -1,0 +1,15 @@
+{
+  "towers": 4,
+  "total_storeys": 160,
+  "cad_entity_count": 51200,
+  "tile_count": 1440,
+  "partition_ms": 400.4538200006209,
+  "partition_entities_per_second": 127854.94217515671,
+  "fingerprint_ms": 2677.018907999809,
+  "incremental_plan_ms": 5861.081492999801,
+  "incremental_mode": "local",
+  "incremental_selected_entities": 169,
+  "incremental_selection_ratio": 0.00330078125,
+  "hierarchy_ms": 12.775527000485454,
+  "python_peak_tracemalloc_mb": 252.42279624938965
+}

@@ -1,0 +1,9 @@
+usage: cbim-product [-h] {plan,studio,report} ...
+
+CompatibilizaBIM product workflow tools (deliveries 41-45)
+
+positional arguments:
+  {plan,studio,report}
+
+options:
+  -h, --help            show this help message and exit

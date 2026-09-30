@@ -1,0 +1,12 @@
+Core tests: 55/55 PASS
+CBIM tests: 6/6 PASS
+Core coverage: 91%
+CBIM coverage: 95%
+Core 1.22.0 wheel build: PASS
+Clean wheel smoke: PASS
+ACadSharp Python provider contract: PASS
+DWG compatibility signature suite: PASS
+Native XREF orchestration: PASS
+DWG->CBIM->IFC contract: PASS
+ACadSharp C# binary compilation: UNVERIFIED (no dotnet SDK/NuGet in environment)
+Real DWG semantic read: UNVERIFIED

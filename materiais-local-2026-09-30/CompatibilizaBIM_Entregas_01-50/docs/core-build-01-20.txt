@@ -1,0 +1,10 @@
+WARNING: The directory '/home/oai/.cache/pip' or its parent directory is not owned or is not writable by the current user. The cache has been disabled. Check the permissions and owner of that directory. If executing pip with sudo, you should use sudo's -H flag.
+Processing /mnt/data/CompatibilizaBIM_Entregas_01-20/compatibilizabim-core
+  Preparing metadata (pyproject.toml): started
+  Preparing metadata (pyproject.toml): finished with status 'done'
+Building wheels for collected packages: compatibilizabim-core
+  Building wheel for compatibilizabim-core (pyproject.toml): started
+  Building wheel for compatibilizabim-core (pyproject.toml): finished with status 'done'
+  Created wheel for compatibilizabim-core: filename=compatibilizabim_core-1.7.0-py3-none-any.whl size=45234 sha256=c9ef2c70847a30559db47dda8bb799e0fca0f0fe86c1979ec610bc0365e56163
+  Stored in directory: /tmp/pip-ephem-wheel-cache-vgxhtqxo/wheels/7a/89/c0/b566f80f9a6a51337245b1be03178ba1fb26c3a3f8e7b5f783
+Successfully built compatibilizabim-core

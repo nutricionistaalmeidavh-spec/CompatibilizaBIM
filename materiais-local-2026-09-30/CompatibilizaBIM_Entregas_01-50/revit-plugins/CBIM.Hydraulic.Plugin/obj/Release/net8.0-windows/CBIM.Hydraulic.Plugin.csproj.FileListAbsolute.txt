@@ -1,0 +1,5 @@
+C:\tmp\CompatibilizaBIM_Entregas_01-50\revit-plugins\CBIM.Hydraulic.Plugin\obj\Release\net8.0-windows\CBIM.Hydraulic.Plugin.csproj.AssemblyReference.cache
+C:\tmp\CompatibilizaBIM_Entregas_01-50\revit-plugins\CBIM.Hydraulic.Plugin\obj\Release\net8.0-windows\CBIM.Hydraulic.Plugin.GeneratedMSBuildEditorConfig.editorconfig
+C:\tmp\CompatibilizaBIM_Entregas_01-50\revit-plugins\CBIM.Hydraulic.Plugin\obj\Release\net8.0-windows\CBIM.Hydraulic.Plugin.AssemblyInfoInputs.cache
+C:\tmp\CompatibilizaBIM_Entregas_01-50\revit-plugins\CBIM.Hydraulic.Plugin\obj\Release\net8.0-windows\CBIM.Hydraulic.Plugin.AssemblyInfo.cs
+C:\tmp\CompatibilizaBIM_Entregas_01-50\revit-plugins\CBIM.Hydraulic.Plugin\obj\Release\net8.0-windows\CBIM.Hydraulic.Plugin.csproj.CoreCompileInputs.cache

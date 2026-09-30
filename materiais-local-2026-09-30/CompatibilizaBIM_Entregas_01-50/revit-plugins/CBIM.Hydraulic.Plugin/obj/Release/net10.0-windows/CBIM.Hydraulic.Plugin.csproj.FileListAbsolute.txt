@@ -1,0 +1,17 @@
+C:\tmp\CompatibilizaBIM_Entregas_01-50\revit-plugins\CBIM.Hydraulic.Plugin\obj\Release\net10.0-windows\CBIM.Hydraulic.Plugin.csproj.AssemblyReference.cache
+C:\tmp\CompatibilizaBIM_Entregas_01-50\revit-plugins\CBIM.Hydraulic.Plugin\obj\Release\net10.0-windows\CBIM.Hydraulic.Plugin.GeneratedMSBuildEditorConfig.editorconfig
+C:\tmp\CompatibilizaBIM_Entregas_01-50\revit-plugins\CBIM.Hydraulic.Plugin\obj\Release\net10.0-windows\CBIM.Hydraulic.Plugin.AssemblyInfoInputs.cache
+C:\tmp\CompatibilizaBIM_Entregas_01-50\revit-plugins\CBIM.Hydraulic.Plugin\obj\Release\net10.0-windows\CBIM.Hydraulic.Plugin.AssemblyInfo.cs
+C:\tmp\CompatibilizaBIM_Entregas_01-50\revit-plugins\CBIM.Hydraulic.Plugin\obj\Release\net10.0-windows\CBIM.Hydraulic.Plugin.csproj.CoreCompileInputs.cache
+C:\tmp\CompatibilizaBIM_Entregas_01-50\revit-plugins\CBIM.Hydraulic.Plugin\bin\Release\net10.0-windows\CBIM.Hydraulic.Plugin.deps.json
+C:\tmp\CompatibilizaBIM_Entregas_01-50\revit-plugins\CBIM.Hydraulic.Plugin\bin\Release\net10.0-windows\CBIM.Hydraulic.Plugin.dll
+C:\tmp\CompatibilizaBIM_Entregas_01-50\revit-plugins\CBIM.Hydraulic.Plugin\bin\Release\net10.0-windows\CBIM.Hydraulic.Plugin.pdb
+C:\tmp\CompatibilizaBIM_Entregas_01-50\revit-plugins\CBIM.Hydraulic.Plugin\bin\Release\net10.0-windows\CBIM.Library.Contract.dll
+C:\tmp\CompatibilizaBIM_Entregas_01-50\revit-plugins\CBIM.Hydraulic.Plugin\bin\Release\net10.0-windows\CBIM.Revit.Contracts.dll
+C:\tmp\CompatibilizaBIM_Entregas_01-50\revit-plugins\CBIM.Hydraulic.Plugin\bin\Release\net10.0-windows\CBIM.Revit.Contracts.pdb
+C:\tmp\CompatibilizaBIM_Entregas_01-50\revit-plugins\CBIM.Hydraulic.Plugin\bin\Release\net10.0-windows\CBIM.Library.Contract.pdb
+C:\tmp\CompatibilizaBIM_Entregas_01-50\revit-plugins\CBIM.Hydraulic.Plugin\obj\Release\net10.0-windows\CBIM.Hyd.13D2EF51.Up2Date
+C:\tmp\CompatibilizaBIM_Entregas_01-50\revit-plugins\CBIM.Hydraulic.Plugin\obj\Release\net10.0-windows\CBIM.Hydraulic.Plugin.dll
+C:\tmp\CompatibilizaBIM_Entregas_01-50\revit-plugins\CBIM.Hydraulic.Plugin\obj\Release\net10.0-windows\refint\CBIM.Hydraulic.Plugin.dll
+C:\tmp\CompatibilizaBIM_Entregas_01-50\revit-plugins\CBIM.Hydraulic.Plugin\obj\Release\net10.0-windows\CBIM.Hydraulic.Plugin.pdb
+C:\tmp\CompatibilizaBIM_Entregas_01-50\revit-plugins\CBIM.Hydraulic.Plugin\obj\Release\net10.0-windows\ref\CBIM.Hydraulic.Plugin.dll

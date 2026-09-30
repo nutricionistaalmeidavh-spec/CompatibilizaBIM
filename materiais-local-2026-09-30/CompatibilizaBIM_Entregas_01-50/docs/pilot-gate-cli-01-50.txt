@@ -1,0 +1,96 @@
+{
+  "pilot_ready": false,
+  "status": "commercial_pilot_blocked",
+  "checks": [
+    {
+      "name": "real_evidence",
+      "passed": false,
+      "observed": "fixture, eligible=False",
+      "requirement": "real client project explicitly eligible as production evidence"
+    },
+    {
+      "name": "native_dwg",
+      "passed": false,
+      "observed": "False",
+      "requirement": "native ACadSharp DWG bridge compiled and exercised on real DWG"
+    },
+    {
+      "name": "disciplines",
+      "passed": true,
+      "observed": "architecture,fire,hydraulic,structure",
+      "requirement": "architecture, structure, hydraulic and fire validated"
+    },
+    {
+      "name": "import_coverage",
+      "passed": true,
+      "observed": "100.0%",
+      "requirement": ">=95%"
+    },
+    {
+      "name": "recognition_coverage",
+      "passed": true,
+      "observed": "95.0%",
+      "requirement": ">=80%"
+    },
+    {
+      "name": "review_load",
+      "passed": true,
+      "observed": "5.0%",
+      "requirement": "<=25% pending manual review"
+    },
+    {
+      "name": "ifc_export",
+      "passed": true,
+      "observed": "True",
+      "requirement": "IFC export passes"
+    },
+    {
+      "name": "federation",
+      "passed": true,
+      "observed": "True",
+      "requirement": "multidiscipline federation passes"
+    },
+    {
+      "name": "quantities",
+      "passed": true,
+      "observed": "True",
+      "requirement": "quantities generated"
+    },
+    {
+      "name": "workspace",
+      "passed": true,
+      "observed": "True",
+      "requirement": "project save/reopen passes"
+    },
+    {
+      "name": "recovery",
+      "passed": true,
+      "observed": "True",
+      "requirement": "crash recovery passes"
+    },
+    {
+      "name": "desktop",
+      "passed": true,
+      "observed": "True",
+      "requirement": "desktop/local app smoke passes"
+    },
+    {
+      "name": "license",
+      "passed": true,
+      "observed": "True",
+      "requirement": "customer license verifies offline"
+    },
+    {
+      "name": "scale",
+      "passed": false,
+      "observed": "11",
+      "requirement": ">=100 real CBIM elements"
+    }
+  ],
+  "blockers": [
+    "real_evidence",
+    "native_dwg",
+    "scale"
+  ]
+}
+pilot_gate_exit=3 (3 means correctly blocked)

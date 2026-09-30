@@ -1,0 +1,18 @@
+﻿
+[18:07:50] DOWNLOAD https://www.nordicsustainableconstruction.com/Media/638593249820446520/ARCH.zip
+[18:08:33] EXTRAIDO C:\tmp\BiblioRVT\_downloads\BIM4LCA_ARCH.zip
+[18:08:33] DOWNLOAD https://www.nordicsustainableconstruction.com/Media/638615141390369983/STRUCTURAL.zip
+[18:08:35] EXTRAIDO C:\tmp\BiblioRVT\_downloads\BIM4LCA_STRUCTURAL.zip
+[18:08:35] DOWNLOAD https://www.nordicsustainableconstruction.com/Media/638596535832776143/HVAC.zip
+[18:09:36] EXTRAIDO C:\tmp\BiblioRVT\_downloads\BIM4LCA_HVAC.zip
+[18:09:36] DOWNLOAD https://github.com/buildingSMART/Sample-Test-Files/archive/refs/heads/main.zip
+[18:09:40] EXTRAIDO C:\tmp\BiblioRVT\_downloads\buildingSMART_Official.zip
+[18:09:40] DOWNLOAD https://github.com/buildingsmart-community/Community-Sample-Test-Files/archive/refs/heads/main.zip
+[18:10:05] FALHA EXTRACAO C:\tmp\BiblioRVT\_downloads\buildingSMART_Community.zip :: Exceção ao chamar "ExtractToFile" com "3" argumento(s): "Não foi possível localizar uma parte do caminho 'C:\tmp\BiblioRVT\06_Projetos_Completos_RVT_IFC\buildingSMART_Community\Community-Sample-Test-Files-main\IFC 2.3.0.1 (IFC 2x3)\Schependomlaan\Coordination model and subcontractors models\BIMsight Projectdata1\ProjectData\ProjectData\links\1b77b36d-e7a8-4711-8aad-003c46dc96f4'."
+[18:10:05] DOWNLOAD https://github.com/yorikvanhavre/FreeCAD-BIM-examples/archive/refs/heads/main.zip
+[18:10:12] EXTRAIDO C:\tmp\BiblioRVT\_downloads\FreeCAD_BIM_Examples.zip
+[18:16:48] EXTRAIDO StudioLE_RevitFamilies: 25 arquivos, 16 RFA
+[18:17:56] RELATORIO_ATUALIZADO: RFA=22 RVT=21 IFC=222
+[18:26:17] KSB: 16 RFA extraidos em 16 arquivos; coleta publica continua.
+[18:29:28] TRAMONTINA_IMPORTADA: 14 ZIPs unicos, 395 RFA, 432 arquivos.
+[18:42:09] ARCAT: MIFAB MCL-G.rfa baixado via navegador e importado.

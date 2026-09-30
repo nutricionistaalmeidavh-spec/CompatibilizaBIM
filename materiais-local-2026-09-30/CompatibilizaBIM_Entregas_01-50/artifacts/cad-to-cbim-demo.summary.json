@@ -1,0 +1,15 @@
+{
+  "elements": {
+    "wall": 4,
+    "column": 1,
+    "door": 1,
+    "space": 1,
+    "beam": 1,
+    "opening": 1,
+    "slab": 2
+  },
+  "storeys": 1,
+  "topology_nodes": 24,
+  "topology_edges": 30,
+  "topology_faces": 7
+}

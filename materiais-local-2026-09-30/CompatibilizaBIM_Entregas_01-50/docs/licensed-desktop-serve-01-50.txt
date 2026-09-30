@@ -1,0 +1,1 @@
+licensed_desktop_serve_exit=124 (124 means license accepted and server entered serve loop)

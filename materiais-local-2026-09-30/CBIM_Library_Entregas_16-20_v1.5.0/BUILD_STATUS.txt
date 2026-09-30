@@ -1,0 +1,22 @@
+CBIM LIBRARY v1.5.0 — ENTREGAS 16–20 — STATUS
+==================================================
+
+ALVO
+- Autodesk Revit 2027
+- .NET 10 / SDK 10.0.100
+- Windows x64
+
+IMPLEMENTADO NO CÓDIGO
+- Entrega 16: catálogo inteligente, inspeção RFA, quality score, busca e comparação.
+- Entrega 17: manifest v2, diferencial, assinatura, stable/preview, staging e rollback.
+- Entrega 18: Smart Insert, substituição, kits e Standards Manager.
+- Entrega 19: index incremental, empresa read-only, diagnóstico, classificação/quantitativos.
+- Entrega 20: bridge CBIM, vocabulário, observações e feedback local.
+
+LIMITAÇÕES DE VERIFICAÇÃO DESTA SESSÃO
+- Este ambiente é Linux e não possui .NET SDK nem Revit 2027.
+- Portanto, a compilação final e execução da Revit API precisam ser validadas no Windows com Revit 2027.
+- O pacote inclui verificações estáticas e o builder one-click.
+
+PRÓXIMO MARCO APÓS TESTE
+- Learning Phase 1: coletar observações reais e calibrar matching CBIM→Library sem treinar automaticamente antes de validar os sinais.

@@ -1,0 +1,16 @@
+{
+  "product": "CompatibilizaBIM Desktop Portable",
+  "version": "1.39.0",
+  "wheels": [
+    {
+      "file": "wheels/cbim_sdk-0.3.0-py3-none-any.whl",
+      "sha256": "b9f6da26e5a4632bb6f0250888fb039edd212c3542cbf31b12b405b88efd7b8f"
+    },
+    {
+      "file": "wheels/compatibilizabim_core-1.39.0-py3-none-any.whl",
+      "sha256": "5e986eea717843cf8046e27611971be4753db08118212522797336f03019b7e8"
+    }
+  ],
+  "entrypoint": "cbim-desktop",
+  "native_installer": false
+}

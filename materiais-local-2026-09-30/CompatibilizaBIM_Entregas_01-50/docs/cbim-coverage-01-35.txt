@@ -1,0 +1,13 @@
+......                                                                   [100%]
+================================ tests coverage ================================
+_______________ coverage: platform linux, python 3.13.5-final-0 ________________
+
+Name                     Stmts   Miss  Cover   Missing
+------------------------------------------------------
+src/cbim_sdk/models.py     217      7    97%   242, 257, 260, 267, 270, 273, 276
+src/cbim_sdk/schema.py       9      1    89%   12
+src/cbim_sdk/sdk.py         68      6    91%   76, 84, 91, 95, 104-105
+------------------------------------------------------
+TOTAL                      298     14    95%
+
+1 file skipped due to complete coverage.

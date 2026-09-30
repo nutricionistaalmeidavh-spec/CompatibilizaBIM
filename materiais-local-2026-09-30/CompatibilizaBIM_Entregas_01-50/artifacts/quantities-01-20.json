@@ -1,0 +1,242 @@
+{
+  "rows": [
+    {
+      "element_id": "wall_effa2e7000234b8c",
+      "type": "wall",
+      "storey_id": "storey_28b6712ee34a4303",
+      "system_id": null,
+      "manufacturer": null,
+      "line": null,
+      "length_m": 6.0,
+      "area_m2": 16.799999999999997,
+      "volume_m3": 2.352,
+      "count": 1.0
+    },
+    {
+      "element_id": "wall_7f6850578b3d4e68",
+      "type": "wall",
+      "storey_id": "storey_28b6712ee34a4303",
+      "system_id": null,
+      "manufacturer": null,
+      "line": null,
+      "length_m": 6.0,
+      "area_m2": 16.799999999999997,
+      "volume_m3": 2.3520000000000016,
+      "count": 1.0
+    },
+    {
+      "element_id": "wall_2eacfc1f2dac4e7d",
+      "type": "wall",
+      "storey_id": "storey_28b6712ee34a4303",
+      "system_id": null,
+      "manufacturer": null,
+      "line": null,
+      "length_m": 3.7199999999999998,
+      "area_m2": 10.415999999999999,
+      "volume_m3": 1.45824,
+      "count": 1.0
+    },
+    {
+      "element_id": "wall_9ed5453c0919440e",
+      "type": "wall",
+      "storey_id": "storey_28b6712ee34a4303",
+      "system_id": null,
+      "manufacturer": null,
+      "line": null,
+      "length_m": 3.7199999999999998,
+      "area_m2": 10.415999999999999,
+      "volume_m3": 1.4582399999999964,
+      "count": 1.0
+    },
+    {
+      "element_id": "column_6be579ec28d64101",
+      "type": "column",
+      "storey_id": "storey_28b6712ee34a4303",
+      "system_id": null,
+      "manufacturer": null,
+      "line": null,
+      "length_m": 0.0,
+      "area_m2": 0.0,
+      "volume_m3": 0.33599999999999997,
+      "count": 1.0
+    },
+    {
+      "element_id": "door_20dcfd4551f8407b",
+      "type": "door",
+      "storey_id": "storey_28b6712ee34a4303",
+      "system_id": null,
+      "manufacturer": null,
+      "line": null,
+      "length_m": 0.0,
+      "area_m2": 1.8900000000000001,
+      "volume_m3": 0.0,
+      "count": 1.0
+    },
+    {
+      "element_id": "space_6d0a7b4bb56240fa",
+      "type": "space",
+      "storey_id": "storey_28b6712ee34a4303",
+      "system_id": null,
+      "manufacturer": null,
+      "line": null,
+      "length_m": 0.0,
+      "area_m2": 21.2784,
+      "volume_m3": 59.57952,
+      "count": 1.0
+    },
+    {
+      "element_id": "beam_187a132471ba4ef9",
+      "type": "beam",
+      "storey_id": "storey_28b6712ee34a4303",
+      "system_id": null,
+      "manufacturer": null,
+      "line": null,
+      "length_m": 6.0,
+      "area_m2": 0.0,
+      "volume_m3": 0.4800000000000004,
+      "count": 1.0
+    },
+    {
+      "element_id": "slab_fa6915f80e774b90",
+      "type": "slab",
+      "storey_id": "storey_28b6712ee34a4303",
+      "system_id": null,
+      "manufacturer": null,
+      "line": null,
+      "length_m": 0.0,
+      "area_m2": 24.0,
+      "volume_m3": 2.88,
+      "count": 1.0
+    },
+    {
+      "element_id": "fitting_b113feeb8e8f4832",
+      "type": "fitting",
+      "storey_id": "storey_28b6712ee34a4303",
+      "system_id": "system_5482795f51b548be",
+      "manufacturer": null,
+      "line": null,
+      "length_m": 0.0,
+      "area_m2": 0.0,
+      "volume_m3": 0.0,
+      "count": 1.0
+    },
+    {
+      "element_id": "pipe_692f0baf1a9344bf",
+      "type": "pipe",
+      "storey_id": "storey_28b6712ee34a4303",
+      "system_id": "system_5482795f51b548be",
+      "manufacturer": "Amanco Wavin",
+      "line": "PPR",
+      "length_m": 4.5,
+      "area_m2": 0.0,
+      "volume_m3": 0.0022089323345553234,
+      "count": 1.0
+    },
+    {
+      "element_id": "pipe_f982dbfa7e9f4ff0",
+      "type": "pipe",
+      "storey_id": "storey_28b6712ee34a4303",
+      "system_id": "system_5482795f51b548be",
+      "manufacturer": "Amanco Wavin",
+      "line": "PPR",
+      "length_m": 1.8,
+      "area_m2": 0.0,
+      "volume_m3": 0.0008835729338221294,
+      "count": 1.0
+    },
+    {
+      "element_id": "equipment_dab86293da214575",
+      "type": "equipment",
+      "storey_id": "storey_28b6712ee34a4303",
+      "system_id": "system_2fa11b5b254c4030",
+      "manufacturer": null,
+      "line": null,
+      "length_m": 0.0,
+      "area_m2": 0.0,
+      "volume_m3": 0.0,
+      "count": 1.0
+    },
+    {
+      "element_id": "pipe_879798b18fb44b23",
+      "type": "pipe",
+      "storey_id": "storey_28b6712ee34a4303",
+      "system_id": "system_2fa11b5b254c4030",
+      "manufacturer": "Amanco Wavin",
+      "line": "CPVC Fireblazer Master",
+      "length_m": 5.0,
+      "area_m2": 0.0,
+      "volume_m3": 0.016591536201771097,
+      "count": 1.0
+    }
+  ],
+  "totals_by_type": {
+    "beam": {
+      "length_m": 6.0,
+      "area_m2": 0.0,
+      "volume_m3": 0.48,
+      "count": 1.0
+    },
+    "column": {
+      "length_m": 0.0,
+      "area_m2": 0.0,
+      "volume_m3": 0.336,
+      "count": 1.0
+    },
+    "door": {
+      "length_m": 0.0,
+      "area_m2": 1.89,
+      "volume_m3": 0.0,
+      "count": 1.0
+    },
+    "equipment": {
+      "length_m": 0.0,
+      "area_m2": 0.0,
+      "volume_m3": 0.0,
+      "count": 1.0
+    },
+    "fitting": {
+      "length_m": 0.0,
+      "area_m2": 0.0,
+      "volume_m3": 0.0,
+      "count": 1.0
+    },
+    "pipe": {
+      "length_m": 11.3,
+      "area_m2": 0.0,
+      "volume_m3": 0.019684,
+      "count": 3.0
+    },
+    "slab": {
+      "length_m": 0.0,
+      "area_m2": 24.0,
+      "volume_m3": 2.88,
+      "count": 1.0
+    },
+    "space": {
+      "length_m": 0.0,
+      "area_m2": 21.2784,
+      "volume_m3": 59.57952,
+      "count": 1.0
+    },
+    "wall": {
+      "length_m": 19.44,
+      "area_m2": 54.432,
+      "volume_m3": 7.62048,
+      "count": 4.0
+    }
+  },
+  "totals_by_system": {
+    "system_2fa11b5b254c4030": {
+      "length_m": 5.0,
+      "area_m2": 0.0,
+      "volume_m3": 0.016592,
+      "count": 2.0
+    },
+    "system_5482795f51b548be": {
+      "length_m": 6.3,
+      "area_m2": 0.0,
+      "volume_m3": 0.003093,
+      "count": 3.0
+    }
+  }
+}

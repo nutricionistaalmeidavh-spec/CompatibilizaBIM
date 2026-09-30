@@ -1,0 +1,9 @@
+Metadata-Version: 2.4
+Name: cbim-sdk
+Version: 0.4.0
+Summary: Common BIM Intermediate Model SDK shared by CompatibilizaBIM products
+Requires-Python: >=3.11
+Requires-Dist: pydantic<3,>=2.8
+Provides-Extra: dev
+Requires-Dist: pytest>=8; extra == "dev"
+Requires-Dist: jsonschema>=4.22; extra == "dev"

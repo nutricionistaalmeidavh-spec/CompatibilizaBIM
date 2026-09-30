@@ -1,0 +1,24 @@
+{
+  "autosave_path": "artifacts/workspace-demo-01-50/autosave/snapshots/20260816T185155597271Z-568b067c3401.cbim.json",
+  "candidates_before_clean": [
+    {
+      "path": "/mnt/data/CompatibilizaBIM_01_50_work/CompatibilizaBIM_Entregas_01-50/artifacts/workspace-demo-01-50/autosave/snapshots/20260816T185155597271Z-568b067c3401.cbim.json",
+      "created_at": "2026-08-16T18:51:55.597351Z",
+      "sha256": "568b067c34019360b43416ee98603b77252d78940df7484c6b5cbfb265fb899d",
+      "project_id": "project_dc5b4663e31d452c",
+      "project_name": "Demo Entregas 01-10 - Autosave"
+    }
+  ],
+  "recovered_project_name": "Demo Entregas 01-10 - Autosave",
+  "candidates_after_clean": 0,
+  "workspace_status": {
+    "root": "/mnt/data/CompatibilizaBIM_01_50_work/CompatibilizaBIM_Entregas_01-50/artifacts/workspace-demo-01-50",
+    "project_id": "project_dc5b4663e31d452c",
+    "project_name": "Demo Entregas 01-10",
+    "revision": 0,
+    "project_sha256": "7208280b87d240e88ae5759157cb53af2facb8d0254c70114f2d2f82db5e6292",
+    "source_count": 4,
+    "has_profile": true,
+    "has_report": true
+  }
+}

@@ -1,0 +1,12 @@
+<Project>
+  <PropertyGroup>
+    <Version>1.5.0</Version>
+    <Authors>CBIM</Authors>
+    <Company>CBIM</Company>
+    <Product>CBIM Library</Product>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <LangVersion>14.0</LangVersion>
+    <Deterministic>true</Deterministic>
+  </PropertyGroup>
+</Project>

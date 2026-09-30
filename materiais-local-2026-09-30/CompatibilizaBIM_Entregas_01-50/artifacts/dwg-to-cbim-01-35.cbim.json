@@ -1,0 +1,679 @@
+{
+  "id": "project_161ae007268b4279",
+  "schema": "CBIM",
+  "schema_version": "0.2.0",
+  "name": "DWG Contract Demo",
+  "created_at": "2026-08-16T17:47:43.181251Z",
+  "units": "m",
+  "coordinate_reference": "local",
+  "sites": [
+    {
+      "id": "site_c709d3d28ff84fcd",
+      "name": "Local Site",
+      "latitude": null,
+      "longitude": null,
+      "elevation": 0.0,
+      "properties": {}
+    }
+  ],
+  "buildings": [
+    {
+      "id": "building_1257952d92e94f76",
+      "name": "Building",
+      "site_id": null,
+      "properties": {}
+    }
+  ],
+  "storeys": [
+    {
+      "id": "storey_6b3085c41cf14389",
+      "name": "Térreo",
+      "building_id": "building_1257952d92e94f76",
+      "elevation": 0.0,
+      "height": 2.8,
+      "properties": {}
+    }
+  ],
+  "materials": [],
+  "systems": [],
+  "elements": [
+    {
+      "id": "wall_0d0de9fad8654582",
+      "type": "wall",
+      "name": null,
+      "storey_id": "storey_6b3085c41cf14389",
+      "confidence": 0.995,
+      "review_state": "auto",
+      "source_refs": [
+        {
+          "source_id": "dwg:demo",
+          "entity_id": "L1",
+          "source_type": "cad",
+          "layer": "WALL",
+          "metadata": {}
+        },
+        {
+          "source_id": "dwg:demo",
+          "entity_id": "L2",
+          "source_type": "cad",
+          "layer": "WALL",
+          "metadata": {}
+        }
+      ],
+      "material_ids": [],
+      "properties": {
+        "intelligence_action": "auto_confirm_candidate",
+        "intelligence_evidence_count": 1
+      },
+      "start": {
+        "x": 0.0,
+        "y": 0.07,
+        "z": 0.0
+      },
+      "end": {
+        "x": 6.0,
+        "y": 0.07,
+        "z": 0.0
+      },
+      "thickness": 0.14,
+      "height": 2.8
+    },
+    {
+      "id": "wall_759f0e84225849d7",
+      "type": "wall",
+      "name": null,
+      "storey_id": "storey_6b3085c41cf14389",
+      "confidence": 0.995,
+      "review_state": "auto",
+      "source_refs": [
+        {
+          "source_id": "dwg:demo",
+          "entity_id": "L5",
+          "source_type": "cad",
+          "layer": "WALL",
+          "metadata": {}
+        },
+        {
+          "source_id": "dwg:demo",
+          "entity_id": "L6",
+          "source_type": "cad",
+          "layer": "WALL",
+          "metadata": {}
+        }
+      ],
+      "material_ids": [],
+      "properties": {
+        "intelligence_action": "auto_confirm_candidate",
+        "intelligence_evidence_count": 1
+      },
+      "start": {
+        "x": 0.0,
+        "y": 3.9299999999999997,
+        "z": 0.0
+      },
+      "end": {
+        "x": 6.0,
+        "y": 3.9299999999999997,
+        "z": 0.0
+      },
+      "thickness": 0.14000000000000012,
+      "height": 2.8
+    },
+    {
+      "id": "wall_22b38cf98b7641a4",
+      "type": "wall",
+      "name": null,
+      "storey_id": "storey_6b3085c41cf14389",
+      "confidence": 0.995,
+      "review_state": "auto",
+      "source_refs": [
+        {
+          "source_id": "dwg:demo",
+          "entity_id": "L3",
+          "source_type": "cad",
+          "layer": "WALL",
+          "metadata": {}
+        },
+        {
+          "source_id": "dwg:demo",
+          "entity_id": "L4",
+          "source_type": "cad",
+          "layer": "WALL",
+          "metadata": {}
+        }
+      ],
+      "material_ids": [],
+      "properties": {
+        "intelligence_action": "auto_confirm_candidate",
+        "intelligence_evidence_count": 1
+      },
+      "start": {
+        "x": 5.93,
+        "y": 0.0,
+        "z": 0.0
+      },
+      "end": {
+        "x": 5.93,
+        "y": 4.0,
+        "z": 0.0
+      },
+      "thickness": 0.13999999999999968,
+      "height": 2.8
+    },
+    {
+      "id": "wall_2ef55ace1bab4da1",
+      "type": "wall",
+      "name": null,
+      "storey_id": "storey_6b3085c41cf14389",
+      "confidence": 0.995,
+      "review_state": "auto",
+      "source_refs": [
+        {
+          "source_id": "dwg:demo",
+          "entity_id": "L7",
+          "source_type": "cad",
+          "layer": "WALL",
+          "metadata": {}
+        },
+        {
+          "source_id": "dwg:demo",
+          "entity_id": "L8",
+          "source_type": "cad",
+          "layer": "WALL",
+          "metadata": {}
+        }
+      ],
+      "material_ids": [],
+      "properties": {
+        "intelligence_action": "auto_confirm_candidate",
+        "intelligence_evidence_count": 1
+      },
+      "start": {
+        "x": 0.07,
+        "y": 0.0,
+        "z": 0.0
+      },
+      "end": {
+        "x": 0.07,
+        "y": 4.0,
+        "z": 0.0
+      },
+      "thickness": 0.14,
+      "height": 2.8
+    },
+    {
+      "id": "space_c851bc73eab6418a",
+      "type": "space",
+      "name": null,
+      "storey_id": "storey_6b3085c41cf14389",
+      "confidence": 0.77,
+      "review_state": "auto",
+      "source_refs": [
+        {
+          "source_id": "dwg:demo",
+          "entity_id": "L1",
+          "source_type": "cad",
+          "layer": "WALL",
+          "metadata": {}
+        },
+        {
+          "source_id": "dwg:demo",
+          "entity_id": "L2",
+          "source_type": "cad",
+          "layer": "WALL",
+          "metadata": {}
+        },
+        {
+          "source_id": "dwg:demo",
+          "entity_id": "L3",
+          "source_type": "cad",
+          "layer": "WALL",
+          "metadata": {}
+        },
+        {
+          "source_id": "dwg:demo",
+          "entity_id": "L4",
+          "source_type": "cad",
+          "layer": "WALL",
+          "metadata": {}
+        },
+        {
+          "source_id": "dwg:demo",
+          "entity_id": "L5",
+          "source_type": "cad",
+          "layer": "WALL",
+          "metadata": {}
+        },
+        {
+          "source_id": "dwg:demo",
+          "entity_id": "L6",
+          "source_type": "cad",
+          "layer": "WALL",
+          "metadata": {}
+        },
+        {
+          "source_id": "dwg:demo",
+          "entity_id": "L7",
+          "source_type": "cad",
+          "layer": "WALL",
+          "metadata": {}
+        },
+        {
+          "source_id": "dwg:demo",
+          "entity_id": "L8",
+          "source_type": "cad",
+          "layer": "WALL",
+          "metadata": {}
+        }
+      ],
+      "material_ids": [],
+      "properties": {
+        "intelligence_action": "keep",
+        "intelligence_evidence_count": 1
+      },
+      "boundary": [
+        {
+          "x": 0.14,
+          "y": 0.14,
+          "z": 0.0
+        },
+        {
+          "x": 0.0,
+          "y": 0.14,
+          "z": 0.0
+        },
+        {
+          "x": 0.0,
+          "y": 3.86,
+          "z": 0.0
+        },
+        {
+          "x": 0.14,
+          "y": 3.86,
+          "z": 0.0
+        }
+      ],
+      "height": 2.8
+    },
+    {
+      "id": "space_9442d2feb198436d",
+      "type": "space",
+      "name": null,
+      "storey_id": "storey_6b3085c41cf14389",
+      "confidence": 0.77,
+      "review_state": "auto",
+      "source_refs": [
+        {
+          "source_id": "dwg:demo",
+          "entity_id": "L1",
+          "source_type": "cad",
+          "layer": "WALL",
+          "metadata": {}
+        },
+        {
+          "source_id": "dwg:demo",
+          "entity_id": "L2",
+          "source_type": "cad",
+          "layer": "WALL",
+          "metadata": {}
+        },
+        {
+          "source_id": "dwg:demo",
+          "entity_id": "L3",
+          "source_type": "cad",
+          "layer": "WALL",
+          "metadata": {}
+        },
+        {
+          "source_id": "dwg:demo",
+          "entity_id": "L4",
+          "source_type": "cad",
+          "layer": "WALL",
+          "metadata": {}
+        },
+        {
+          "source_id": "dwg:demo",
+          "entity_id": "L5",
+          "source_type": "cad",
+          "layer": "WALL",
+          "metadata": {}
+        },
+        {
+          "source_id": "dwg:demo",
+          "entity_id": "L6",
+          "source_type": "cad",
+          "layer": "WALL",
+          "metadata": {}
+        },
+        {
+          "source_id": "dwg:demo",
+          "entity_id": "L7",
+          "source_type": "cad",
+          "layer": "WALL",
+          "metadata": {}
+        },
+        {
+          "source_id": "dwg:demo",
+          "entity_id": "L8",
+          "source_type": "cad",
+          "layer": "WALL",
+          "metadata": {}
+        }
+      ],
+      "material_ids": [],
+      "properties": {
+        "intelligence_action": "keep",
+        "intelligence_evidence_count": 1
+      },
+      "boundary": [
+        {
+          "x": 6.0,
+          "y": 0.14,
+          "z": 0.0
+        },
+        {
+          "x": 5.86,
+          "y": 0.14,
+          "z": 0.0
+        },
+        {
+          "x": 5.86,
+          "y": 3.86,
+          "z": 0.0
+        },
+        {
+          "x": 6.0,
+          "y": 3.86,
+          "z": 0.0
+        }
+      ],
+      "height": 2.8
+    },
+    {
+      "id": "space_d505803260dc4d33",
+      "type": "space",
+      "name": null,
+      "storey_id": "storey_6b3085c41cf14389",
+      "confidence": 0.77,
+      "review_state": "auto",
+      "source_refs": [
+        {
+          "source_id": "dwg:demo",
+          "entity_id": "L1",
+          "source_type": "cad",
+          "layer": "WALL",
+          "metadata": {}
+        },
+        {
+          "source_id": "dwg:demo",
+          "entity_id": "L2",
+          "source_type": "cad",
+          "layer": "WALL",
+          "metadata": {}
+        },
+        {
+          "source_id": "dwg:demo",
+          "entity_id": "L3",
+          "source_type": "cad",
+          "layer": "WALL",
+          "metadata": {}
+        },
+        {
+          "source_id": "dwg:demo",
+          "entity_id": "L4",
+          "source_type": "cad",
+          "layer": "WALL",
+          "metadata": {}
+        },
+        {
+          "source_id": "dwg:demo",
+          "entity_id": "L5",
+          "source_type": "cad",
+          "layer": "WALL",
+          "metadata": {}
+        },
+        {
+          "source_id": "dwg:demo",
+          "entity_id": "L6",
+          "source_type": "cad",
+          "layer": "WALL",
+          "metadata": {}
+        },
+        {
+          "source_id": "dwg:demo",
+          "entity_id": "L7",
+          "source_type": "cad",
+          "layer": "WALL",
+          "metadata": {}
+        },
+        {
+          "source_id": "dwg:demo",
+          "entity_id": "L8",
+          "source_type": "cad",
+          "layer": "WALL",
+          "metadata": {}
+        }
+      ],
+      "material_ids": [],
+      "properties": {
+        "intelligence_action": "keep",
+        "intelligence_evidence_count": 1
+      },
+      "boundary": [
+        {
+          "x": 5.86,
+          "y": 0.0,
+          "z": 0.0
+        },
+        {
+          "x": 0.14,
+          "y": 0.0,
+          "z": 0.0
+        },
+        {
+          "x": 0.14,
+          "y": 0.14,
+          "z": 0.0
+        },
+        {
+          "x": 5.86,
+          "y": 0.14,
+          "z": 0.0
+        }
+      ],
+      "height": 2.8
+    },
+    {
+      "id": "space_c67b646e5d044b2a",
+      "type": "space",
+      "name": null,
+      "storey_id": "storey_6b3085c41cf14389",
+      "confidence": 0.77,
+      "review_state": "auto",
+      "source_refs": [
+        {
+          "source_id": "dwg:demo",
+          "entity_id": "L1",
+          "source_type": "cad",
+          "layer": "WALL",
+          "metadata": {}
+        },
+        {
+          "source_id": "dwg:demo",
+          "entity_id": "L2",
+          "source_type": "cad",
+          "layer": "WALL",
+          "metadata": {}
+        },
+        {
+          "source_id": "dwg:demo",
+          "entity_id": "L3",
+          "source_type": "cad",
+          "layer": "WALL",
+          "metadata": {}
+        },
+        {
+          "source_id": "dwg:demo",
+          "entity_id": "L4",
+          "source_type": "cad",
+          "layer": "WALL",
+          "metadata": {}
+        },
+        {
+          "source_id": "dwg:demo",
+          "entity_id": "L5",
+          "source_type": "cad",
+          "layer": "WALL",
+          "metadata": {}
+        },
+        {
+          "source_id": "dwg:demo",
+          "entity_id": "L6",
+          "source_type": "cad",
+          "layer": "WALL",
+          "metadata": {}
+        },
+        {
+          "source_id": "dwg:demo",
+          "entity_id": "L7",
+          "source_type": "cad",
+          "layer": "WALL",
+          "metadata": {}
+        },
+        {
+          "source_id": "dwg:demo",
+          "entity_id": "L8",
+          "source_type": "cad",
+          "layer": "WALL",
+          "metadata": {}
+        }
+      ],
+      "material_ids": [],
+      "properties": {
+        "intelligence_action": "keep",
+        "intelligence_evidence_count": 1
+      },
+      "boundary": [
+        {
+          "x": 5.86,
+          "y": 4.0,
+          "z": 0.0
+        },
+        {
+          "x": 5.86,
+          "y": 3.86,
+          "z": 0.0
+        },
+        {
+          "x": 0.14,
+          "y": 3.86,
+          "z": 0.0
+        },
+        {
+          "x": 0.14,
+          "y": 4.0,
+          "z": 0.0
+        }
+      ],
+      "height": 2.8
+    },
+    {
+      "id": "space_58ab7a9a0674447a",
+      "type": "space",
+      "name": null,
+      "storey_id": "storey_6b3085c41cf14389",
+      "confidence": 0.77,
+      "review_state": "auto",
+      "source_refs": [
+        {
+          "source_id": "dwg:demo",
+          "entity_id": "L1",
+          "source_type": "cad",
+          "layer": "WALL",
+          "metadata": {}
+        },
+        {
+          "source_id": "dwg:demo",
+          "entity_id": "L2",
+          "source_type": "cad",
+          "layer": "WALL",
+          "metadata": {}
+        },
+        {
+          "source_id": "dwg:demo",
+          "entity_id": "L3",
+          "source_type": "cad",
+          "layer": "WALL",
+          "metadata": {}
+        },
+        {
+          "source_id": "dwg:demo",
+          "entity_id": "L4",
+          "source_type": "cad",
+          "layer": "WALL",
+          "metadata": {}
+        },
+        {
+          "source_id": "dwg:demo",
+          "entity_id": "L5",
+          "source_type": "cad",
+          "layer": "WALL",
+          "metadata": {}
+        },
+        {
+          "source_id": "dwg:demo",
+          "entity_id": "L6",
+          "source_type": "cad",
+          "layer": "WALL",
+          "metadata": {}
+        },
+        {
+          "source_id": "dwg:demo",
+          "entity_id": "L7",
+          "source_type": "cad",
+          "layer": "WALL",
+          "metadata": {}
+        },
+        {
+          "source_id": "dwg:demo",
+          "entity_id": "L8",
+          "source_type": "cad",
+          "layer": "WALL",
+          "metadata": {}
+        }
+      ],
+      "material_ids": [],
+      "properties": {
+        "intelligence_action": "keep",
+        "intelligence_evidence_count": 1
+      },
+      "boundary": [
+        {
+          "x": 5.86,
+          "y": 0.14,
+          "z": 0.0
+        },
+        {
+          "x": 0.14,
+          "y": 0.14,
+          "z": 0.0
+        },
+        {
+          "x": 0.14,
+          "y": 3.86,
+          "z": 0.0
+        },
+        {
+          "x": 5.86,
+          "y": 3.86,
+          "z": 0.0
+        }
+      ],
+      "height": 2.8
+    }
+  ],
+  "relations": [],
+  "metadata": {
+    "recognition_intelligence": "deterministic_evidence_v1"
+  }
+}

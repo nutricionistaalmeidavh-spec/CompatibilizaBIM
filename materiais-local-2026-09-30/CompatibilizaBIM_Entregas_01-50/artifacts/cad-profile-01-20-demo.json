@@ -1,0 +1,31 @@
+{
+  "name": "Demo Alto Padrão",
+  "version": "1.0",
+  "organization": "CompatibilizaBIM",
+  "rules": [
+    {
+      "id": "af",
+      "target": "pipe",
+      "layer": "AF_",
+      "block": null,
+      "match": "contains",
+      "system": "cold_water",
+      "defaults": {
+        "diameter_mm": 25
+      },
+      "priority": 5
+    },
+    {
+      "id": "fire",
+      "target": "pipe",
+      "layer": "INCENDIO",
+      "block": null,
+      "match": "contains",
+      "system": "fire_protection",
+      "defaults": {
+        "diameter_mm": 65
+      },
+      "priority": 5
+    }
+  ]
+}

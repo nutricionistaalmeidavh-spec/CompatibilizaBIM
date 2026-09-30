@@ -1,0 +1,71 @@
+{
+  "config": {
+    "project_name": "Torre Alto Padrão - Demo UI",
+    "units": "m",
+    "coordinate_reference": "local",
+    "preferred_manufacturer": "Tigre",
+    "organization": "CompatibilizaBIM Demo",
+    "storeys": [
+      {
+        "name": "Térreo",
+        "elevation": 0.0,
+        "height": 3.2
+      },
+      {
+        "name": "1º Pavimento",
+        "elevation": 3.2,
+        "height": 3.0
+      },
+      {
+        "name": "2º Pavimento",
+        "elevation": 6.2,
+        "height": 3.0
+      }
+    ],
+    "profile_path": null
+  },
+  "sources": [
+    {
+      "path": "ARQ_TORRE.dwg",
+      "name": "ARQ_TORRE.dwg",
+      "discipline": "architecture",
+      "source_format": "dwg",
+      "role": "primary",
+      "enabled": true,
+      "detected_by": "filename",
+      "warnings": []
+    },
+    {
+      "path": "ESTR_TORRE.dwg",
+      "name": "ESTR_TORRE.dwg",
+      "discipline": "structure",
+      "source_format": "dwg",
+      "role": "primary",
+      "enabled": true,
+      "detected_by": "filename",
+      "warnings": []
+    },
+    {
+      "path": "HID_TORRE.dwg",
+      "name": "HID_TORRE.dwg",
+      "discipline": "hydraulic",
+      "source_format": "dwg",
+      "role": "primary",
+      "enabled": true,
+      "detected_by": "filename",
+      "warnings": []
+    },
+    {
+      "path": "INC_TORRE.dwg",
+      "name": "INC_TORRE.dwg",
+      "discipline": "fire",
+      "source_format": "dwg",
+      "role": "primary",
+      "enabled": true,
+      "detected_by": "filename",
+      "warnings": []
+    }
+  ],
+  "warnings": [],
+  "ready": true
+}

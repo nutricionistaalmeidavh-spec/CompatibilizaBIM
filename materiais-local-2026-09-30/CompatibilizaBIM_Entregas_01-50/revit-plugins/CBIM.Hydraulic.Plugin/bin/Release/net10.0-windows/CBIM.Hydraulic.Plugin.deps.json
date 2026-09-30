@@ -1,0 +1,56 @@
+{
+  "runtimeTarget": {
+    "name": ".NETCoreApp,Version=v10.0",
+    "signature": ""
+  },
+  "compilationOptions": {},
+  "targets": {
+    ".NETCoreApp,Version=v10.0": {
+      "CBIM.Hydraulic.Plugin/1.0.0": {
+        "dependencies": {
+          "CBIM.Library.Contract": "1.0.0",
+          "CBIM.Revit.Contracts": "1.0.0"
+        },
+        "runtime": {
+          "CBIM.Hydraulic.Plugin.dll": {}
+        }
+      },
+      "CBIM.Library.Contract/1.0.0": {
+        "dependencies": {
+          "CBIM.Revit.Contracts": "1.0.0"
+        },
+        "runtime": {
+          "CBIM.Library.Contract.dll": {
+            "assemblyVersion": "1.0.0.0",
+            "fileVersion": "1.0.0.0"
+          }
+        }
+      },
+      "CBIM.Revit.Contracts/1.0.0": {
+        "runtime": {
+          "CBIM.Revit.Contracts.dll": {
+            "assemblyVersion": "1.0.0.0",
+            "fileVersion": "1.0.0.0"
+          }
+        }
+      }
+    }
+  },
+  "libraries": {
+    "CBIM.Hydraulic.Plugin/1.0.0": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    },
+    "CBIM.Library.Contract/1.0.0": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    },
+    "CBIM.Revit.Contracts/1.0.0": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    }
+  }
+}

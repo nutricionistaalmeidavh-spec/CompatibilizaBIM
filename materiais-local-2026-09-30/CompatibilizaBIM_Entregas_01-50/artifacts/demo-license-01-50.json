@@ -1,0 +1,23 @@
+{
+  "algorithm": "Ed25519",
+  "payload": {
+    "license_id": "DEMO-01-50",
+    "customer_id": "demo-pilot",
+    "customer_name": "Cliente Piloto Demo",
+    "product": "CompatibilizaBIM",
+    "edition": "pilot",
+    "issued_at": "2026-08-16T18:51:55.605016Z",
+    "not_before": null,
+    "expires_at": null,
+    "installation_ids": [
+      "592ca9ce9bd60f88a1acbc155a02bf0d"
+    ],
+    "features": [
+      "cad_to_cbim",
+      "ifc_export",
+      "quantities",
+      "desktop"
+    ]
+  },
+  "signature_b64": "P3CpDd8wEBzDWCASFY+6elBYcwHc1czIhizj/6apkXf9wElF1qM0KB/oLC16pCvjY+dfnUXQI0aR7nDZKNciCQ=="
+}

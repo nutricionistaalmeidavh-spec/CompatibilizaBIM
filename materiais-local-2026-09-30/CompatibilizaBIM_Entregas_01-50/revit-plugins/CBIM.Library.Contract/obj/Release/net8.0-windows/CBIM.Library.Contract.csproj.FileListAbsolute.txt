@@ -1,0 +1,15 @@
+C:\tmp\CompatibilizaBIM_Entregas_01-50\revit-plugins\CBIM.Library.Contract\bin\Release\net8.0-windows\CBIM.Library.Contract.deps.json
+C:\tmp\CompatibilizaBIM_Entregas_01-50\revit-plugins\CBIM.Library.Contract\bin\Release\net8.0-windows\CBIM.Library.Contract.dll
+C:\tmp\CompatibilizaBIM_Entregas_01-50\revit-plugins\CBIM.Library.Contract\bin\Release\net8.0-windows\CBIM.Library.Contract.pdb
+C:\tmp\CompatibilizaBIM_Entregas_01-50\revit-plugins\CBIM.Library.Contract\bin\Release\net8.0-windows\CBIM.Revit.Contracts.dll
+C:\tmp\CompatibilizaBIM_Entregas_01-50\revit-plugins\CBIM.Library.Contract\bin\Release\net8.0-windows\CBIM.Revit.Contracts.pdb
+C:\tmp\CompatibilizaBIM_Entregas_01-50\revit-plugins\CBIM.Library.Contract\obj\Release\net8.0-windows\CBIM.Library.Contract.csproj.AssemblyReference.cache
+C:\tmp\CompatibilizaBIM_Entregas_01-50\revit-plugins\CBIM.Library.Contract\obj\Release\net8.0-windows\CBIM.Library.Contract.GeneratedMSBuildEditorConfig.editorconfig
+C:\tmp\CompatibilizaBIM_Entregas_01-50\revit-plugins\CBIM.Library.Contract\obj\Release\net8.0-windows\CBIM.Library.Contract.AssemblyInfoInputs.cache
+C:\tmp\CompatibilizaBIM_Entregas_01-50\revit-plugins\CBIM.Library.Contract\obj\Release\net8.0-windows\CBIM.Library.Contract.AssemblyInfo.cs
+C:\tmp\CompatibilizaBIM_Entregas_01-50\revit-plugins\CBIM.Library.Contract\obj\Release\net8.0-windows\CBIM.Library.Contract.csproj.CoreCompileInputs.cache
+C:\tmp\CompatibilizaBIM_Entregas_01-50\revit-plugins\CBIM.Library.Contract\obj\Release\net8.0-windows\CBIM.Lib.67C0EC41.Up2Date
+C:\tmp\CompatibilizaBIM_Entregas_01-50\revit-plugins\CBIM.Library.Contract\obj\Release\net8.0-windows\CBIM.Library.Contract.dll
+C:\tmp\CompatibilizaBIM_Entregas_01-50\revit-plugins\CBIM.Library.Contract\obj\Release\net8.0-windows\refint\CBIM.Library.Contract.dll
+C:\tmp\CompatibilizaBIM_Entregas_01-50\revit-plugins\CBIM.Library.Contract\obj\Release\net8.0-windows\CBIM.Library.Contract.pdb
+C:\tmp\CompatibilizaBIM_Entregas_01-50\revit-plugins\CBIM.Library.Contract\obj\Release\net8.0-windows\ref\CBIM.Library.Contract.dll

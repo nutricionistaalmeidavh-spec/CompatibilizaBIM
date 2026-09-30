@@ -1,0 +1,18 @@
+{
+  "architecture": 13.766928799999732,
+  "architecture_wall_candidates": 11.964280000000144,
+  "catalog": 0.1162333000002036,
+  "connectivity": 0.3868486000001212,
+  "dwg_import": 4.730635500000062,
+  "geometry": 0.8822792000000845,
+  "hydraulic_recognition": 0.8429664000004777,
+  "ifc_export": 0.09762120000050345,
+  "intelligence": 0.5783856999996715,
+  "levels_structure": 0.06839690000015253,
+  "topology": 17.647686299999805,
+  "topology_edges": 3.0771661999997377,
+  "topology_faces": 10.62404450000031,
+  "topology_gap_repair": 0.657740399999966,
+  "topology_intersections": 2.4748427000004085,
+  "topology_spatial_index": 0.44664300000022195
+}

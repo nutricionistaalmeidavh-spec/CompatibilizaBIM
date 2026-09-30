@@ -1,0 +1,31 @@
+{
+  "name": "Demo Alto Padrão",
+  "version": "1.0",
+  "organization": "CompatibilizaBIM",
+  "rules": [
+    {
+      "id": "hyd-cold",
+      "target": "pipe",
+      "layer": "HID_POTAVEL",
+      "block": null,
+      "match": "exact",
+      "system": "cold_water",
+      "defaults": {
+        "diameter_mm": 25
+      },
+      "priority": 10
+    },
+    {
+      "id": "fire-net",
+      "target": "pipe",
+      "layer": "PCI_REDE",
+      "block": null,
+      "match": "exact",
+      "system": "fire_protection",
+      "defaults": {
+        "diameter_mm": 65
+      },
+      "priority": 10
+    }
+  ]
+}

@@ -1,0 +1,7 @@
+Core: 103 tests collected; 103/103 PASS
+CBIM SDK Python: 6 tests collected; 6/6 PASS
+compileall Core src: PASS
+Installed wheel smoke: version 1.41.0; catalog 32 family items; open-source registry 7 capabilities
+Installed wheel semantic regression: stair-pattern 0 pipes; labeled AF Ø32 PVC 1 DN32 pipe; neutral catalog 5 candidates; forced brand None
+Evidence benchmark: 50,000 entities -> 50,000 evidence records in 8.892 s (~5,623 entities/s) in build container
+Real QUA-HID v1.41 Windows rerun: NOT YET EXECUTED; required before claiming visual false-positive closure

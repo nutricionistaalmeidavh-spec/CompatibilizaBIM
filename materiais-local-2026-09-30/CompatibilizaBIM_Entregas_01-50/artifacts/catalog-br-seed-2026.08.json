@@ -1,0 +1,213 @@
+{
+  "version": "2026.08",
+  "items": [
+    {
+      "id": "amanco-ppr-pipe",
+      "manufacturer": "Amanco Wavin",
+      "line": "PPR",
+      "category": "pipe",
+      "systems": [
+        "cold_water",
+        "hot_water"
+      ],
+      "material": "PPR",
+      "nominal_diameters_mm": [
+        20.0,
+        25.0,
+        32.0,
+        40.0,
+        50.0,
+        63.0,
+        75.0,
+        90.0,
+        110.0
+      ],
+      "product_code": null,
+      "description": null,
+      "source_url": "https://wavin.com/br/s/C50_F516_S817/ppr",
+      "metadata": {
+        "official_source": true,
+        "seed_scope": "family"
+      }
+    },
+    {
+      "id": "amanco-esgoto-normal-pipe",
+      "manufacturer": "Amanco Wavin",
+      "line": "Esgoto Série Normal",
+      "category": "pipe",
+      "systems": [
+        "sanitary",
+        "rainwater"
+      ],
+      "material": "PVC",
+      "nominal_diameters_mm": [
+        40.0,
+        50.0,
+        75.0,
+        100.0,
+        150.0,
+        200.0
+      ],
+      "product_code": null,
+      "description": null,
+      "source_url": "https://wavin.com/pt-br/products/f594f5b9-8e66-4abf-9124-02e41f8111b1",
+      "metadata": {
+        "official_source": true,
+        "seed_scope": "family"
+      }
+    },
+    {
+      "id": "amanco-fireblazer-system",
+      "manufacturer": "Amanco Wavin",
+      "line": "CPVC Fireblazer Master",
+      "category": "system",
+      "systems": [
+        "fire",
+        "fire_protection"
+      ],
+      "material": "CPVC",
+      "nominal_diameters_mm": [],
+      "product_code": null,
+      "description": null,
+      "source_url": "https://wavin.com/br/download-center/fichas-tecnicas/fichas-tecnicas-predial",
+      "metadata": {
+        "official_source": true,
+        "seed_scope": "family"
+      }
+    },
+    {
+      "id": "krona-cold-soldavel-system",
+      "manufacturer": "Krona",
+      "line": "Linha Soldável",
+      "category": "system",
+      "systems": [
+        "cold_water"
+      ],
+      "material": "PVC",
+      "nominal_diameters_mm": [],
+      "product_code": null,
+      "description": null,
+      "source_url": "https://www.krona.com.br/produtos/",
+      "metadata": {
+        "official_source": true,
+        "seed_scope": "family"
+      }
+    },
+    {
+      "id": "krona-hot-ppr-system",
+      "manufacturer": "Krona",
+      "line": "Água Quente PPR",
+      "category": "system",
+      "systems": [
+        "hot_water"
+      ],
+      "material": "PPR",
+      "nominal_diameters_mm": [],
+      "product_code": null,
+      "description": null,
+      "source_url": "https://www.krona.com.br/produtos/",
+      "metadata": {
+        "official_source": true,
+        "seed_scope": "family"
+      }
+    },
+    {
+      "id": "krona-hot-cpvc-system",
+      "manufacturer": "Krona",
+      "line": "Água Quente CPVC",
+      "category": "system",
+      "systems": [
+        "hot_water"
+      ],
+      "material": "CPVC",
+      "nominal_diameters_mm": [],
+      "product_code": null,
+      "description": null,
+      "source_url": "https://www.krona.com.br/produtos/",
+      "metadata": {
+        "official_source": true,
+        "seed_scope": "family"
+      }
+    },
+    {
+      "id": "tigre-aquatherm-system",
+      "manufacturer": "Tigre",
+      "line": "CPVC Aquatherm",
+      "category": "system",
+      "systems": [
+        "hot_water"
+      ],
+      "material": "CPVC",
+      "nominal_diameters_mm": [],
+      "product_code": null,
+      "description": null,
+      "source_url": "https://www.tigre.com.br/catalogos-tecnicos/categoria/materiais-tecnicos?page=2",
+      "metadata": {
+        "official_source": true,
+        "seed_scope": "family"
+      }
+    },
+    {
+      "id": "tigre-ppr-system",
+      "manufacturer": "Tigre",
+      "line": "PPR",
+      "category": "system",
+      "systems": [
+        "cold_water",
+        "hot_water"
+      ],
+      "material": "PPR",
+      "nominal_diameters_mm": [],
+      "product_code": null,
+      "description": null,
+      "source_url": "https://www.tigre.com.br/catalogos-tecnicos/categoria/materiais-tecnicos?page=2",
+      "metadata": {
+        "official_source": true,
+        "seed_scope": "family"
+      }
+    },
+    {
+      "id": "tigre-esgoto-system",
+      "manufacturer": "Tigre",
+      "line": "Esgoto Predial",
+      "category": "system",
+      "systems": [
+        "sanitary",
+        "rainwater"
+      ],
+      "material": "PVC",
+      "nominal_diameters_mm": [],
+      "product_code": null,
+      "description": null,
+      "source_url": "https://www.tigre.com.br/catalogos-tecnicos?page=2",
+      "metadata": {
+        "official_source": true,
+        "seed_scope": "family"
+      }
+    },
+    {
+      "id": "astra-pex-pipe",
+      "manufacturer": "Astra",
+      "line": "PEX Monocamada",
+      "category": "pipe",
+      "systems": [
+        "cold_water",
+        "hot_water"
+      ],
+      "material": "PEX",
+      "nominal_diameters_mm": [
+        16.0,
+        20.0,
+        25.0,
+        32.0
+      ],
+      "product_code": null,
+      "description": null,
+      "source_url": "https://www.astra-sa.com/construtoras/produto.asp?id_produtoWebConstrucaoCivil=400",
+      "metadata": {
+        "official_source": true,
+        "seed_scope": "family"
+      }
+    }
+  ]
+}

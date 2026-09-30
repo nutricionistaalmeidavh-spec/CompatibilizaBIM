@@ -1,0 +1,8 @@
+{
+  "cases": [
+    {"name":"architecture-real","discipline":"architecture","source_path":"/path/to/ARQ.dwg","evidence_kind":"real_project"},
+    {"name":"structure-real","discipline":"structure","source_path":"/path/to/EST.dwg","evidence_kind":"real_project"},
+    {"name":"hydraulic-real","discipline":"hydraulic","source_path":"/path/to/HID.dwg","evidence_kind":"real_project"},
+    {"name":"fire-real","discipline":"fire","source_path":"/path/to/INC.dwg","evidence_kind":"real_project"}
+  ]
+}

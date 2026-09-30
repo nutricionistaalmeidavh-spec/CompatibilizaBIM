@@ -1,0 +1,6 @@
+CBIM Library v1.5.0
+Copyright (c) 2026. All rights reserved.
+
+Este código e seus binários não concedem direitos de redistribuição sobre famílias,
+modelos ou bibliotecas BIM de terceiros. O operador da biblioteca master é responsável
+por verificar os termos/licenças de cada conteúdo antes de publicá-lo aos usuários.

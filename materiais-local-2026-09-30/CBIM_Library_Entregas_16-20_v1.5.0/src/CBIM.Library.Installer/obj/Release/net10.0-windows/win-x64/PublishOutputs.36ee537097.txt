@@ -1,0 +1,2 @@
+C:\tmp\CBIM_Library_Entregas_16-20_v1.5.0\dist\installer\CBIM.Library.Setup.pdb
+C:\tmp\CBIM_Library_Entregas_16-20_v1.5.0\dist\installer\CBIM.Library.Setup.exe

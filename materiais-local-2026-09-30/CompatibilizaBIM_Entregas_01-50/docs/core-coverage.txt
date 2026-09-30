@@ -1,0 +1,32 @@
+................                                                         [100%]
+================================ tests coverage ================================
+_______________ coverage: platform linux, python 3.13.5-final-0 ________________
+
+Name                                                   Stmts   Miss  Cover   Missing
+------------------------------------------------------------------------------------
+src/compatibilizabim_core/__init__.py                      9      0   100%
+src/compatibilizabim_core/architecture/__init__.py         2      0   100%
+src/compatibilizabim_core/architecture/recognizer.py      68      2    97%   34, 61
+src/compatibilizabim_core/cad/__init__.py                  2      0   100%
+src/compatibilizabim_core/cad/dxf.py                      93     21    77%   25, 27, 76-82, 93-94, 104-109, 120-122, 127, 130-131
+src/compatibilizabim_core/cad/model.py                    64      0   100%
+src/compatibilizabim_core/geometry/__init__.py             5      0   100%
+src/compatibilizabim_core/geometry/analysis.py            33      7    79%   23-29, 38
+src/compatibilizabim_core/geometry/blocks.py              57     25    56%   23-45, 56, 58, 61-62
+src/compatibilizabim_core/geometry/convert.py             32     25    22%   13-37
+src/compatibilizabim_core/geometry/engine.py              19      1    95%   20
+src/compatibilizabim_core/geometry/normalize.py           96      4    96%   44, 63, 84, 105
+src/compatibilizabim_core/geometry/spatial.py             20      1    95%   26
+src/compatibilizabim_core/levels/__init__.py               2      0   100%
+src/compatibilizabim_core/levels/reconstruct.py           28      6    79%   20-25
+src/compatibilizabim_core/pipeline.py                      9      0   100%
+src/compatibilizabim_core/reviewer/__init__.py             3      0   100%
+src/compatibilizabim_core/reviewer/session.py             34      6    82%   15, 22, 24, 32-34
+src/compatibilizabim_core/reviewer/web.py                  5      0   100%
+src/compatibilizabim_core/structure/__init__.py            2      0   100%
+src/compatibilizabim_core/structure/recognizer.py         36      0   100%
+src/compatibilizabim_core/topology/__init__.py             3      0   100%
+src/compatibilizabim_core/topology/engine.py              66      0   100%
+src/compatibilizabim_core/topology/model.py               14      0   100%
+------------------------------------------------------------------------------------
+TOTAL                                                    702     98    86%

@@ -1,0 +1,663 @@
+{
+  "id": "project_d6110e38d0d742cd",
+  "schema": "CBIM",
+  "schema_version": "0.2.0",
+  "name": "Demo cumulativo 01-15",
+  "created_at": "2026-08-16T16:51:12.829813Z",
+  "units": "m",
+  "coordinate_reference": "local",
+  "sites": [
+    {
+      "id": "site_6e6cf49a2d864bd4",
+      "name": "Local Site",
+      "latitude": null,
+      "longitude": null,
+      "elevation": 0.0,
+      "properties": {}
+    }
+  ],
+  "buildings": [
+    {
+      "id": "building_eb9f0b7634e44c53",
+      "name": "Building",
+      "site_id": null,
+      "properties": {}
+    }
+  ],
+  "storeys": [
+    {
+      "id": "storey_d2b9a435b7424b0e",
+      "name": "Térreo",
+      "building_id": "building_eb9f0b7634e44c53",
+      "elevation": 0.0,
+      "height": 2.8,
+      "properties": {}
+    }
+  ],
+  "materials": [],
+  "systems": [
+    {
+      "id": "system_7504960214584c68",
+      "name": "Água fria",
+      "discipline": "plumbing",
+      "classification": "cold_water",
+      "properties": {}
+    },
+    {
+      "id": "system_8980dd18d88c42a4",
+      "name": "Combate a incêndio",
+      "discipline": "fire",
+      "classification": "fire_protection",
+      "properties": {}
+    }
+  ],
+  "elements": [
+    {
+      "id": "wall_0c5e919fbd9b4f97",
+      "type": "wall",
+      "name": null,
+      "storey_id": "storey_d2b9a435b7424b0e",
+      "confidence": 0.96,
+      "review_state": "auto",
+      "source_refs": [
+        {
+          "source_id": "dxf:cad-mep-fire-demo.dxf:c5343d9f",
+          "entity_id": "36",
+          "source_type": "cad",
+          "layer": "A-WALL",
+          "metadata": {}
+        },
+        {
+          "source_id": "dxf:cad-mep-fire-demo.dxf:c5343d9f",
+          "entity_id": "3A",
+          "source_type": "cad",
+          "layer": "A-WALL",
+          "metadata": {}
+        }
+      ],
+      "material_ids": [],
+      "properties": {},
+      "start": {
+        "x": 0.15,
+        "y": 0.075,
+        "z": 0.0
+      },
+      "end": {
+        "x": 5.85,
+        "y": 0.075,
+        "z": 0.0
+      },
+      "thickness": 0.15,
+      "height": 2.8
+    },
+    {
+      "id": "wall_6dc24f843e674167",
+      "type": "wall",
+      "name": null,
+      "storey_id": "storey_d2b9a435b7424b0e",
+      "confidence": 0.96,
+      "review_state": "auto",
+      "source_refs": [
+        {
+          "source_id": "dxf:cad-mep-fire-demo.dxf:c5343d9f",
+          "entity_id": "38",
+          "source_type": "cad",
+          "layer": "A-WALL",
+          "metadata": {}
+        },
+        {
+          "source_id": "dxf:cad-mep-fire-demo.dxf:c5343d9f",
+          "entity_id": "3C",
+          "source_type": "cad",
+          "layer": "A-WALL",
+          "metadata": {}
+        }
+      ],
+      "material_ids": [],
+      "properties": {},
+      "start": {
+        "x": 5.85,
+        "y": 3.925,
+        "z": 0.0
+      },
+      "end": {
+        "x": 0.15000000000000036,
+        "y": 3.925,
+        "z": 0.0
+      },
+      "thickness": 0.1499999999999999,
+      "height": 2.8
+    },
+    {
+      "id": "wall_7c2c08c31235496b",
+      "type": "wall",
+      "name": null,
+      "storey_id": "storey_d2b9a435b7424b0e",
+      "confidence": 0.96,
+      "review_state": "auto",
+      "source_refs": [
+        {
+          "source_id": "dxf:cad-mep-fire-demo.dxf:c5343d9f",
+          "entity_id": "37",
+          "source_type": "cad",
+          "layer": "A-WALL",
+          "metadata": {}
+        },
+        {
+          "source_id": "dxf:cad-mep-fire-demo.dxf:c5343d9f",
+          "entity_id": "3B",
+          "source_type": "cad",
+          "layer": "A-WALL",
+          "metadata": {}
+        }
+      ],
+      "material_ids": [],
+      "properties": {},
+      "start": {
+        "x": 5.925,
+        "y": 0.15,
+        "z": 0.0
+      },
+      "end": {
+        "x": 5.925,
+        "y": 3.85,
+        "z": 0.0
+      },
+      "thickness": 0.15000000000000036,
+      "height": 2.8
+    },
+    {
+      "id": "wall_e19a2fdf52814d14",
+      "type": "wall",
+      "name": null,
+      "storey_id": "storey_d2b9a435b7424b0e",
+      "confidence": 0.96,
+      "review_state": "auto",
+      "source_refs": [
+        {
+          "source_id": "dxf:cad-mep-fire-demo.dxf:c5343d9f",
+          "entity_id": "39",
+          "source_type": "cad",
+          "layer": "A-WALL",
+          "metadata": {}
+        },
+        {
+          "source_id": "dxf:cad-mep-fire-demo.dxf:c5343d9f",
+          "entity_id": "3D",
+          "source_type": "cad",
+          "layer": "A-WALL",
+          "metadata": {}
+        }
+      ],
+      "material_ids": [],
+      "properties": {},
+      "start": {
+        "x": 0.075,
+        "y": 3.85,
+        "z": 0.0
+      },
+      "end": {
+        "x": 0.075,
+        "y": 0.1499999999999999,
+        "z": 0.0
+      },
+      "thickness": 0.15,
+      "height": 2.8
+    },
+    {
+      "id": "column_347c3be9e45f4528",
+      "type": "column",
+      "name": null,
+      "storey_id": "storey_d2b9a435b7424b0e",
+      "confidence": 0.97,
+      "review_state": "auto",
+      "source_refs": [
+        {
+          "source_id": "dxf:cad-mep-fire-demo.dxf:c5343d9f",
+          "entity_id": "3E",
+          "source_type": "cad",
+          "layer": "S-COLUMN",
+          "metadata": {}
+        }
+      ],
+      "material_ids": [],
+      "properties": {
+        "structural": true
+      },
+      "center": {
+        "x": 1.15,
+        "y": 1.2,
+        "z": 0.0
+      },
+      "width": 0.30000000000000004,
+      "depth": 0.3999999999999999,
+      "height": 2.8,
+      "rotation_deg": 0.0
+    },
+    {
+      "id": "door_dd88f5c6e3ba4e1b",
+      "type": "door",
+      "name": null,
+      "storey_id": "storey_d2b9a435b7424b0e",
+      "confidence": 0.95,
+      "review_state": "auto",
+      "source_refs": [
+        {
+          "source_id": "dxf:cad-mep-fire-demo.dxf:c5343d9f",
+          "entity_id": "46",
+          "source_type": "cad",
+          "layer": "A-DOOR",
+          "metadata": {}
+        }
+      ],
+      "material_ids": [],
+      "properties": {},
+      "position": {
+        "x": 3.0,
+        "y": 0.075,
+        "z": 0.0
+      },
+      "width": 0.9,
+      "height": 2.1,
+      "host_id": "wall_0c5e919fbd9b4f97",
+      "rotation_deg": 0.0
+    },
+    {
+      "id": "space_f5654787332646bc",
+      "type": "space",
+      "name": null,
+      "storey_id": "storey_d2b9a435b7424b0e",
+      "confidence": 0.72,
+      "review_state": "auto",
+      "source_refs": [
+        {
+          "source_id": "dxf:cad-mep-fire-demo.dxf:c5343d9f",
+          "entity_id": "36",
+          "source_type": "cad",
+          "layer": "A-WALL",
+          "metadata": {}
+        },
+        {
+          "source_id": "dxf:cad-mep-fire-demo.dxf:c5343d9f",
+          "entity_id": "37",
+          "source_type": "cad",
+          "layer": "A-WALL",
+          "metadata": {}
+        },
+        {
+          "source_id": "dxf:cad-mep-fire-demo.dxf:c5343d9f",
+          "entity_id": "38",
+          "source_type": "cad",
+          "layer": "A-WALL",
+          "metadata": {}
+        },
+        {
+          "source_id": "dxf:cad-mep-fire-demo.dxf:c5343d9f",
+          "entity_id": "39",
+          "source_type": "cad",
+          "layer": "A-WALL",
+          "metadata": {}
+        },
+        {
+          "source_id": "dxf:cad-mep-fire-demo.dxf:c5343d9f",
+          "entity_id": "3A",
+          "source_type": "cad",
+          "layer": "A-WALL",
+          "metadata": {}
+        },
+        {
+          "source_id": "dxf:cad-mep-fire-demo.dxf:c5343d9f",
+          "entity_id": "3B",
+          "source_type": "cad",
+          "layer": "A-WALL",
+          "metadata": {}
+        },
+        {
+          "source_id": "dxf:cad-mep-fire-demo.dxf:c5343d9f",
+          "entity_id": "3C",
+          "source_type": "cad",
+          "layer": "A-WALL",
+          "metadata": {}
+        },
+        {
+          "source_id": "dxf:cad-mep-fire-demo.dxf:c5343d9f",
+          "entity_id": "3D",
+          "source_type": "cad",
+          "layer": "A-WALL",
+          "metadata": {}
+        }
+      ],
+      "material_ids": [],
+      "properties": {},
+      "boundary": [
+        {
+          "x": 6.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        {
+          "x": 0.0,
+          "y": 4.0,
+          "z": 0.0
+        },
+        {
+          "x": 6.0,
+          "y": 4.0,
+          "z": 0.0
+        }
+      ],
+      "height": 2.8
+    },
+    {
+      "id": "space_43f87a9407d84d52",
+      "type": "space",
+      "name": null,
+      "storey_id": "storey_d2b9a435b7424b0e",
+      "confidence": 0.72,
+      "review_state": "auto",
+      "source_refs": [
+        {
+          "source_id": "dxf:cad-mep-fire-demo.dxf:c5343d9f",
+          "entity_id": "36",
+          "source_type": "cad",
+          "layer": "A-WALL",
+          "metadata": {}
+        },
+        {
+          "source_id": "dxf:cad-mep-fire-demo.dxf:c5343d9f",
+          "entity_id": "37",
+          "source_type": "cad",
+          "layer": "A-WALL",
+          "metadata": {}
+        },
+        {
+          "source_id": "dxf:cad-mep-fire-demo.dxf:c5343d9f",
+          "entity_id": "38",
+          "source_type": "cad",
+          "layer": "A-WALL",
+          "metadata": {}
+        },
+        {
+          "source_id": "dxf:cad-mep-fire-demo.dxf:c5343d9f",
+          "entity_id": "39",
+          "source_type": "cad",
+          "layer": "A-WALL",
+          "metadata": {}
+        },
+        {
+          "source_id": "dxf:cad-mep-fire-demo.dxf:c5343d9f",
+          "entity_id": "3A",
+          "source_type": "cad",
+          "layer": "A-WALL",
+          "metadata": {}
+        },
+        {
+          "source_id": "dxf:cad-mep-fire-demo.dxf:c5343d9f",
+          "entity_id": "3B",
+          "source_type": "cad",
+          "layer": "A-WALL",
+          "metadata": {}
+        },
+        {
+          "source_id": "dxf:cad-mep-fire-demo.dxf:c5343d9f",
+          "entity_id": "3C",
+          "source_type": "cad",
+          "layer": "A-WALL",
+          "metadata": {}
+        },
+        {
+          "source_id": "dxf:cad-mep-fire-demo.dxf:c5343d9f",
+          "entity_id": "3D",
+          "source_type": "cad",
+          "layer": "A-WALL",
+          "metadata": {}
+        }
+      ],
+      "material_ids": [],
+      "properties": {},
+      "boundary": [
+        {
+          "x": 5.85,
+          "y": 0.15,
+          "z": 0.0
+        },
+        {
+          "x": 0.15,
+          "y": 0.15,
+          "z": 0.0
+        },
+        {
+          "x": 0.15,
+          "y": 3.85,
+          "z": 0.0
+        },
+        {
+          "x": 5.85,
+          "y": 3.85,
+          "z": 0.0
+        }
+      ],
+      "height": 2.8
+    },
+    {
+      "id": "beam_ce244df571f04aa7",
+      "type": "beam",
+      "name": null,
+      "storey_id": "storey_d2b9a435b7424b0e",
+      "confidence": 0.9,
+      "review_state": "auto",
+      "source_refs": [
+        {
+          "source_id": "dxf:cad-mep-fire-demo.dxf:c5343d9f",
+          "entity_id": "3F",
+          "source_type": "cad",
+          "layer": "S-BEAM",
+          "metadata": {}
+        },
+        {
+          "source_id": "dxf:cad-mep-fire-demo.dxf:c5343d9f",
+          "entity_id": "40",
+          "source_type": "cad",
+          "layer": "S-BEAM",
+          "metadata": {}
+        }
+      ],
+      "material_ids": [],
+      "properties": {
+        "structural": true
+      },
+      "start": {
+        "x": 0.5,
+        "y": 3.125,
+        "z": 2.8
+      },
+      "end": {
+        "x": 5.5,
+        "y": 3.125,
+        "z": 2.8
+      },
+      "width": 0.25,
+      "height": 0.4
+    },
+    {
+      "id": "slab_e7497bcdcaca44e3",
+      "type": "slab",
+      "name": null,
+      "storey_id": "storey_d2b9a435b7424b0e",
+      "confidence": 0.95,
+      "review_state": "auto",
+      "source_refs": [
+        {
+          "source_id": "dxf:cad-mep-fire-demo.dxf:c5343d9f",
+          "entity_id": "41",
+          "source_type": "cad",
+          "layer": "S-SLAB",
+          "metadata": {}
+        }
+      ],
+      "material_ids": [],
+      "properties": {
+        "structural": true,
+        "structural_role": "slab"
+      },
+      "boundary": [
+        {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        {
+          "x": 6.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        {
+          "x": 6.0,
+          "y": 4.0,
+          "z": 0.0
+        },
+        {
+          "x": 0.0,
+          "y": 4.0,
+          "z": 0.0
+        }
+      ],
+      "thickness": 0.12
+    },
+    {
+      "id": "equipment_4c5b4ae122004005",
+      "type": "equipment",
+      "name": null,
+      "storey_id": "storey_d2b9a435b7424b0e",
+      "confidence": 0.9,
+      "review_state": "auto",
+      "source_refs": [
+        {
+          "source_id": "dxf:cad-mep-fire-demo.dxf:c5343d9f",
+          "entity_id": "4C",
+          "source_type": "cad",
+          "layer": "HID_POTAVEL",
+          "metadata": {}
+        }
+      ],
+      "material_ids": [],
+      "properties": {},
+      "position": {
+        "x": 2.0,
+        "y": 2.0,
+        "z": 0.0
+      },
+      "equipment_type": "REGISTRO_GAVETA",
+      "system_id": "system_7504960214584c68",
+      "rotation_deg": 0.0
+    },
+    {
+      "id": "pipe_05092c5b8ae14801",
+      "type": "pipe",
+      "name": null,
+      "storey_id": "storey_d2b9a435b7424b0e",
+      "confidence": 0.94,
+      "review_state": "auto",
+      "source_refs": [
+        {
+          "source_id": "dxf:cad-mep-fire-demo.dxf:c5343d9f",
+          "entity_id": "54",
+          "source_type": "cad",
+          "layer": "HID_POTAVEL",
+          "metadata": {}
+        }
+      ],
+      "material_ids": [],
+      "properties": {
+        "service": "cold_water"
+      },
+      "path": [
+        {
+          "x": 0.5,
+          "y": 2.0,
+          "z": 0.0
+        },
+        {
+          "x": 5.5,
+          "y": 2.0,
+          "z": 0.0
+        }
+      ],
+      "diameter": 0.025,
+      "system_id": "system_7504960214584c68",
+      "slope": null
+    },
+    {
+      "id": "equipment_9700eee4c87f4476",
+      "type": "equipment",
+      "name": null,
+      "storey_id": "storey_d2b9a435b7424b0e",
+      "confidence": 0.94,
+      "review_state": "auto",
+      "source_refs": [
+        {
+          "source_id": "dxf:cad-mep-fire-demo.dxf:c5343d9f",
+          "entity_id": "52",
+          "source_type": "cad",
+          "layer": "PCI_REDE",
+          "metadata": {}
+        }
+      ],
+      "material_ids": [],
+      "properties": {
+        "fire_component": true
+      },
+      "position": {
+        "x": 4.0,
+        "y": 2.0,
+        "z": 0.0
+      },
+      "equipment_type": "SPRINKLER_HEAD",
+      "system_id": "system_8980dd18d88c42a4",
+      "rotation_deg": 0.0
+    },
+    {
+      "id": "pipe_ff5b3fe606df4c45",
+      "type": "pipe",
+      "name": null,
+      "storey_id": "storey_d2b9a435b7424b0e",
+      "confidence": 0.95,
+      "review_state": "auto",
+      "source_refs": [
+        {
+          "source_id": "dxf:cad-mep-fire-demo.dxf:c5343d9f",
+          "entity_id": "55",
+          "source_type": "cad",
+          "layer": "PCI_REDE",
+          "metadata": {}
+        }
+      ],
+      "material_ids": [],
+      "properties": {
+        "service": "fire"
+      },
+      "path": [
+        {
+          "x": 0.5,
+          "y": 2.5,
+          "z": 0.0
+        },
+        {
+          "x": 5.5,
+          "y": 2.5,
+          "z": 0.0
+        }
+      ],
+      "diameter": 0.065,
+      "system_id": "system_8980dd18d88c42a4",
+      "slope": null
+    }
+  ],
+  "relations": [],
+  "metadata": {}
+}

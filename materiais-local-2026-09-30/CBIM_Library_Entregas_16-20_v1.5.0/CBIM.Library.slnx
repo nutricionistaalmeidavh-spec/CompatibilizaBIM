@@ -1,0 +1,6 @@
+<Solution>
+  <Project Path="src/CBIM.Library.Contracts/CBIM.Library.Contracts.csproj" />
+  <Project Path="src/CBIM.Library.Revit2027/CBIM.Library.Revit2027.csproj" />
+  <Project Path="src/CBIM.Library.Publisher/CBIM.Library.Publisher.csproj" />
+  <Project Path="src/CBIM.Library.Installer/CBIM.Library.Installer.csproj" />
+</Solution>

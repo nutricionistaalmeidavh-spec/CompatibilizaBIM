@@ -1,0 +1,217 @@
+{
+  "id": "project_b2ee656af04348d4",
+  "schema": "CBIM",
+  "schema_version": "0.2.0",
+  "name": "Vertical Demo",
+  "created_at": "2026-08-16T17:20:20.685183Z",
+  "units": "m",
+  "coordinate_reference": "local",
+  "sites": [],
+  "buildings": [
+    {
+      "id": "tower",
+      "name": "Torre A",
+      "site_id": null,
+      "properties": {}
+    }
+  ],
+  "storeys": [
+    {
+      "id": "floor01",
+      "name": "01",
+      "building_id": "tower",
+      "elevation": 0.0,
+      "height": 3.0,
+      "properties": {}
+    },
+    {
+      "id": "floor02",
+      "name": "02",
+      "building_id": "tower",
+      "elevation": 3.0,
+      "height": 3.0,
+      "properties": {}
+    },
+    {
+      "id": "floor03",
+      "name": "03",
+      "building_id": "tower",
+      "elevation": 6.0,
+      "height": 3.0,
+      "properties": {}
+    }
+  ],
+  "materials": [],
+  "systems": [],
+  "elements": [
+    {
+      "id": "wallA",
+      "type": "wall",
+      "name": null,
+      "storey_id": "floor01",
+      "confidence": 1.0,
+      "review_state": "confirmed",
+      "source_refs": [],
+      "material_ids": [],
+      "properties": {},
+      "start": {
+        "x": 0.0,
+        "y": 0.0,
+        "z": 0.0
+      },
+      "end": {
+        "x": 5.0,
+        "y": 0.0,
+        "z": 0.0
+      },
+      "thickness": 0.14,
+      "height": 3.0
+    },
+    {
+      "id": "doorA",
+      "type": "door",
+      "name": null,
+      "storey_id": "floor01",
+      "confidence": 1.0,
+      "review_state": "confirmed",
+      "source_refs": [],
+      "material_ids": [],
+      "properties": {},
+      "position": {
+        "x": 2.0,
+        "y": 0.0,
+        "z": 0.0
+      },
+      "width": 0.8,
+      "height": 2.1,
+      "host_id": "wallA",
+      "rotation_deg": 0.0
+    },
+    {
+      "id": "wallA__floor02",
+      "type": "wall",
+      "name": null,
+      "storey_id": "floor02",
+      "confidence": 1.0,
+      "review_state": "confirmed",
+      "source_refs": [],
+      "material_ids": [],
+      "properties": {
+        "vertical_propagated": true,
+        "propagated_from": "wallA"
+      },
+      "start": {
+        "x": 0.0,
+        "y": 0.0,
+        "z": 3.0
+      },
+      "end": {
+        "x": 5.0,
+        "y": 0.0,
+        "z": 3.0
+      },
+      "thickness": 0.14,
+      "height": 3.0
+    },
+    {
+      "id": "doorA__floor02",
+      "type": "door",
+      "name": null,
+      "storey_id": "floor02",
+      "confidence": 1.0,
+      "review_state": "confirmed",
+      "source_refs": [],
+      "material_ids": [],
+      "properties": {
+        "vertical_propagated": true,
+        "propagated_from": "doorA"
+      },
+      "position": {
+        "x": 2.0,
+        "y": 0.0,
+        "z": 3.0
+      },
+      "width": 0.8,
+      "height": 2.1,
+      "host_id": "wallA__floor02",
+      "rotation_deg": 0.0
+    },
+    {
+      "id": "wallA__floor03",
+      "type": "wall",
+      "name": null,
+      "storey_id": "floor03",
+      "confidence": 1.0,
+      "review_state": "confirmed",
+      "source_refs": [],
+      "material_ids": [],
+      "properties": {
+        "vertical_propagated": true,
+        "propagated_from": "wallA"
+      },
+      "start": {
+        "x": 0.0,
+        "y": 0.0,
+        "z": 6.0
+      },
+      "end": {
+        "x": 5.0,
+        "y": 0.0,
+        "z": 6.0
+      },
+      "thickness": 0.14,
+      "height": 3.0
+    },
+    {
+      "id": "doorA__floor03",
+      "type": "door",
+      "name": null,
+      "storey_id": "floor03",
+      "confidence": 1.0,
+      "review_state": "confirmed",
+      "source_refs": [],
+      "material_ids": [],
+      "properties": {
+        "vertical_propagated": true,
+        "propagated_from": "doorA"
+      },
+      "position": {
+        "x": 2.0,
+        "y": 0.0,
+        "z": 6.0
+      },
+      "width": 0.8,
+      "height": 2.1,
+      "host_id": "wallA__floor03",
+      "rotation_deg": 0.0
+    }
+  ],
+  "relations": [
+    {
+      "id": "relA",
+      "type": "host",
+      "from_id": "doorA",
+      "to_id": "wallA",
+      "metadata": {}
+    },
+    {
+      "id": "relA__floor02",
+      "type": "host",
+      "from_id": "doorA__floor02",
+      "to_id": "wallA__floor02",
+      "metadata": {
+        "vertical_propagated": true
+      }
+    },
+    {
+      "id": "relA__floor03",
+      "type": "host",
+      "from_id": "doorA__floor03",
+      "to_id": "wallA__floor03",
+      "metadata": {
+        "vertical_propagated": true
+      }
+    }
+  ],
+  "metadata": {}
+}

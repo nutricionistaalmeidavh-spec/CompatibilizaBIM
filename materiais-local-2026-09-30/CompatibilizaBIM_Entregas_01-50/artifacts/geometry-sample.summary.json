@@ -1,0 +1,11 @@
+{
+  "source_entities": 8,
+  "processed_entities": 6,
+  "layers": [
+    "DOOR",
+    "SYMBOL",
+    "WALL"
+  ],
+  "contours": 2,
+  "intersections": 5
+}

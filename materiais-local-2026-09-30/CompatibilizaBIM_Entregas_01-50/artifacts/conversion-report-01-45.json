@@ -1,0 +1,70 @@
+{
+  "project_id": "project_dc5b4663e31d452c",
+  "project_name": "Demo Entregas 01-10",
+  "source_files": 4,
+  "element_counts": {
+    "wall": 4,
+    "column": 1,
+    "door": 1,
+    "space": 1,
+    "beam": 1,
+    "opening": 1,
+    "slab": 2
+  },
+  "total_elements": 11,
+  "review_states": {
+    "confirmed": 11
+  },
+  "mean_confidence": 0.9436363636363635,
+  "low_confidence": 0,
+  "pending_review": 0,
+  "confirmed_or_edited": 11,
+  "completion_rate": 1.0,
+  "quantity_totals": {
+    "beam": {
+      "length_m": 4.0,
+      "area_m2": 0.0,
+      "volume_m3": 0.32,
+      "count": 1.0
+    },
+    "column": {
+      "length_m": 0.0,
+      "area_m2": 0.0,
+      "volume_m3": 0.224,
+      "count": 1.0
+    },
+    "door": {
+      "length_m": 0.0,
+      "area_m2": 1.89,
+      "volume_m3": 0.0,
+      "count": 1.0
+    },
+    "opening": {
+      "length_m": 0.0,
+      "area_m2": 1.2,
+      "volume_m3": 0.48,
+      "count": 1.0
+    },
+    "slab": {
+      "length_m": 0.0,
+      "area_m2": 21.0,
+      "volume_m3": 2.8,
+      "count": 2.0
+    },
+    "space": {
+      "length_m": 0.0,
+      "area_m2": 17.5584,
+      "volume_m3": 49.16352,
+      "count": 1.0
+    },
+    "wall": {
+      "length_m": 17.44,
+      "area_m2": 48.832,
+      "volume_m3": 6.83648,
+      "count": 4.0
+    }
+  },
+  "warnings": [],
+  "blockers": [],
+  "ready_to_export": true
+}

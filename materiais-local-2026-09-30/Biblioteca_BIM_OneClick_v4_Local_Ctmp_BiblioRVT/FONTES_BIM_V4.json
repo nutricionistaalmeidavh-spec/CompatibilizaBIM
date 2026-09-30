@@ -1,0 +1,212 @@
+[
+  {
+    "name": "BIM4LCA - Architecture",
+    "discipline": "Projetos completos / Arquitetura",
+    "mode": "direct_zip",
+    "url": "https://www.nordicsustainableconstruction.com/Media/638593249820446520/ARCH.zip",
+    "notes": "CC BY-SA 4.0; Revit/IFC architecture"
+  },
+  {
+    "name": "BIM4LCA - Structural",
+    "discipline": "Estrutural",
+    "mode": "direct_zip",
+    "url": "https://www.nordicsustainableconstruction.com/Media/638615141390369983/STRUCTURAL.zip",
+    "notes": "CC BY-SA 4.0; estrutural/IFC"
+  },
+  {
+    "name": "BIM4LCA - HVAC",
+    "discipline": "MEP / HVAC / Elétrica / Incêndio",
+    "mode": "direct_zip",
+    "url": "https://www.nordicsustainableconstruction.com/Media/638596535832776143/HVAC.zip",
+    "notes": "CC BY-SA 4.0; MagiCAD/Revit + IFC"
+  },
+  {
+    "name": "buildingSMART Sample Test Files",
+    "discipline": "IFC / Projetos / Testes",
+    "mode": "direct_zip",
+    "url": "https://github.com/buildingSMART/Sample-Test-Files/archive/refs/heads/main.zip",
+    "notes": "Coleção oficial buildingSMART"
+  },
+  {
+    "name": "buildingSMART Community Sample Test Files",
+    "discipline": "IFC / Projetos / Testes",
+    "mode": "direct_zip",
+    "url": "https://github.com/buildingsmart-community/Community-Sample-Test-Files/archive/refs/heads/main.zip",
+    "notes": "Coleção comunitária"
+  },
+  {
+    "name": "FreeCAD BIM Examples",
+    "discipline": "Projetos completos / IFC",
+    "mode": "direct_zip",
+    "url": "https://github.com/yorikvanhavre/FreeCAD-BIM-examples/archive/refs/heads/main.zip",
+    "notes": "Projetos BIM abertos"
+  },
+  {
+    "name": "Legrand",
+    "discipline": "Elétrica",
+    "mode": "crawl_public",
+    "url": "https://www.legrand.com/ecatalogue/",
+    "notes": "Bibliotecas Revit públicas por linhas/produtos"
+  },
+  {
+    "name": "KSB",
+    "discipline": "Bombas / Válvulas / Hidráulica",
+    "mode": "crawl_public",
+    "url": "https://www.ksb.com/en-rs/tools/digital-product-data/revit-data-records",
+    "notes": "Registros Revit públicos"
+  },
+  {
+    "name": "Daikin",
+    "discipline": "HVAC",
+    "mode": "crawl_public",
+    "url": "https://www.daikin-bim-library.daikin.com/",
+    "notes": "Portal BIM oficial; baixa só links públicos diretos"
+  },
+  {
+    "name": "Mitsubishi Electric",
+    "discipline": "HVAC / Bombas de calor / VRF",
+    "mode": "crawl_public",
+    "url": "https://les.mitsubishielectric.co.uk/installers/tools-and-software-downloads?stage=Live",
+    "notes": "Área oficial de CAD/BIM; grande acervo HVAC"
+  },
+  {
+    "name": "ARCAT",
+    "discipline": "Multidisciplinar",
+    "mode": "crawl_public",
+    "url": "https://www.arcat.com/content-type/bim",
+    "notes": "Milhares de famílias; sem cadastro obrigatório para conteúdo público"
+  },
+  {
+    "name": "Simpson Strong-Tie",
+    "discipline": "Estrutural / Conectores / Fixações",
+    "mode": "crawl_public",
+    "url": "https://www.strongtie.com/resources/drawings",
+    "notes": "BIM/CAD e Drawing Finder; captura somente conteúdo público"
+  },
+  {
+    "name": "Unistrut / Atkore",
+    "discipline": "Suportes MEP / Estrutural",
+    "mode": "crawl_public",
+    "url": "https://www.unistrut.us/resources/bim-cad-library",
+    "notes": "Perfis, abraçadeiras, suportes e bracing"
+  },
+  {
+    "name": "Systemair",
+    "discipline": "HVAC / Ventilação / Incêndio",
+    "mode": "crawl_public",
+    "url": "https://www.systemair.com/pt-pt/contacto/downloads/building-information-modelling",
+    "notes": "Fabricante informa BIM no site sem login"
+  },
+  {
+    "name": "Swegon",
+    "discipline": "HVAC",
+    "mode": "crawl_public",
+    "url": "https://www.swegon.com/support/software/bim/",
+    "notes": "AHU, chillers, difusores e equipamentos"
+  },
+  {
+    "name": "Victaulic",
+    "discipline": "Hidráulica / Tubulação / MEP",
+    "mode": "crawl_public",
+    "url": "https://www.victaulic.com/resources/cad-bim/",
+    "notes": "Captura somente arquivos públicos; algumas áreas podem exigir perfil/licença"
+  },
+  {
+    "name": "Duravit",
+    "discipline": "Louças / Metais / Sanitários",
+    "mode": "crawl_public",
+    "url": "https://www.duravit.com/service/downloads/bim_cad.com-en.html",
+    "notes": "BIM/CAD por produto"
+  },
+  {
+    "name": "Eliane",
+    "discipline": "Revestimentos / Arquitetura",
+    "mode": "crawl_public",
+    "url": "https://www.eliane.com/produtos",
+    "notes": "Páginas de produto com BIM Revit/ArchiCAD/SKP"
+  },
+  {
+    "name": "Grundfos",
+    "discipline": "Bombas / Hidráulica",
+    "mode": "crawl_public",
+    "url": "https://product-selection.grundfos.com/",
+    "notes": "BIM assets no Product Center"
+  },
+  {
+    "name": "Geberit",
+    "discipline": "Sanitária / Hidráulica",
+    "mode": "crawl_public",
+    "url": "https://www.geberit.com/know-how/digital-tools/bim/",
+    "notes": "Plugin e conteúdo BIM; captura apenas binários públicos"
+  },
+  {
+    "name": "ABB",
+    "discipline": "Elétrica",
+    "mode": "crawl_public",
+    "url": "https://new.abb.com/low-voltage/launches/bimagic",
+    "notes": "BIMagic / catálogo BIM; parte do conteúdo acessível sem registro"
+  },
+  {
+    "name": "VELUX",
+    "discipline": "Arquitetura / Coberturas / Janelas",
+    "mode": "crawl_public",
+    "url": "https://www.velux.com/professional/tools/bim-objects",
+    "notes": "Objetos BIM/CAD para produtos"
+  },
+  {
+    "name": "Tigre",
+    "discipline": "Hidráulica / Sanitária / MEP",
+    "mode": "crawl_public",
+    "url": "https://www.tigre.com.br/tigre-bim",
+    "notes": "TigreBIM; se exigir cadastro, será ignorado automaticamente"
+  },
+  {
+    "name": "Amanco Wavin",
+    "discipline": "Hidráulica / Sanitária / Elétrica / Incêndio",
+    "mode": "crawl_public",
+    "url": "https://bim.amanco.com.br/librerias-bim/",
+    "notes": "Famílias/Plugin; captura só links públicos"
+  },
+  {
+    "name": "ArcelorMittal Brasil",
+    "discipline": "Estrutural / Aço / Coberturas",
+    "mode": "crawl_public",
+    "url": "https://brasil.arcelormittal.com/biblioteca-bim",
+    "notes": "Biblioteca BIM; captura só links públicos"
+  },
+  {
+    "name": "Gerdau",
+    "discipline": "Estrutural / Aço",
+    "mode": "crawl_public",
+    "url": "https://voce.mais.gerdau.com.br/bibliotecas-bim",
+    "notes": "Se exigir cadastro, será ignorado automaticamente"
+  },
+  {
+    "name": "Docol",
+    "discipline": "Metais / Louças / Sanitários",
+    "mode": "crawl_public",
+    "url": "https://www.docol.com.br/br/downloads",
+    "notes": "Downloads oficiais; captura apenas links públicos"
+  },
+  {
+    "name": "Tramontina",
+    "discipline": "Elétrica / Arquitetura / Equipamentos",
+    "mode": "crawl_public",
+    "url": "https://www.tramontina.com.br/biblioteca",
+    "notes": "Captura apenas arquivos públicos"
+  },
+  {
+    "name": "Schneider Electric",
+    "discipline": "Elétrica / Quadros / Automação",
+    "mode": "crawl_public",
+    "url": "https://www.se.com/us/en/work/support/resources-and-tools/cad-drawings/",
+    "notes": "CAD/BIM público quando exposto"
+  },
+  {
+    "name": "Hilti",
+    "discipline": "Fixações / Suportes MEP / Estrutural",
+    "mode": "crawl_public",
+    "url": "https://www.hilti.com.br/content/hilti/W2/BR/pt/business/business/trends/bim-equipment-and-services/building-information-modeling-bim.html",
+    "notes": "BIM/CAD e plugins; captura apenas arquivos públicos"
+  }
+]

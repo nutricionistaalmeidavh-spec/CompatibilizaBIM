@@ -1,0 +1,514 @@
+{
+  "reports": [
+    {
+      "case_name": "architecture",
+      "discipline": "architecture",
+      "source_path": "artifacts/validation-01-40-fixture/architecture-fixture.dwg",
+      "evidence_kind": "fixture",
+      "provider": "acadsharp",
+      "dwg_version": "AC1032",
+      "import_coverage": 1.0,
+      "unsupported_rate": 0.0,
+      "converted_entities": 9,
+      "unsupported_entities": 0,
+      "canonical_entities": 9,
+      "recognized_source_entities": 9,
+      "recognition_rate": 1.0,
+      "project_elements": 10,
+      "relevant_elements": 10,
+      "element_counts": {
+        "door": 1,
+        "space": 5,
+        "wall": 4
+      },
+      "relevant_element_counts": {
+        "door": 1,
+        "space": 5,
+        "wall": 4
+      },
+      "expected_element_counts": {},
+      "expected_count_coverage": null,
+      "mean_confidence": 0.882,
+      "low_confidence_count": 0,
+      "review_pending_count": 10,
+      "network_count": 0,
+      "xref_missing": [],
+      "ifc_exported": true,
+      "ifc_sanity_passed": true,
+      "warnings": [],
+      "errors": [],
+      "passed": true,
+      "failed_criteria": []
+    },
+    {
+      "case_name": "structure",
+      "discipline": "structure",
+      "source_path": "artifacts/validation-01-40-fixture/structure-fixture.dwg",
+      "evidence_kind": "fixture",
+      "provider": "acadsharp",
+      "dwg_version": "AC1032",
+      "import_coverage": 1.0,
+      "unsupported_rate": 0.0,
+      "converted_entities": 3,
+      "unsupported_entities": 0,
+      "canonical_entities": 3,
+      "recognized_source_entities": 3,
+      "recognition_rate": 1.0,
+      "project_elements": 2,
+      "relevant_elements": 2,
+      "element_counts": {
+        "beam": 1,
+        "slab": 1
+      },
+      "relevant_element_counts": {
+        "beam": 1,
+        "slab": 1
+      },
+      "expected_element_counts": {},
+      "expected_count_coverage": null,
+      "mean_confidence": 0.95,
+      "low_confidence_count": 0,
+      "review_pending_count": 2,
+      "network_count": 0,
+      "xref_missing": [],
+      "ifc_exported": true,
+      "ifc_sanity_passed": true,
+      "warnings": [],
+      "errors": [],
+      "passed": true,
+      "failed_criteria": []
+    },
+    {
+      "case_name": "hydraulic",
+      "discipline": "hydraulic",
+      "source_path": "artifacts/validation-01-40-fixture/hydraulic-fixture.dwg",
+      "evidence_kind": "fixture",
+      "provider": "acadsharp",
+      "dwg_version": "AC1032",
+      "import_coverage": 1.0,
+      "unsupported_rate": 0.0,
+      "converted_entities": 2,
+      "unsupported_entities": 0,
+      "canonical_entities": 2,
+      "recognized_source_entities": 2,
+      "recognition_rate": 1.0,
+      "project_elements": 2,
+      "relevant_elements": 2,
+      "element_counts": {
+        "pipe": 2
+      },
+      "relevant_element_counts": {
+        "pipe": 2
+      },
+      "expected_element_counts": {},
+      "expected_count_coverage": null,
+      "mean_confidence": 0.995,
+      "low_confidence_count": 0,
+      "review_pending_count": 2,
+      "network_count": 1,
+      "xref_missing": [],
+      "ifc_exported": true,
+      "ifc_sanity_passed": true,
+      "warnings": [],
+      "errors": [],
+      "passed": true,
+      "failed_criteria": []
+    },
+    {
+      "case_name": "fire",
+      "discipline": "fire",
+      "source_path": "artifacts/validation-01-40-fixture/fire-fixture.dwg",
+      "evidence_kind": "fixture",
+      "provider": "acadsharp",
+      "dwg_version": "AC1032",
+      "import_coverage": 1.0,
+      "unsupported_rate": 0.0,
+      "converted_entities": 2,
+      "unsupported_entities": 0,
+      "canonical_entities": 2,
+      "recognized_source_entities": 2,
+      "recognition_rate": 1.0,
+      "project_elements": 2,
+      "relevant_elements": 2,
+      "element_counts": {
+        "pipe": 2
+      },
+      "relevant_element_counts": {
+        "pipe": 2
+      },
+      "expected_element_counts": {},
+      "expected_count_coverage": null,
+      "mean_confidence": 0.995,
+      "low_confidence_count": 0,
+      "review_pending_count": 2,
+      "network_count": 1,
+      "xref_missing": [],
+      "ifc_exported": true,
+      "ifc_sanity_passed": true,
+      "warnings": [],
+      "errors": [],
+      "passed": true,
+      "failed_criteria": []
+    }
+  ],
+  "federation": {
+    "disciplines": [
+      "architecture",
+      "structure",
+      "hydraulic",
+      "fire"
+    ],
+    "project_ids": {
+      "architecture": "project_a069b8beefd44cc4",
+      "structure": "project_5939dcae54384588",
+      "hydraulic": "project_60d30fe6f194431c",
+      "fire": "project_f17183ba104b451b"
+    },
+    "element_counts": {
+      "architecture": 10,
+      "structure": 2,
+      "hydraulic": 2,
+      "fire": 2
+    },
+    "total_elements": 16,
+    "issue_targets": {
+      "architecture": [
+        "door_d402fb2b10da4260",
+        "space_1afea9b1b56f4cf3",
+        "space_3701c19d52a24fe3",
+        "space_b0dc8571af9f48a6",
+        "space_deeae99c2abb464d",
+        "space_f669f0e60013460e",
+        "wall_0903b3a1b46d4ebd",
+        "wall_4ad0f324f04347ab",
+        "wall_ab48fec682e44d34",
+        "wall_f463083c321b4476"
+      ],
+      "structure": [
+        "beam_5a47f8f7b9cb4bc0",
+        "slab_9b51919cabba4ab3"
+      ],
+      "hydraulic": [
+        "pipe_2993c193a5e34431",
+        "pipe_91a3c12a3fed4bcb"
+      ],
+      "fire": [
+        "pipe_0f11ee6fb17141a9",
+        "pipe_b2bfa6b5b8d8496f"
+      ]
+    },
+    "network_counts": {
+      "architecture": 0,
+      "structure": 0,
+      "hydraulic": 1,
+      "fire": 1
+    },
+    "id_collisions": [],
+    "cross_discipline_candidates": [
+      {
+        "left": {
+          "discipline": "architecture",
+          "project_id": "project_a069b8beefd44cc4",
+          "element_id": "wall_f463083c321b4476",
+          "element_type": "wall",
+          "storey_id": "storey_3426e875a79142ac",
+          "bbox": [
+            -0.07,
+            0.0,
+            -0.07,
+            5.07,
+            0.14,
+            2.8699999999999997
+          ]
+        },
+        "right": {
+          "discipline": "structure",
+          "project_id": "project_5939dcae54384588",
+          "element_id": "slab_9b51919cabba4ab3",
+          "element_type": "slab",
+          "storey_id": "storey_07a3c62b3abb409f",
+          "bbox": [
+            0.0,
+            0.0,
+            0.0,
+            5.0,
+            4.0,
+            0.12
+          ]
+        },
+        "overlap_volume": 0.084
+      },
+      {
+        "left": {
+          "discipline": "architecture",
+          "project_id": "project_a069b8beefd44cc4",
+          "element_id": "wall_ab48fec682e44d34",
+          "element_type": "wall",
+          "storey_id": "storey_3426e875a79142ac",
+          "bbox": [
+            -0.07000000000000006,
+            3.8599999999999994,
+            -0.07000000000000006,
+            5.07,
+            4.0,
+            2.87
+          ]
+        },
+        "right": {
+          "discipline": "structure",
+          "project_id": "project_5939dcae54384588",
+          "element_id": "slab_9b51919cabba4ab3",
+          "element_type": "slab",
+          "storey_id": "storey_07a3c62b3abb409f",
+          "bbox": [
+            0.0,
+            0.0,
+            0.0,
+            5.0,
+            4.0,
+            0.12
+          ]
+        },
+        "overlap_volume": 0.08400000000000034
+      },
+      {
+        "left": {
+          "discipline": "architecture",
+          "project_id": "project_a069b8beefd44cc4",
+          "element_id": "wall_4ad0f324f04347ab",
+          "element_type": "wall",
+          "storey_id": "storey_3426e875a79142ac",
+          "bbox": [
+            0.0,
+            -0.07,
+            -0.07,
+            0.14,
+            4.07,
+            2.8699999999999997
+          ]
+        },
+        "right": {
+          "discipline": "structure",
+          "project_id": "project_5939dcae54384588",
+          "element_id": "beam_5a47f8f7b9cb4bc0",
+          "element_type": "beam",
+          "storey_id": "storey_07a3c62b3abb409f",
+          "bbox": [
+            -0.2,
+            0.925,
+            2.5999999999999996,
+            5.2,
+            1.325,
+            3.0
+          ]
+        },
+        "overlap_volume": 0.01512
+      },
+      {
+        "left": {
+          "discipline": "architecture",
+          "project_id": "project_a069b8beefd44cc4",
+          "element_id": "wall_4ad0f324f04347ab",
+          "element_type": "wall",
+          "storey_id": "storey_3426e875a79142ac",
+          "bbox": [
+            0.0,
+            -0.07,
+            -0.07,
+            0.14,
+            4.07,
+            2.8699999999999997
+          ]
+        },
+        "right": {
+          "discipline": "structure",
+          "project_id": "project_5939dcae54384588",
+          "element_id": "slab_9b51919cabba4ab3",
+          "element_type": "slab",
+          "storey_id": "storey_07a3c62b3abb409f",
+          "bbox": [
+            0.0,
+            0.0,
+            0.0,
+            5.0,
+            4.0,
+            0.12
+          ]
+        },
+        "overlap_volume": 0.06720000000000001
+      },
+      {
+        "left": {
+          "discipline": "architecture",
+          "project_id": "project_a069b8beefd44cc4",
+          "element_id": "wall_0903b3a1b46d4ebd",
+          "element_type": "wall",
+          "storey_id": "storey_3426e875a79142ac",
+          "bbox": [
+            4.859999999999999,
+            -0.06999999999999984,
+            -0.06999999999999984,
+            5.0,
+            4.07,
+            2.8699999999999997
+          ]
+        },
+        "right": {
+          "discipline": "structure",
+          "project_id": "project_5939dcae54384588",
+          "element_id": "beam_5a47f8f7b9cb4bc0",
+          "element_type": "beam",
+          "storey_id": "storey_07a3c62b3abb409f",
+          "bbox": [
+            -0.2,
+            0.925,
+            2.5999999999999996,
+            5.2,
+            1.325,
+            3.0
+          ]
+        },
+        "overlap_volume": 0.015120000000000059
+      },
+      {
+        "left": {
+          "discipline": "architecture",
+          "project_id": "project_a069b8beefd44cc4",
+          "element_id": "wall_0903b3a1b46d4ebd",
+          "element_type": "wall",
+          "storey_id": "storey_3426e875a79142ac",
+          "bbox": [
+            4.859999999999999,
+            -0.06999999999999984,
+            -0.06999999999999984,
+            5.0,
+            4.07,
+            2.8699999999999997
+          ]
+        },
+        "right": {
+          "discipline": "structure",
+          "project_id": "project_5939dcae54384588",
+          "element_id": "slab_9b51919cabba4ab3",
+          "element_type": "slab",
+          "storey_id": "storey_07a3c62b3abb409f",
+          "bbox": [
+            0.0,
+            0.0,
+            0.0,
+            5.0,
+            4.0,
+            0.12
+          ]
+        },
+        "overlap_volume": 0.06720000000000027
+      },
+      {
+        "left": {
+          "discipline": "architecture",
+          "project_id": "project_a069b8beefd44cc4",
+          "element_id": "wall_f463083c321b4476",
+          "element_type": "wall",
+          "storey_id": "storey_3426e875a79142ac",
+          "bbox": [
+            -0.07,
+            0.0,
+            -0.07,
+            5.07,
+            0.14,
+            2.8699999999999997
+          ]
+        },
+        "right": {
+          "discipline": "hydraulic",
+          "project_id": "project_60d30fe6f194431c",
+          "element_id": "pipe_2993c193a5e34431",
+          "element_type": "pipe",
+          "storey_id": "storey_8fa90f164b884bd0",
+          "bbox": [
+            1.9875,
+            -1.0125,
+            0.9875,
+            2.0125,
+            2.0125,
+            1.0125
+          ]
+        },
+        "overlap_volume": 0.00008750000000000016
+      },
+      {
+        "left": {
+          "discipline": "architecture",
+          "project_id": "project_a069b8beefd44cc4",
+          "element_id": "wall_f463083c321b4476",
+          "element_type": "wall",
+          "storey_id": "storey_3426e875a79142ac",
+          "bbox": [
+            -0.07,
+            0.0,
+            -0.07,
+            5.07,
+            0.14,
+            2.8699999999999997
+          ]
+        },
+        "right": {
+          "discipline": "fire",
+          "project_id": "project_f17183ba104b451b",
+          "element_id": "pipe_0f11ee6fb17141a9",
+          "element_type": "pipe",
+          "storey_id": "storey_0022937d2cc94c2f",
+          "bbox": [
+            2.975,
+            -1.025,
+            1.975,
+            3.025,
+            2.025,
+            2.025
+          ]
+        },
+        "overlap_volume": 0.00034999999999999756
+      },
+      {
+        "left": {
+          "discipline": "architecture",
+          "project_id": "project_a069b8beefd44cc4",
+          "element_id": "wall_0903b3a1b46d4ebd",
+          "element_type": "wall",
+          "storey_id": "storey_3426e875a79142ac",
+          "bbox": [
+            4.859999999999999,
+            -0.06999999999999984,
+            -0.06999999999999984,
+            5.0,
+            4.07,
+            2.8699999999999997
+          ]
+        },
+        "right": {
+          "discipline": "fire",
+          "project_id": "project_f17183ba104b451b",
+          "element_id": "pipe_b2bfa6b5b8d8496f",
+          "element_type": "pipe",
+          "storey_id": "storey_0022937d2cc94c2f",
+          "bbox": [
+            2.975,
+            1.975,
+            1.975,
+            5.025,
+            2.025,
+            2.025
+          ]
+        },
+        "overlap_volume": 0.0003499999999999989
+      }
+    ],
+    "passed": true,
+    "warnings": []
+  },
+  "all_passed": true,
+  "production_evidence_eligible": false,
+  "blockers": [
+    "real_project_sources_not_provided_for_all_cases"
+  ]
+}

@@ -1,0 +1,14 @@
+C:\tmp\CBIM_Library_Entregas_16-20_v1.5.0\dist\plugin\CBIM.Library.Contracts.deps.json
+C:\tmp\CBIM_Library_Entregas_16-20_v1.5.0\dist\plugin\CBIM.Library.Contracts.dll
+C:\tmp\CBIM_Library_Entregas_16-20_v1.5.0\dist\plugin\CBIM.Library.Contracts.pdb
+C:\tmp\CBIM_Library_Entregas_16-20_v1.5.0\src\CBIM.Library.Contracts\obj\Release\net10.0\CBIM.Library.Contracts.GeneratedMSBuildEditorConfig.editorconfig
+C:\tmp\CBIM_Library_Entregas_16-20_v1.5.0\src\CBIM.Library.Contracts\obj\Release\net10.0\CBIM.Library.Contracts.AssemblyInfoInputs.cache
+C:\tmp\CBIM_Library_Entregas_16-20_v1.5.0\src\CBIM.Library.Contracts\obj\Release\net10.0\CBIM.Library.Contracts.AssemblyInfo.cs
+C:\tmp\CBIM_Library_Entregas_16-20_v1.5.0\src\CBIM.Library.Contracts\obj\Release\net10.0\CBIM.Library.Contracts.csproj.CoreCompileInputs.cache
+C:\tmp\CBIM_Library_Entregas_16-20_v1.5.0\src\CBIM.Library.Contracts\obj\Release\net10.0\CBIM.Library.Contracts.dll
+C:\tmp\CBIM_Library_Entregas_16-20_v1.5.0\src\CBIM.Library.Contracts\obj\Release\net10.0\refint\CBIM.Library.Contracts.dll
+C:\tmp\CBIM_Library_Entregas_16-20_v1.5.0\src\CBIM.Library.Contracts\obj\Release\net10.0\CBIM.Library.Contracts.pdb
+C:\tmp\CBIM_Library_Entregas_16-20_v1.5.0\src\CBIM.Library.Contracts\obj\Release\net10.0\ref\CBIM.Library.Contracts.dll
+C:\tmp\CBIM_Library_Entregas_16-20_v1.5.0\src\CBIM.Library.Contracts\bin\Release\net10.0\CBIM.Library.Contracts.deps.json
+C:\tmp\CBIM_Library_Entregas_16-20_v1.5.0\src\CBIM.Library.Contracts\bin\Release\net10.0\CBIM.Library.Contracts.dll
+C:\tmp\CBIM_Library_Entregas_16-20_v1.5.0\src\CBIM.Library.Contracts\bin\Release\net10.0\CBIM.Library.Contracts.pdb

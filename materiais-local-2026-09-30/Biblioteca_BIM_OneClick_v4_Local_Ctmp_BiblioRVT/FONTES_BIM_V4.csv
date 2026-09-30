@@ -1,0 +1,31 @@
+﻿name,discipline,mode,url,notes
+BIM4LCA - Architecture,Projetos completos / Arquitetura,direct_zip,https://www.nordicsustainableconstruction.com/Media/638593249820446520/ARCH.zip,CC BY-SA 4.0; Revit/IFC architecture
+BIM4LCA - Structural,Estrutural,direct_zip,https://www.nordicsustainableconstruction.com/Media/638615141390369983/STRUCTURAL.zip,CC BY-SA 4.0; estrutural/IFC
+BIM4LCA - HVAC,MEP / HVAC / Elétrica / Incêndio,direct_zip,https://www.nordicsustainableconstruction.com/Media/638596535832776143/HVAC.zip,CC BY-SA 4.0; MagiCAD/Revit + IFC
+buildingSMART Sample Test Files,IFC / Projetos / Testes,direct_zip,https://github.com/buildingSMART/Sample-Test-Files/archive/refs/heads/main.zip,Coleção oficial buildingSMART
+buildingSMART Community Sample Test Files,IFC / Projetos / Testes,direct_zip,https://github.com/buildingsmart-community/Community-Sample-Test-Files/archive/refs/heads/main.zip,Coleção comunitária
+FreeCAD BIM Examples,Projetos completos / IFC,direct_zip,https://github.com/yorikvanhavre/FreeCAD-BIM-examples/archive/refs/heads/main.zip,Projetos BIM abertos
+Legrand,Elétrica,crawl_public,https://www.legrand.com/ecatalogue/,Bibliotecas Revit públicas por linhas/produtos
+KSB,Bombas / Válvulas / Hidráulica,crawl_public,https://www.ksb.com/en-rs/tools/digital-product-data/revit-data-records,Registros Revit públicos
+Daikin,HVAC,crawl_public,https://www.daikin-bim-library.daikin.com/,Portal BIM oficial; baixa só links públicos diretos
+Mitsubishi Electric,HVAC / Bombas de calor / VRF,crawl_public,https://les.mitsubishielectric.co.uk/installers/tools-and-software-downloads?stage=Live,Área oficial de CAD/BIM; grande acervo HVAC
+ARCAT,Multidisciplinar,crawl_public,https://www.arcat.com/content-type/bim,Milhares de famílias; sem cadastro obrigatório para conteúdo público
+Simpson Strong-Tie,Estrutural / Conectores / Fixações,crawl_public,https://www.strongtie.com/resources/drawings,BIM/CAD e Drawing Finder; captura somente conteúdo público
+Unistrut / Atkore,Suportes MEP / Estrutural,crawl_public,https://www.unistrut.us/resources/bim-cad-library,"Perfis, abraçadeiras, suportes e bracing"
+Systemair,HVAC / Ventilação / Incêndio,crawl_public,https://www.systemair.com/pt-pt/contacto/downloads/building-information-modelling,Fabricante informa BIM no site sem login
+Swegon,HVAC,crawl_public,https://www.swegon.com/support/software/bim/,"AHU, chillers, difusores e equipamentos"
+Victaulic,Hidráulica / Tubulação / MEP,crawl_public,https://www.victaulic.com/resources/cad-bim/,Captura somente arquivos públicos; algumas áreas podem exigir perfil/licença
+Duravit,Louças / Metais / Sanitários,crawl_public,https://www.duravit.com/service/downloads/bim_cad.com-en.html,BIM/CAD por produto
+Eliane,Revestimentos / Arquitetura,crawl_public,https://www.eliane.com/produtos,Páginas de produto com BIM Revit/ArchiCAD/SKP
+Grundfos,Bombas / Hidráulica,crawl_public,https://product-selection.grundfos.com/,BIM assets no Product Center
+Geberit,Sanitária / Hidráulica,crawl_public,https://www.geberit.com/know-how/digital-tools/bim/,Plugin e conteúdo BIM; captura apenas binários públicos
+ABB,Elétrica,crawl_public,https://new.abb.com/low-voltage/launches/bimagic,BIMagic / catálogo BIM; parte do conteúdo acessível sem registro
+VELUX,Arquitetura / Coberturas / Janelas,crawl_public,https://www.velux.com/professional/tools/bim-objects,Objetos BIM/CAD para produtos
+Tigre,Hidráulica / Sanitária / MEP,crawl_public,https://www.tigre.com.br/tigre-bim,"TigreBIM; se exigir cadastro, será ignorado automaticamente"
+Amanco Wavin,Hidráulica / Sanitária / Elétrica / Incêndio,crawl_public,https://bim.amanco.com.br/librerias-bim/,Famílias/Plugin; captura só links públicos
+ArcelorMittal Brasil,Estrutural / Aço / Coberturas,crawl_public,https://brasil.arcelormittal.com/biblioteca-bim,Biblioteca BIM; captura só links públicos
+Gerdau,Estrutural / Aço,crawl_public,https://voce.mais.gerdau.com.br/bibliotecas-bim,"Se exigir cadastro, será ignorado automaticamente"
+Docol,Metais / Louças / Sanitários,crawl_public,https://www.docol.com.br/br/downloads,Downloads oficiais; captura apenas links públicos
+Tramontina,Elétrica / Arquitetura / Equipamentos,crawl_public,https://www.tramontina.com.br/biblioteca,Captura apenas arquivos públicos
+Schneider Electric,Elétrica / Quadros / Automação,crawl_public,https://www.se.com/us/en/work/support/resources-and-tools/cad-drawings/,CAD/BIM público quando exposto
+Hilti,Fixações / Suportes MEP / Estrutural,crawl_public,https://www.hilti.com.br/content/hilti/W2/BR/pt/business/business/trends/bim-equipment-and-services/building-information-modeling-bim.html,BIM/CAD e plugins; captura apenas arquivos públicos

@@ -1,0 +1,11 @@
+Name                                   Stmts   Miss  Cover   Missing
+--------------------------------------------------------------------
+src/cbim_sdk/__init__.py                   4      0   100%
+src/cbim_sdk/models.py                   217      7    97%   242, 257, 260, 267, 270, 273, 276
+src/cbim_sdk/schema.py                     9      1    89%   12
+src/cbim_sdk/sdk.py                       68      6    91%   76, 84, 91, 95, 104-105
+tests/test_dotnet_contract_static.py      11      0   100%
+tests/test_schema.py                       8      0   100%
+tests/test_sdk.py                         31      0   100%
+--------------------------------------------------------------------
+TOTAL                                    348     14    96%

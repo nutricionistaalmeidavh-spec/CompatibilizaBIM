@@ -1,0 +1,11 @@
+pydantic<3,>=2.8
+ezdxf<2,>=1.3
+shapely<3,>=2.0
+cbim-sdk<0.5,>=0.4.0
+cryptography<47,>=45
+
+[dev]
+pytest>=8
+
+[ifc]
+ifcopenshell<0.9,>=0.8.3

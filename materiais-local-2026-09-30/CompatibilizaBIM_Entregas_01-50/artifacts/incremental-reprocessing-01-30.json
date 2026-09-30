@@ -1,0 +1,99 @@
+{
+  "mode": "local",
+  "reasons": [
+    "spatial_local_change"
+  ],
+  "changed_entity_ids": [
+    "L500"
+  ],
+  "affected_tiles": [
+    [
+      39,
+      -1
+    ],
+    [
+      39,
+      0
+    ],
+    [
+      39,
+      1
+    ],
+    [
+      40,
+      -1
+    ],
+    [
+      40,
+      0
+    ],
+    [
+      40,
+      1
+    ],
+    [
+      41,
+      -1
+    ],
+    [
+      41,
+      0
+    ],
+    [
+      41,
+      1
+    ]
+  ],
+  "selected_entity_ids": [
+    "L487",
+    "L488",
+    "L489",
+    "L490",
+    "L491",
+    "L492",
+    "L493",
+    "L494",
+    "L495",
+    "L496",
+    "L497",
+    "L498",
+    "L499",
+    "L500",
+    "L501",
+    "L502",
+    "L503",
+    "L504",
+    "L505",
+    "L506",
+    "L507",
+    "L508",
+    "L509",
+    "L510",
+    "L511",
+    "L512",
+    "L513",
+    "L514",
+    "L515",
+    "L516",
+    "L517",
+    "L518",
+    "L519",
+    "L520",
+    "L521",
+    "L522",
+    "L523",
+    "L524"
+  ],
+  "invalidated_stages": [
+    "geometry",
+    "topology",
+    "architecture",
+    "structure",
+    "mep",
+    "connectivity",
+    "intelligence",
+    "quantities",
+    "integration"
+  ],
+  "impacted_cbim_ids": []
+}

@@ -1,0 +1,11 @@
+Core: 110/110 PASS
+CBIM SDK Python: 6/6 PASS
+compileall Core src: PASS
+Wheel: compatibilizabim_core-1.42.0-py3-none-any.whl built PASS
+Installed wheel smoke: version 1.42.0 PASS
+Semantic gate: bare H-AF-TB -> 0 Pipe / 1 candidate PASS
+Semantic gate: H-AF-TB + AF Ø32 PVC -> 1 DN32 Pipe PASS
+Semantic gate: unknown H-AF-CX block -> 0 Fitting / 1 candidate PASS
+Semantic gate: repetitive stair-like H-AF-TB -> rejected / 0 Pipe PASS
+Evidence benchmark: 50,000 isolated candidates -> 3.143s (~15,907/s)
+Real QUA-HID v1.42 Windows rerun: PENDING

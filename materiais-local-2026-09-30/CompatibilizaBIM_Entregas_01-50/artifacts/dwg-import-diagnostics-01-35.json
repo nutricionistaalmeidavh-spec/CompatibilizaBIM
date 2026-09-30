@@ -1,0 +1,41 @@
+{
+  "provider": "acadsharp",
+  "source_path": "sample_AC1032.dwg",
+  "version": "AC1032",
+  "unit_name": "Millimeters",
+  "unit_scale_to_m": 0.001,
+  "total_entities": 18426,
+  "converted_entities": 18211,
+  "unsupported_entities": 215,
+  "blocks": 317,
+  "xrefs": 4,
+  "by_source_type": {
+    "Line": 8921,
+    "LwPolyline": 4210,
+    "Insert": 1822,
+    "TextEntity": 714,
+    "MText": 430,
+    "Arc": 732,
+    "Circle": 482,
+    "Spline": 112,
+    "Hatch": 941,
+    "ProxyEntity": 62
+  },
+  "by_canonical_kind": {
+    "line": 8921,
+    "polyline": 4210,
+    "insert": 1822,
+    "text": 1144,
+    "arc": 732,
+    "circle": 482,
+    "spline": 112
+  },
+  "unsupported_types": {
+    "Hatch": 153,
+    "ProxyEntity": 62
+  },
+  "warnings": [
+    "example diagnostic artifact; not evidence from a real client DWG"
+  ],
+  "errors": []
+}

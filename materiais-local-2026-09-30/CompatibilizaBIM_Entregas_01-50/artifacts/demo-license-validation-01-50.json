@@ -1,0 +1,12 @@
+{
+  "valid": true,
+  "reason": "ok",
+  "customer_id": "demo-pilot",
+  "edition": "pilot",
+  "features": [
+    "cad_to_cbim",
+    "ifc_export",
+    "quantities",
+    "desktop"
+  ]
+}

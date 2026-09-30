@@ -1,0 +1,1294 @@
+{
+  "id": "project_f2957cfa0b27439a",
+  "schema": "CBIM",
+  "schema_version": "0.2.0",
+  "name": "Curved Wall Demo",
+  "created_at": "2026-08-16T17:20:20.681415Z",
+  "units": "m",
+  "coordinate_reference": "local",
+  "sites": [
+    {
+      "id": "site_198a6c8786104fd6",
+      "name": "Local Site",
+      "latitude": null,
+      "longitude": null,
+      "elevation": 0.0,
+      "properties": {}
+    }
+  ],
+  "buildings": [
+    {
+      "id": "building_9df9a5d258b84068",
+      "name": "Building",
+      "site_id": null,
+      "properties": {}
+    }
+  ],
+  "storeys": [],
+  "materials": [],
+  "systems": [],
+  "elements": [
+    {
+      "id": "wall_3326bfc7d0e64cab",
+      "type": "wall",
+      "name": null,
+      "storey_id": null,
+      "confidence": 0.96,
+      "review_state": "auto",
+      "source_refs": [
+        {
+          "source_id": "CURVED_WALL_DEMO",
+          "entity_id": "ARC-IN",
+          "source_type": "cad",
+          "layer": "WALL_CURVED",
+          "metadata": {
+            "generated_segment_id": "ARC-IN::seg0020"
+          }
+        },
+        {
+          "source_id": "CURVED_WALL_DEMO",
+          "entity_id": "ARC-OUT",
+          "source_type": "cad",
+          "layer": "WALL_CURVED",
+          "metadata": {
+            "generated_segment_id": "ARC-OUT::seg0020"
+          }
+        }
+      ],
+      "material_ids": [],
+      "properties": {},
+      "start": {
+        "x": 1.4017033701775012,
+        "y": 7.967531858274786,
+        "z": 0.0
+      },
+      "end": {
+        "x": 0.8487456549832839,
+        "y": 8.045244997123309,
+        "z": 0.0
+      },
+      "thickness": 0.17989034886343724,
+      "height": 2.8
+    },
+    {
+      "id": "wall_db71af7c47124359",
+      "type": "wall",
+      "name": null,
+      "storey_id": null,
+      "confidence": 0.96,
+      "review_state": "auto",
+      "source_refs": [
+        {
+          "source_id": "CURVED_WALL_DEMO",
+          "entity_id": "ARC-IN",
+          "source_type": "cad",
+          "layer": "WALL_CURVED",
+          "metadata": {
+            "generated_segment_id": "ARC-IN::seg0017"
+          }
+        },
+        {
+          "source_id": "CURVED_WALL_DEMO",
+          "entity_id": "ARC-OUT",
+          "source_type": "cad",
+          "layer": "WALL_CURVED",
+          "metadata": {
+            "generated_segment_id": "ARC-OUT::seg0017"
+          }
+        }
+      ],
+      "material_ids": [],
+      "properties": {},
+      "start": {
+        "x": 3.0276158087778864,
+        "y": 7.501991653223086,
+        "z": 0.0
+      },
+      "end": {
+        "x": 2.5028990164501685,
+        "y": 7.692972947050015,
+        "z": 0.0
+      },
+      "thickness": 0.17989034886343677,
+      "height": 2.8
+    },
+    {
+      "id": "wall_88e278910a7f4e86",
+      "type": "wall",
+      "name": null,
+      "storey_id": null,
+      "confidence": 0.96,
+      "review_state": "auto",
+      "source_refs": [
+        {
+          "source_id": "CURVED_WALL_DEMO",
+          "entity_id": "ARC-IN",
+          "source_type": "cad",
+          "layer": "WALL_CURVED",
+          "metadata": {
+            "generated_segment_id": "ARC-IN::seg0027"
+          }
+        },
+        {
+          "source_id": "CURVED_WALL_DEMO",
+          "entity_id": "ARC-OUT",
+          "source_type": "cad",
+          "layer": "WALL_CURVED",
+          "metadata": {
+            "generated_segment_id": "ARC-OUT::seg0027"
+          }
+        }
+      ],
+      "material_ids": [],
+      "properties": {},
+      "start": {
+        "x": -2.502899016450166,
+        "y": 7.692972947050016,
+        "z": 0.0
+      },
+      "end": {
+        "x": -3.0276158087778837,
+        "y": 7.501991653223087,
+        "z": 0.0
+      },
+      "thickness": 0.1798903488634368,
+      "height": 2.8
+    },
+    {
+      "id": "wall_645bd641158e44ec",
+      "type": "wall",
+      "name": null,
+      "storey_id": null,
+      "confidence": 0.96,
+      "review_state": "auto",
+      "source_refs": [
+        {
+          "source_id": "CURVED_WALL_DEMO",
+          "entity_id": "ARC-IN",
+          "source_type": "cad",
+          "layer": "WALL_CURVED",
+          "metadata": {
+            "generated_segment_id": "ARC-IN::seg0015"
+          }
+        },
+        {
+          "source_id": "CURVED_WALL_DEMO",
+          "entity_id": "ARC-OUT",
+          "source_type": "cad",
+          "layer": "WALL_CURVED",
+          "metadata": {
+            "generated_segment_id": "ARC-OUT::seg0015"
+          }
+        }
+      ],
+      "material_ids": [],
+      "properties": {},
+      "start": {
+        "x": 4.042226701605509,
+        "y": 7.007620105529271,
+        "z": 0.0
+      },
+      "end": {
+        "x": 3.549195875918128,
+        "y": 7.269769245647098,
+        "z": 0.0
+      },
+      "thickness": 0.17989034886343666,
+      "height": 2.8
+    },
+    {
+      "id": "wall_bcdc62e444f94aa8",
+      "type": "wall",
+      "name": null,
+      "storey_id": null,
+      "confidence": 0.96,
+      "review_state": "auto",
+      "source_refs": [
+        {
+          "source_id": "CURVED_WALL_DEMO",
+          "entity_id": "ARC-IN",
+          "source_type": "cad",
+          "layer": "WALL_CURVED",
+          "metadata": {
+            "generated_segment_id": "ARC-IN::seg0023"
+          }
+        },
+        {
+          "source_id": "CURVED_WALL_DEMO",
+          "entity_id": "ARC-OUT",
+          "source_type": "cad",
+          "layer": "WALL_CURVED",
+          "metadata": {
+            "generated_segment_id": "ARC-OUT::seg0023"
+          }
+        }
+      ],
+      "material_ids": [],
+      "properties": {},
+      "start": {
+        "x": -0.2854702318186629,
+        "y": 8.084852688660197,
+        "z": 0.0
+      },
+      "end": {
+        "x": -0.8425019643398837,
+        "y": 8.045901235453618,
+        "z": 0.0
+      },
+      "thickness": 0.17989034886343636,
+      "height": 2.8
+    },
+    {
+      "id": "wall_bebe9d4d0a894cdb",
+      "type": "wall",
+      "name": null,
+      "storey_id": null,
+      "confidence": 0.96,
+      "review_state": "auto",
+      "source_refs": [
+        {
+          "source_id": "CURVED_WALL_DEMO",
+          "entity_id": "ARC-IN",
+          "source_type": "cad",
+          "layer": "WALL_CURVED",
+          "metadata": {
+            "generated_segment_id": "ARC-IN::seg0024"
+          }
+        },
+        {
+          "source_id": "CURVED_WALL_DEMO",
+          "entity_id": "ARC-OUT",
+          "source_type": "cad",
+          "layer": "WALL_CURVED",
+          "metadata": {
+            "generated_segment_id": "ARC-OUT::seg0024"
+          }
+        }
+      ],
+      "material_ids": [],
+      "properties": {},
+      "start": {
+        "x": -0.8487456549832828,
+        "y": 8.045244997123309,
+        "z": 0.0
+      },
+      "end": {
+        "x": -1.4017033701774986,
+        "y": 7.967531858274786,
+        "z": 0.0
+      },
+      "thickness": 0.17989034886343638,
+      "height": 2.8
+    },
+    {
+      "id": "wall_b4603c84ba2c4545",
+      "type": "wall",
+      "name": null,
+      "storey_id": null,
+      "confidence": 0.96,
+      "review_state": "auto",
+      "source_refs": [
+        {
+          "source_id": "CURVED_WALL_DEMO",
+          "entity_id": "ARC-IN",
+          "source_type": "cad",
+          "layer": "WALL_CURVED",
+          "metadata": {
+            "generated_segment_id": "ARC-IN::seg0029"
+          }
+        },
+        {
+          "source_id": "CURVED_WALL_DEMO",
+          "entity_id": "ARC-OUT",
+          "source_type": "cad",
+          "layer": "WALL_CURVED",
+          "metadata": {
+            "generated_segment_id": "ARC-OUT::seg0029"
+          }
+        }
+      ],
+      "material_ids": [],
+      "properties": {},
+      "start": {
+        "x": -3.5491958759181252,
+        "y": 7.269769245647099,
+        "z": 0.0
+      },
+      "end": {
+        "x": -4.0422267016055065,
+        "y": 7.007620105529272,
+        "z": 0.0
+      },
+      "thickness": 0.1798903488634367,
+      "height": 2.8
+    },
+    {
+      "id": "wall_63bfa0f80aae42b7",
+      "type": "wall",
+      "name": null,
+      "storey_id": null,
+      "confidence": 0.96,
+      "review_state": "auto",
+      "source_refs": [
+        {
+          "source_id": "CURVED_WALL_DEMO",
+          "entity_id": "ARC-IN",
+          "source_type": "cad",
+          "layer": "WALL_CURVED",
+          "metadata": {
+            "generated_segment_id": "ARC-IN::seg0005"
+          }
+        },
+        {
+          "source_id": "CURVED_WALL_DEMO",
+          "entity_id": "ARC-OUT",
+          "source_type": "cad",
+          "layer": "WALL_CURVED",
+          "metadata": {
+            "generated_segment_id": "ARC-OUT::seg0005"
+          }
+        }
+      ],
+      "material_ids": [],
+      "properties": {},
+      "start": {
+        "x": 7.6009366798165505,
+        "y": 2.7698552019934155,
+        "z": 0.0
+      },
+      "end": {
+        "x": 7.391759374670089,
+        "y": 3.2875871999944675,
+        "z": 0.0
+      },
+      "thickness": 0.17989034886343708,
+      "height": 2.8
+    },
+    {
+      "id": "wall_065c6d77c0a94221",
+      "type": "wall",
+      "name": null,
+      "storey_id": null,
+      "confidence": 0.96,
+      "review_state": "auto",
+      "source_refs": [
+        {
+          "source_id": "CURVED_WALL_DEMO",
+          "entity_id": "ARC-IN",
+          "source_type": "cad",
+          "layer": "WALL_CURVED",
+          "metadata": {
+            "generated_segment_id": "ARC-IN::seg0010"
+          }
+        },
+        {
+          "source_id": "CURVED_WALL_DEMO",
+          "entity_id": "ARC-OUT",
+          "source_type": "cad",
+          "layer": "WALL_CURVED",
+          "metadata": {
+            "generated_segment_id": "ARC-OUT::seg0010"
+          }
+        }
+      ],
+      "material_ids": [],
+      "properties": {},
+      "start": {
+        "x": 6.195197835907418,
+        "y": 5.202485946598863,
+        "z": 0.0
+      },
+      "end": {
+        "x": 5.821560693664803,
+        "y": 5.617452032778527,
+        "z": 0.0
+      },
+      "thickness": 0.179890348863437,
+      "height": 2.8
+    },
+    {
+      "id": "wall_229d826710a84900",
+      "type": "wall",
+      "name": null,
+      "storey_id": null,
+      "confidence": 0.96,
+      "review_state": "auto",
+      "source_refs": [
+        {
+          "source_id": "CURVED_WALL_DEMO",
+          "entity_id": "ARC-IN",
+          "source_type": "cad",
+          "layer": "WALL_CURVED",
+          "metadata": {
+            "generated_segment_id": "ARC-IN::seg0012"
+          }
+        },
+        {
+          "source_id": "CURVED_WALL_DEMO",
+          "entity_id": "ARC-OUT",
+          "source_type": "cad",
+          "layer": "WALL_CURVED",
+          "metadata": {
+            "generated_segment_id": "ARC-OUT::seg0012"
+          }
+        }
+      ],
+      "material_ids": [],
+      "properties": {},
+      "start": {
+        "x": 5.410860494546669,
+        "y": 6.014060604877938,
+        "z": 0.0
+      },
+      "end": {
+        "x": 4.983107446281069,
+        "y": 6.37298802991256,
+        "z": 0.0
+      },
+      "thickness": 0.1798903488634364,
+      "height": 2.8
+    },
+    {
+      "id": "wall_cbca0c44d7fb44cd",
+      "type": "wall",
+      "name": null,
+      "storey_id": null,
+      "confidence": 0.96,
+      "review_state": "auto",
+      "source_refs": [
+        {
+          "source_id": "CURVED_WALL_DEMO",
+          "entity_id": "ARC-IN",
+          "source_type": "cad",
+          "layer": "WALL_CURVED",
+          "metadata": {
+            "generated_segment_id": "ARC-IN::seg0008"
+          }
+        },
+        {
+          "source_id": "CURVED_WALL_DEMO",
+          "entity_id": "ARC-OUT",
+          "source_type": "cad",
+          "layer": "WALL_CURVED",
+          "metadata": {
+            "generated_segment_id": "ARC-OUT::seg0008"
+          }
+        }
+      ],
+      "material_ids": [],
+      "properties": {},
+      "start": {
+        "x": 6.85895269832532,
+        "y": 4.289650817109294,
+        "z": 0.0
+      },
+      "end": {
+        "x": 6.546703884073491,
+        "y": 4.75257872158344,
+        "z": 0.0
+      },
+      "thickness": 0.17989034886343658,
+      "height": 2.8
+    },
+    {
+      "id": "wall_f97fc7cbd2f44b3f",
+      "type": "wall",
+      "name": null,
+      "storey_id": null,
+      "confidence": 0.96,
+      "review_state": "auto",
+      "source_refs": [
+        {
+          "source_id": "CURVED_WALL_DEMO",
+          "entity_id": "ARC-IN",
+          "source_type": "cad",
+          "layer": "WALL_CURVED",
+          "metadata": {
+            "generated_segment_id": "ARC-IN::seg0000"
+          }
+        },
+        {
+          "source_id": "CURVED_WALL_DEMO",
+          "entity_id": "ARC-OUT",
+          "source_type": "cad",
+          "layer": "WALL_CURVED",
+          "metadata": {
+            "generated_segment_id": "ARC-OUT::seg0000"
+          }
+        }
+      ],
+      "material_ids": [],
+      "properties": {},
+      "start": {
+        "x": 8.089890382261693,
+        "y": 0.0031390413184855994,
+        "z": 0.0
+      },
+      "end": {
+        "x": 8.070402784340285,
+        "y": 0.561190831271488,
+        "z": 0.0
+      },
+      "thickness": 0.17989034886343697,
+      "height": 2.8
+    },
+    {
+      "id": "wall_7cf89eae7ccc4d58",
+      "type": "wall",
+      "name": null,
+      "storey_id": null,
+      "confidence": 0.96,
+      "review_state": "auto",
+      "source_refs": [
+        {
+          "source_id": "CURVED_WALL_DEMO",
+          "entity_id": "ARC-IN",
+          "source_type": "cad",
+          "layer": "WALL_CURVED",
+          "metadata": {
+            "generated_segment_id": "ARC-IN::seg0003"
+          }
+        },
+        {
+          "source_id": "CURVED_WALL_DEMO",
+          "entity_id": "ARC-OUT",
+          "source_type": "cad",
+          "layer": "WALL_CURVED",
+          "metadata": {
+            "generated_segment_id": "ARC-OUT::seg0003"
+          }
+        }
+      ],
+      "material_ids": [],
+      "properties": {},
+      "start": {
+        "x": 7.91245422422069,
+        "y": 1.6850532336406385,
+        "z": 0.0
+      },
+      "end": {
+        "x": 7.777366985856796,
+        "y": 2.2268585536345573,
+        "z": 0.0
+      },
+      "thickness": 0.1798903488634363,
+      "height": 2.8
+    },
+    {
+      "id": "wall_d6b778a1b7054d8d",
+      "type": "wall",
+      "name": null,
+      "storey_id": null,
+      "confidence": 0.96,
+      "review_state": "auto",
+      "source_refs": [
+        {
+          "source_id": "CURVED_WALL_DEMO",
+          "entity_id": "ARC-IN",
+          "source_type": "cad",
+          "layer": "WALL_CURVED",
+          "metadata": {
+            "generated_segment_id": "ARC-IN::seg0007"
+          }
+        },
+        {
+          "source_id": "CURVED_WALL_DEMO",
+          "entity_id": "ARC-OUT",
+          "source_type": "cad",
+          "layer": "WALL_CURVED",
+          "metadata": {
+            "generated_segment_id": "ARC-OUT::seg0007"
+          }
+        }
+      ],
+      "material_ids": [],
+      "properties": {},
+      "start": {
+        "x": 7.141475548877107,
+        "y": 3.8007450895029855,
+        "z": 0.0
+      },
+      "end": {
+        "x": 6.862279575257098,
+        "y": 4.284326701081499,
+        "z": 0.0
+      },
+      "thickness": 0.1798903488634369,
+      "height": 2.8
+    },
+    {
+      "id": "wall_04e42b15b69e45dc",
+      "type": "wall",
+      "name": null,
+      "storey_id": null,
+      "confidence": 0.96,
+      "review_state": "auto",
+      "source_refs": [
+        {
+          "source_id": "CURVED_WALL_DEMO",
+          "entity_id": "ARC-IN",
+          "source_type": "cad",
+          "layer": "WALL_CURVED",
+          "metadata": {
+            "generated_segment_id": "ARC-IN::seg0006"
+          }
+        },
+        {
+          "source_id": "CURVED_WALL_DEMO",
+          "entity_id": "ARC-OUT",
+          "source_type": "cad",
+          "layer": "WALL_CURVED",
+          "metadata": {
+            "generated_segment_id": "ARC-OUT::seg0006"
+          }
+        }
+      ],
+      "material_ids": [],
+      "properties": {},
+      "start": {
+        "x": 7.389205848413376,
+        "y": 3.2933225138701774,
+        "z": 0.0
+      },
+      "end": {
+        "x": 7.1444229301439846,
+        "y": 3.795201871550902,
+        "z": 0.0
+      },
+      "thickness": 0.1798903488634369,
+      "height": 2.8
+    },
+    {
+      "id": "wall_f5b6bcdbda9c4b90",
+      "type": "wall",
+      "name": null,
+      "storey_id": null,
+      "confidence": 0.96,
+      "review_state": "auto",
+      "source_refs": [
+        {
+          "source_id": "CURVED_WALL_DEMO",
+          "entity_id": "ARC-IN",
+          "source_type": "cad",
+          "layer": "WALL_CURVED",
+          "metadata": {
+            "generated_segment_id": "ARC-IN::seg0001"
+          }
+        },
+        {
+          "source_id": "CURVED_WALL_DEMO",
+          "entity_id": "ARC-OUT",
+          "source_type": "cad",
+          "layer": "WALL_CURVED",
+          "metadata": {
+            "generated_segment_id": "ARC-OUT::seg0001"
+          }
+        }
+      ],
+      "material_ids": [],
+      "properties": {},
+      "start": {
+        "x": 8.069964847433656,
+        "y": 0.567453620814691,
+        "z": 0.0
+      },
+      "end": {
+        "x": 8.011596995287626,
+        "y": 1.122786638542212,
+        "z": 0.0
+      },
+      "thickness": 0.1798903488634366,
+      "height": 2.8
+    },
+    {
+      "id": "wall_5f62ab49cfde4ef7",
+      "type": "wall",
+      "name": null,
+      "storey_id": null,
+      "confidence": 0.96,
+      "review_state": "auto",
+      "source_refs": [
+        {
+          "source_id": "CURVED_WALL_DEMO",
+          "entity_id": "ARC-IN",
+          "source_type": "cad",
+          "layer": "WALL_CURVED",
+          "metadata": {
+            "generated_segment_id": "ARC-IN::seg0002"
+          }
+        },
+        {
+          "source_id": "CURVED_WALL_DEMO",
+          "entity_id": "ARC-OUT",
+          "source_type": "cad",
+          "layer": "WALL_CURVED",
+          "metadata": {
+            "generated_segment_id": "ARC-OUT::seg0002"
+          }
+        }
+      ],
+      "material_ids": [],
+      "properties": {},
+      "start": {
+        "x": 8.010723255058954,
+        "y": 1.1290036233105254,
+        "z": 0.0
+      },
+      "end": {
+        "x": 7.913759510996837,
+        "y": 1.6789123421720764,
+        "z": 0.0
+      },
+      "thickness": 0.17989034886343633,
+      "height": 2.8
+    },
+    {
+      "id": "wall_87147f426eeb4f0d",
+      "type": "wall",
+      "name": null,
+      "storey_id": null,
+      "confidence": 0.96,
+      "review_state": "auto",
+      "source_refs": [
+        {
+          "source_id": "CURVED_WALL_DEMO",
+          "entity_id": "ARC-IN",
+          "source_type": "cad",
+          "layer": "WALL_CURVED",
+          "metadata": {
+            "generated_segment_id": "ARC-IN::seg0014"
+          }
+        },
+        {
+          "source_id": "CURVED_WALL_DEMO",
+          "entity_id": "ARC-OUT",
+          "source_type": "cad",
+          "layer": "WALL_CURVED",
+          "metadata": {
+            "generated_segment_id": "ARC-OUT::seg0014"
+          }
+        }
+      ],
+      "material_ids": [],
+      "properties": {},
+      "start": {
+        "x": 4.521206908422158,
+        "y": 6.7085784143756095,
+        "z": 0.0
+      },
+      "end": {
+        "x": 4.047663680656184,
+        "y": 7.004481064210785,
+        "z": 0.0
+      },
+      "thickness": 0.1798903488634368,
+      "height": 2.8
+    },
+    {
+      "id": "wall_e9fe5cf047ee4122",
+      "type": "wall",
+      "name": null,
+      "storey_id": null,
+      "confidence": 0.96,
+      "review_state": "auto",
+      "source_refs": [
+        {
+          "source_id": "CURVED_WALL_DEMO",
+          "entity_id": "ARC-IN",
+          "source_type": "cad",
+          "layer": "WALL_CURVED",
+          "metadata": {
+            "generated_segment_id": "ARC-IN::seg0011"
+          }
+        },
+        {
+          "source_id": "CURVED_WALL_DEMO",
+          "entity_id": "ARC-OUT",
+          "source_type": "cad",
+          "layer": "WALL_CURVED",
+          "metadata": {
+            "generated_segment_id": "ARC-OUT::seg0011"
+          }
+        }
+      ],
+      "material_ids": [],
+      "properties": {},
+      "start": {
+        "x": 5.8171995710105975,
+        "y": 5.621968107489115,
+        "z": 0.0
+      },
+      "end": {
+        "x": 5.415526019172253,
+        "y": 6.009859747636291,
+        "z": 0.0
+      },
+      "thickness": 0.17989034886343638,
+      "height": 2.8
+    },
+    {
+      "id": "wall_965e233fa325464e",
+      "type": "wall",
+      "name": null,
+      "storey_id": null,
+      "confidence": 0.96,
+      "review_state": "auto",
+      "source_refs": [
+        {
+          "source_id": "CURVED_WALL_DEMO",
+          "entity_id": "ARC-IN",
+          "source_type": "cad",
+          "layer": "WALL_CURVED",
+          "metadata": {
+            "generated_segment_id": "ARC-IN::seg0004"
+          }
+        },
+        {
+          "source_id": "CURVED_WALL_DEMO",
+          "entity_id": "ARC-OUT",
+          "source_type": "cad",
+          "layer": "WALL_CURVED",
+          "metadata": {
+            "generated_segment_id": "ARC-OUT::seg0004"
+          }
+        }
+      ],
+      "material_ids": [],
+      "properties": {},
+      "start": {
+        "x": 7.775636511759141,
+        "y": 2.232893433997413,
+        "z": 0.0
+      },
+      "end": {
+        "x": 7.6030839105398575,
+        "y": 2.7639557340667693,
+        "z": 0.0
+      },
+      "thickness": 0.17989034886343683,
+      "height": 2.8
+    },
+    {
+      "id": "wall_f764feb824e04134",
+      "type": "wall",
+      "name": null,
+      "storey_id": null,
+      "confidence": 0.96,
+      "review_state": "auto",
+      "source_refs": [
+        {
+          "source_id": "CURVED_WALL_DEMO",
+          "entity_id": "ARC-IN",
+          "source_type": "cad",
+          "layer": "WALL_CURVED",
+          "metadata": {
+            "generated_segment_id": "ARC-IN::seg0013"
+          }
+        },
+        {
+          "source_id": "CURVED_WALL_DEMO",
+          "entity_id": "ARC-OUT",
+          "source_type": "cad",
+          "layer": "WALL_CURVED",
+          "metadata": {
+            "generated_segment_id": "ARC-OUT::seg0013"
+          }
+        }
+      ],
+      "material_ids": [],
+      "properties": {},
+      "start": {
+        "x": 4.978160249651104,
+        "y": 6.376853203531054,
+        "z": 0.0
+      },
+      "end": {
+        "x": 4.526411674811813,
+        "y": 6.7050677551176125,
+        "z": 0.0
+      },
+      "thickness": 0.1798903488634368,
+      "height": 2.8
+    },
+    {
+      "id": "wall_2829149ee85345fd",
+      "type": "wall",
+      "name": null,
+      "storey_id": null,
+      "confidence": 0.96,
+      "review_state": "auto",
+      "source_refs": [
+        {
+          "source_id": "CURVED_WALL_DEMO",
+          "entity_id": "ARC-IN",
+          "source_type": "cad",
+          "layer": "WALL_CURVED",
+          "metadata": {
+            "generated_segment_id": "ARC-IN::seg0009"
+          }
+        },
+        {
+          "source_id": "CURVED_WALL_DEMO",
+          "entity_id": "ARC-OUT",
+          "source_type": "cad",
+          "layer": "WALL_CURVED",
+          "metadata": {
+            "generated_segment_id": "ARC-OUT::seg0009"
+          }
+        }
+      ],
+      "material_ids": [],
+      "properties": {},
+      "start": {
+        "x": 6.543013719686806,
+        "y": 4.75765779712884,
+        "z": 0.0
+      },
+      "end": {
+        "x": 6.199233309639052,
+        "y": 5.197676656281369,
+        "z": 0.0
+      },
+      "thickness": 0.17989034886343663,
+      "height": 2.8
+    },
+    {
+      "id": "wall_cc914bd20d334d9f",
+      "type": "wall",
+      "name": null,
+      "storey_id": null,
+      "confidence": 0.96,
+      "review_state": "auto",
+      "source_refs": [
+        {
+          "source_id": "CURVED_WALL_DEMO",
+          "entity_id": "ARC-IN",
+          "source_type": "cad",
+          "layer": "WALL_CURVED",
+          "metadata": {
+            "generated_segment_id": "ARC-IN::seg0019"
+          }
+        },
+        {
+          "source_id": "CURVED_WALL_DEMO",
+          "entity_id": "ARC-OUT",
+          "source_type": "cad",
+          "layer": "WALL_CURVED",
+          "metadata": {
+            "generated_segment_id": "ARC-OUT::seg0019"
+          }
+        }
+      ],
+      "material_ids": [],
+      "properties": {},
+      "start": {
+        "x": 1.95407581809434,
+        "y": 7.850345466775941,
+        "z": 0.0
+      },
+      "end": {
+        "x": 1.407886074632442,
+        "y": 7.966441680665634,
+        "z": 0.0
+      },
+      "thickness": 0.179890348863437,
+      "height": 2.8
+    },
+    {
+      "id": "wall_6b34a6af5dab4dbf",
+      "type": "wall",
+      "name": null,
+      "storey_id": null,
+      "confidence": 0.96,
+      "review_state": "auto",
+      "source_refs": [
+        {
+          "source_id": "CURVED_WALL_DEMO",
+          "entity_id": "ARC-IN",
+          "source_type": "cad",
+          "layer": "WALL_CURVED",
+          "metadata": {
+            "generated_segment_id": "ARC-IN::seg0021"
+          }
+        },
+        {
+          "source_id": "CURVED_WALL_DEMO",
+          "entity_id": "ARC-OUT",
+          "source_type": "cad",
+          "layer": "WALL_CURVED",
+          "metadata": {
+            "generated_segment_id": "ARC-OUT::seg0021"
+          }
+        }
+      ],
+      "material_ids": [],
+      "properties": {},
+      "start": {
+        "x": 0.8425019643398848,
+        "y": 8.045901235453618,
+        "z": 0.0
+      },
+      "end": {
+        "x": 0.2854702318186657,
+        "y": 8.084852688660197,
+        "z": 0.0
+      },
+      "thickness": 0.17989034886343713,
+      "height": 2.8
+    },
+    {
+      "id": "wall_4b1b810bceb547b7",
+      "type": "wall",
+      "name": null,
+      "storey_id": null,
+      "confidence": 0.96,
+      "review_state": "auto",
+      "source_refs": [
+        {
+          "source_id": "CURVED_WALL_DEMO",
+          "entity_id": "ARC-IN",
+          "source_type": "cad",
+          "layer": "WALL_CURVED",
+          "metadata": {
+            "generated_segment_id": "ARC-IN::seg0025"
+          }
+        },
+        {
+          "source_id": "CURVED_WALL_DEMO",
+          "entity_id": "ARC-OUT",
+          "source_type": "cad",
+          "layer": "WALL_CURVED",
+          "metadata": {
+            "generated_segment_id": "ARC-OUT::seg0025"
+          }
+        }
+      ],
+      "material_ids": [],
+      "properties": {},
+      "start": {
+        "x": -1.4078860746324393,
+        "y": 7.966441680665634,
+        "z": 0.0
+      },
+      "end": {
+        "x": -1.9540758180943374,
+        "y": 7.850345466775941,
+        "z": 0.0
+      },
+      "thickness": 0.17989034886343694,
+      "height": 2.8
+    },
+    {
+      "id": "wall_2883d1dce73b4153",
+      "type": "wall",
+      "name": null,
+      "storey_id": null,
+      "confidence": 0.96,
+      "review_state": "auto",
+      "source_refs": [
+        {
+          "source_id": "CURVED_WALL_DEMO",
+          "entity_id": "ARC-IN",
+          "source_type": "cad",
+          "layer": "WALL_CURVED",
+          "metadata": {
+            "generated_segment_id": "ARC-IN::seg0018"
+          }
+        },
+        {
+          "source_id": "CURVED_WALL_DEMO",
+          "entity_id": "ARC-OUT",
+          "source_type": "cad",
+          "layer": "WALL_CURVED",
+          "metadata": {
+            "generated_segment_id": "ARC-OUT::seg0018"
+          }
+        }
+      ],
+      "material_ids": [],
+      "properties": {},
+      "start": {
+        "x": 2.4969282050484374,
+        "y": 7.69491298127693,
+        "z": 0.0
+      },
+      "end": {
+        "x": 1.9601674148462007,
+        "y": 7.848826661123674,
+        "z": 0.0
+      },
+      "thickness": 0.17989034886343694,
+      "height": 2.8
+    },
+    {
+      "id": "wall_24c86467b52a457f",
+      "type": "wall",
+      "name": null,
+      "storey_id": null,
+      "confidence": 0.96,
+      "review_state": "auto",
+      "source_refs": [
+        {
+          "source_id": "CURVED_WALL_DEMO",
+          "entity_id": "ARC-IN",
+          "source_type": "cad",
+          "layer": "WALL_CURVED",
+          "metadata": {
+            "generated_segment_id": "ARC-IN::seg0022"
+          }
+        },
+        {
+          "source_id": "CURVED_WALL_DEMO",
+          "entity_id": "ARC-OUT",
+          "source_type": "cad",
+          "layer": "WALL_CURVED",
+          "metadata": {
+            "generated_segment_id": "ARC-OUT::seg0022"
+          }
+        }
+      ],
+      "material_ids": [],
+      "properties": {},
+      "start": {
+        "x": 0.27919597362000864,
+        "y": 8.085071790584484,
+        "z": 0.0
+      },
+      "end": {
+        "x": -0.27919597362000587,
+        "y": 8.085071790584484,
+        "z": 0.0
+      },
+      "thickness": 0.17989034886343713,
+      "height": 2.8
+    },
+    {
+      "id": "wall_0a9d74eca52b40ff",
+      "type": "wall",
+      "name": null,
+      "storey_id": null,
+      "confidence": 0.96,
+      "review_state": "auto",
+      "source_refs": [
+        {
+          "source_id": "CURVED_WALL_DEMO",
+          "entity_id": "ARC-IN",
+          "source_type": "cad",
+          "layer": "WALL_CURVED",
+          "metadata": {
+            "generated_segment_id": "ARC-IN::seg0016"
+          }
+        },
+        {
+          "source_id": "CURVED_WALL_DEMO",
+          "entity_id": "ARC-OUT",
+          "source_type": "cad",
+          "layer": "WALL_CURVED",
+          "metadata": {
+            "generated_segment_id": "ARC-OUT::seg0016"
+          }
+        }
+      ],
+      "material_ids": [],
+      "properties": {},
+      "start": {
+        "x": 3.543553172621844,
+        "y": 7.272521375932304,
+        "z": 0.0
+      },
+      "end": {
+        "x": 3.033436745636522,
+        "y": 7.499639842073266,
+        "z": 0.0
+      },
+      "thickness": 0.1798903488634367,
+      "height": 2.8
+    },
+    {
+      "id": "wall_984e31390983484c",
+      "type": "wall",
+      "name": null,
+      "storey_id": null,
+      "confidence": 0.96,
+      "review_state": "auto",
+      "source_refs": [
+        {
+          "source_id": "CURVED_WALL_DEMO",
+          "entity_id": "ARC-IN",
+          "source_type": "cad",
+          "layer": "WALL_CURVED",
+          "metadata": {
+            "generated_segment_id": "ARC-IN::seg0028"
+          }
+        },
+        {
+          "source_id": "CURVED_WALL_DEMO",
+          "entity_id": "ARC-OUT",
+          "source_type": "cad",
+          "layer": "WALL_CURVED",
+          "metadata": {
+            "generated_segment_id": "ARC-OUT::seg0028"
+          }
+        }
+      ],
+      "material_ids": [],
+      "properties": {},
+      "start": {
+        "x": -3.0334367456365188,
+        "y": 7.499639842073267,
+        "z": 0.0
+      },
+      "end": {
+        "x": -3.5435531726218414,
+        "y": 7.272521375932305,
+        "z": 0.0
+      },
+      "thickness": 0.17989034886343663,
+      "height": 2.8
+    },
+    {
+      "id": "wall_fdb76bcd3daf44c5",
+      "type": "wall",
+      "name": null,
+      "storey_id": null,
+      "confidence": 0.96,
+      "review_state": "auto",
+      "source_refs": [
+        {
+          "source_id": "CURVED_WALL_DEMO",
+          "entity_id": "ARC-IN",
+          "source_type": "cad",
+          "layer": "WALL_CURVED",
+          "metadata": {
+            "generated_segment_id": "ARC-IN::seg0026"
+          }
+        },
+        {
+          "source_id": "CURVED_WALL_DEMO",
+          "entity_id": "ARC-OUT",
+          "source_type": "cad",
+          "layer": "WALL_CURVED",
+          "metadata": {
+            "generated_segment_id": "ARC-OUT::seg0026"
+          }
+        }
+      ],
+      "material_ids": [],
+      "properties": {},
+      "start": {
+        "x": -1.960167414846198,
+        "y": 7.848826661123674,
+        "z": 0.0
+      },
+      "end": {
+        "x": -2.4969282050484347,
+        "y": 7.69491298127693,
+        "z": 0.0
+      },
+      "thickness": 0.17989034886343694,
+      "height": 2.8
+    }
+  ],
+  "relations": [],
+  "metadata": {}
+}

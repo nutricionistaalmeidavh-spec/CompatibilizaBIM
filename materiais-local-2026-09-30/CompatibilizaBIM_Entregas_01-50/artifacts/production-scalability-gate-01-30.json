@@ -1,0 +1,128 @@
+{
+  "evidence": {
+    "core_tests_passed": true,
+    "cbim_tests_passed": true,
+    "core_coverage": 0.9,
+    "cbim_coverage": 0.95,
+    "benchmark_entity_count": 51200,
+    "benchmark_throughput_eps": 127854.94217515671,
+    "benchmark_peak_memory_mb": 252.42279624938965,
+    "benchmark_incremental_plan_ms": 5861.081492999801,
+    "incremental_selection_ratio": 0.00330078125,
+    "coordinate_roundtrip_error_m": 0.0,
+    "ifc_roundtrip_passed": true,
+    "zip_integrity_passed": true,
+    "native_dwg_backend_validated": false,
+    "real_complex_project_validated": false,
+    "real_project_element_count": 0
+  },
+  "result": {
+    "technical_gate_passed": true,
+    "production_ready": false,
+    "release_status": "technical_candidate_external_validation_required",
+    "criteria": [
+      {
+        "name": "core_tests",
+        "passed": true,
+        "required_for": "technical",
+        "observed": "True",
+        "requirement": "all Core tests pass"
+      },
+      {
+        "name": "cbim_tests",
+        "passed": true,
+        "required_for": "technical",
+        "observed": "True",
+        "requirement": "all CBIM SDK tests pass"
+      },
+      {
+        "name": "core_coverage",
+        "passed": true,
+        "required_for": "technical",
+        "observed": "90.0%",
+        "requirement": ">=85%"
+      },
+      {
+        "name": "cbim_coverage",
+        "passed": true,
+        "required_for": "technical",
+        "observed": "95.0%",
+        "requirement": ">=90%"
+      },
+      {
+        "name": "xxl_size",
+        "passed": true,
+        "required_for": "technical",
+        "observed": "51200",
+        "requirement": ">=50000 CAD entities"
+      },
+      {
+        "name": "xxl_throughput",
+        "passed": true,
+        "required_for": "technical",
+        "observed": "127855 entities/s",
+        "requirement": ">=1000 entities/s"
+      },
+      {
+        "name": "xxl_memory",
+        "passed": true,
+        "required_for": "technical",
+        "observed": "252.4 MB",
+        "requirement": "<=2048 MB Python traced peak"
+      },
+      {
+        "name": "incremental_locality",
+        "passed": true,
+        "required_for": "technical",
+        "observed": "0.330%",
+        "requirement": "<=10% selected for a local edit"
+      },
+      {
+        "name": "incremental_latency",
+        "passed": true,
+        "required_for": "technical",
+        "observed": "5861.1 ms",
+        "requirement": "<=10000 ms on XXL synthetic case"
+      },
+      {
+        "name": "coordinate_roundtrip",
+        "passed": true,
+        "required_for": "technical",
+        "observed": "0 m",
+        "requirement": "<=1e-06 m"
+      },
+      {
+        "name": "ifc_roundtrip",
+        "passed": true,
+        "required_for": "technical",
+        "observed": "True",
+        "requirement": "CBIM -> IFC -> CBIM smoke passes"
+      },
+      {
+        "name": "zip_integrity",
+        "passed": true,
+        "required_for": "technical",
+        "observed": "True",
+        "requirement": "archive integrity passes"
+      },
+      {
+        "name": "native_dwg_backend",
+        "passed": false,
+        "required_for": "production",
+        "observed": "False",
+        "requirement": "licensed/native DWG provider tested with real DWG"
+      },
+      {
+        "name": "real_complex_building",
+        "passed": false,
+        "required_for": "production",
+        "observed": "validated=False, elements=0",
+        "requirement": "at least one real large/high-end project validated end-to-end"
+      }
+    ],
+    "blockers": [
+      "native_dwg_backend",
+      "real_complex_building"
+    ]
+  }
+}

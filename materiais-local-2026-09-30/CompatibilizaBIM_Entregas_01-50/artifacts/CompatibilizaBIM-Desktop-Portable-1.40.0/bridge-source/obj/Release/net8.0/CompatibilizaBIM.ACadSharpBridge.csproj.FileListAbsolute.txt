@@ -1,0 +1,17 @@
+C:\tmp\CompatibilizaBIM_Entregas_01-50\artifacts\CompatibilizaBIM-Desktop-Portable-1.40.0\bridge-source\bin\Release\net8.0\CompatibilizaBIM.ACadSharpBridge.exe
+C:\tmp\CompatibilizaBIM_Entregas_01-50\artifacts\CompatibilizaBIM-Desktop-Portable-1.40.0\bridge-source\bin\Release\net8.0\CompatibilizaBIM.ACadSharpBridge.deps.json
+C:\tmp\CompatibilizaBIM_Entregas_01-50\artifacts\CompatibilizaBIM-Desktop-Portable-1.40.0\bridge-source\bin\Release\net8.0\CompatibilizaBIM.ACadSharpBridge.runtimeconfig.json
+C:\tmp\CompatibilizaBIM_Entregas_01-50\artifacts\CompatibilizaBIM-Desktop-Portable-1.40.0\bridge-source\bin\Release\net8.0\CompatibilizaBIM.ACadSharpBridge.dll
+C:\tmp\CompatibilizaBIM_Entregas_01-50\artifacts\CompatibilizaBIM-Desktop-Portable-1.40.0\bridge-source\bin\Release\net8.0\CompatibilizaBIM.ACadSharpBridge.pdb
+C:\tmp\CompatibilizaBIM_Entregas_01-50\artifacts\CompatibilizaBIM-Desktop-Portable-1.40.0\bridge-source\bin\Release\net8.0\ACadSharp.dll
+C:\tmp\CompatibilizaBIM_Entregas_01-50\artifacts\CompatibilizaBIM-Desktop-Portable-1.40.0\bridge-source\obj\Release\net8.0\CompatibilizaBIM.ACadSharpBridge.csproj.AssemblyReference.cache
+C:\tmp\CompatibilizaBIM_Entregas_01-50\artifacts\CompatibilizaBIM-Desktop-Portable-1.40.0\bridge-source\obj\Release\net8.0\CompatibilizaBIM.ACadSharpBridge.GeneratedMSBuildEditorConfig.editorconfig
+C:\tmp\CompatibilizaBIM_Entregas_01-50\artifacts\CompatibilizaBIM-Desktop-Portable-1.40.0\bridge-source\obj\Release\net8.0\CompatibilizaBIM.ACadSharpBridge.AssemblyInfoInputs.cache
+C:\tmp\CompatibilizaBIM_Entregas_01-50\artifacts\CompatibilizaBIM-Desktop-Portable-1.40.0\bridge-source\obj\Release\net8.0\CompatibilizaBIM.ACadSharpBridge.AssemblyInfo.cs
+C:\tmp\CompatibilizaBIM_Entregas_01-50\artifacts\CompatibilizaBIM-Desktop-Portable-1.40.0\bridge-source\obj\Release\net8.0\CompatibilizaBIM.ACadSharpBridge.csproj.CoreCompileInputs.cache
+C:\tmp\CompatibilizaBIM_Entregas_01-50\artifacts\CompatibilizaBIM-Desktop-Portable-1.40.0\bridge-source\obj\Release\net8.0\Compatib.487A84D2.Up2Date
+C:\tmp\CompatibilizaBIM_Entregas_01-50\artifacts\CompatibilizaBIM-Desktop-Portable-1.40.0\bridge-source\obj\Release\net8.0\CompatibilizaBIM.ACadSharpBridge.dll
+C:\tmp\CompatibilizaBIM_Entregas_01-50\artifacts\CompatibilizaBIM-Desktop-Portable-1.40.0\bridge-source\obj\Release\net8.0\refint\CompatibilizaBIM.ACadSharpBridge.dll
+C:\tmp\CompatibilizaBIM_Entregas_01-50\artifacts\CompatibilizaBIM-Desktop-Portable-1.40.0\bridge-source\obj\Release\net8.0\CompatibilizaBIM.ACadSharpBridge.pdb
+C:\tmp\CompatibilizaBIM_Entregas_01-50\artifacts\CompatibilizaBIM-Desktop-Portable-1.40.0\bridge-source\obj\Release\net8.0\CompatibilizaBIM.ACadSharpBridge.genruntimeconfig.cache
+C:\tmp\CompatibilizaBIM_Entregas_01-50\artifacts\CompatibilizaBIM-Desktop-Portable-1.40.0\bridge-source\obj\Release\net8.0\ref\CompatibilizaBIM.ACadSharpBridge.dll

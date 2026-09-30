@@ -1,0 +1,12 @@
+[
+  {
+    "id": "residencial-br",
+    "name": "Residencial — Brasil",
+    "description": "Template, padrões e famílias essenciais",
+    "templatePath": "C:\\BIM\\Templates\\Residencial.rte",
+    "standardsRvtPath": "C:\\BIM\\Standards\\Padroes.rvt",
+    "families": [
+      {"path":"C:\\BIM\\Familias\\Registro.rfa","typeName":"DN25"}
+    ]
+  }
+]

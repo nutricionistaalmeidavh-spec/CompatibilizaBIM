@@ -1,0 +1,70 @@
+{
+  "candidates": [
+    {
+      "selector_kind": "layer",
+      "selector": "ABERTURA",
+      "target": "opening",
+      "system": null,
+      "observations": 1,
+      "agreement": 1.0,
+      "promoted": false
+    },
+    {
+      "selector_kind": "layer",
+      "selector": "LAJE",
+      "target": "slab",
+      "system": null,
+      "observations": 1,
+      "agreement": 1.0,
+      "promoted": false
+    },
+    {
+      "selector_kind": "layer",
+      "selector": "PILAR",
+      "target": "column",
+      "system": null,
+      "observations": 1,
+      "agreement": 1.0,
+      "promoted": false
+    },
+    {
+      "selector_kind": "layer",
+      "selector": "PORTA",
+      "target": "door",
+      "system": null,
+      "observations": 1,
+      "agreement": 1.0,
+      "promoted": false
+    },
+    {
+      "selector_kind": "layer",
+      "selector": "SAPATA",
+      "target": "slab",
+      "system": null,
+      "observations": 1,
+      "agreement": 1.0,
+      "promoted": false
+    },
+    {
+      "selector_kind": "layer",
+      "selector": "VIGA",
+      "target": "beam",
+      "system": null,
+      "observations": 2,
+      "agreement": 1.0,
+      "promoted": true
+    },
+    {
+      "selector_kind": "layer",
+      "selector": "WALL",
+      "target": "wall",
+      "system": null,
+      "observations": 16,
+      "agreement": 0.5,
+      "promoted": false
+    }
+  ],
+  "promoted_rule_ids": [
+    "learned-layer-viga"
+  ]
+}

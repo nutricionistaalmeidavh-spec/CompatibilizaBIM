@@ -1,0 +1,9 @@
+Processing ./compatibilizabim-core
+  Preparing metadata (pyproject.toml): started
+  Preparing metadata (pyproject.toml): finished with status 'done'
+Building wheels for collected packages: compatibilizabim-core
+  Building wheel for compatibilizabim-core (pyproject.toml): started
+  Building wheel for compatibilizabim-core (pyproject.toml): finished with status 'done'
+  Created wheel for compatibilizabim-core: filename=compatibilizabim_core-1.32.0-py3-none-any.whl size=95170 sha256=8b4476cbd36fac5d977f84d4f25116bee36e947ffa0f6b4124e0dacdcefc8d3c
+  Stored in directory: /tmp/pip-ephem-wheel-cache-8jqq72w8/wheels/cd/f9/6c/84c06f5e5b8b167ce52946726520ea0e7275a7afef67822d4b
+Successfully built compatibilizabim-core

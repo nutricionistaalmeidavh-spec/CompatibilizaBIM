@@ -1,0 +1,5 @@
+Processing ./dist-01-45/cbim_sdk-0.3.0-py3-none-any.whl
+Processing ./dist-01-45/compatibilizabim_core-1.32.0-py3-none-any.whl
+Installing collected packages: compatibilizabim-core, cbim-sdk
+
+Successfully installed cbim-sdk-0.3.0 compatibilizabim-core-1.32.0

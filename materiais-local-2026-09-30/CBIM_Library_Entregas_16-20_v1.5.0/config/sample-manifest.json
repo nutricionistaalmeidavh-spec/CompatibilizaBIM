@@ -1,0 +1,24 @@
+{
+  "schema": "cbim-library-manifest/v2",
+  "version": "2.0",
+  "generatedAtUtc": "2026-08-21T17:00:00Z",
+  "channel": "stable",
+  "signature": "",
+  "publicKeyFingerprint": "",
+  "packages": [
+    {
+      "id": "hidraulica-core",
+      "version": "1.1.0",
+      "category": "Hidráulica",
+      "channel": "stable",
+      "minRevit": 2027,
+      "maxRevit": 2027,
+      "url": "packages/hidraulica-core-1.1.0.zip",
+      "sha256": "",
+      "size": 0,
+      "files": [
+        {"relativePath":"Tigre/joelho_dn25.rfa","url":"files/hidraulica-core/Tigre/joelho_dn25.rfa","sha256":"","size":0}
+      ]
+    }
+  ]
+}

@@ -1,0 +1,17 @@
+C:\tmp\CompatibilizaBIM_Entregas_01-50\revit-plugins\CBIM.Revit.Plugin\obj\Release\net10.0-windows\CBIM.Revit.Plugin.csproj.AssemblyReference.cache
+C:\tmp\CompatibilizaBIM_Entregas_01-50\revit-plugins\CBIM.Revit.Plugin\obj\Release\net10.0-windows\CBIM.Revit.Plugin.GeneratedMSBuildEditorConfig.editorconfig
+C:\tmp\CompatibilizaBIM_Entregas_01-50\revit-plugins\CBIM.Revit.Plugin\obj\Release\net10.0-windows\CBIM.Revit.Plugin.AssemblyInfoInputs.cache
+C:\tmp\CompatibilizaBIM_Entregas_01-50\revit-plugins\CBIM.Revit.Plugin\obj\Release\net10.0-windows\CBIM.Revit.Plugin.AssemblyInfo.cs
+C:\tmp\CompatibilizaBIM_Entregas_01-50\revit-plugins\CBIM.Revit.Plugin\obj\Release\net10.0-windows\CBIM.Revit.Plugin.csproj.CoreCompileInputs.cache
+C:\tmp\CompatibilizaBIM_Entregas_01-50\revit-plugins\CBIM.Revit.Plugin\bin\Release\net10.0-windows\CBIM.Revit.Plugin.deps.json
+C:\tmp\CompatibilizaBIM_Entregas_01-50\revit-plugins\CBIM.Revit.Plugin\bin\Release\net10.0-windows\CBIM.Revit.Plugin.dll
+C:\tmp\CompatibilizaBIM_Entregas_01-50\revit-plugins\CBIM.Revit.Plugin\bin\Release\net10.0-windows\CBIM.Revit.Plugin.pdb
+C:\tmp\CompatibilizaBIM_Entregas_01-50\revit-plugins\CBIM.Revit.Plugin\bin\Release\net10.0-windows\CBIM.Library.Contract.dll
+C:\tmp\CompatibilizaBIM_Entregas_01-50\revit-plugins\CBIM.Revit.Plugin\bin\Release\net10.0-windows\CBIM.Revit.Contracts.dll
+C:\tmp\CompatibilizaBIM_Entregas_01-50\revit-plugins\CBIM.Revit.Plugin\bin\Release\net10.0-windows\CBIM.Revit.Contracts.pdb
+C:\tmp\CompatibilizaBIM_Entregas_01-50\revit-plugins\CBIM.Revit.Plugin\bin\Release\net10.0-windows\CBIM.Library.Contract.pdb
+C:\tmp\CompatibilizaBIM_Entregas_01-50\revit-plugins\CBIM.Revit.Plugin\obj\Release\net10.0-windows\CBIM.Rev.BD4050CC.Up2Date
+C:\tmp\CompatibilizaBIM_Entregas_01-50\revit-plugins\CBIM.Revit.Plugin\obj\Release\net10.0-windows\CBIM.Revit.Plugin.dll
+C:\tmp\CompatibilizaBIM_Entregas_01-50\revit-plugins\CBIM.Revit.Plugin\obj\Release\net10.0-windows\refint\CBIM.Revit.Plugin.dll
+C:\tmp\CompatibilizaBIM_Entregas_01-50\revit-plugins\CBIM.Revit.Plugin\obj\Release\net10.0-windows\CBIM.Revit.Plugin.pdb
+C:\tmp\CompatibilizaBIM_Entregas_01-50\revit-plugins\CBIM.Revit.Plugin\obj\Release\net10.0-windows\ref\CBIM.Revit.Plugin.dll

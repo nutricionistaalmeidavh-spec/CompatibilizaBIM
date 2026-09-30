@@ -1,0 +1,5 @@
+C:\tmp\CompatibilizaBIM_Entregas_01-50\revit-plugins\CBIM.Revit.Plugin\obj\Release\net8.0-windows\CBIM.Revit.Plugin.csproj.AssemblyReference.cache
+C:\tmp\CompatibilizaBIM_Entregas_01-50\revit-plugins\CBIM.Revit.Plugin\obj\Release\net8.0-windows\CBIM.Revit.Plugin.GeneratedMSBuildEditorConfig.editorconfig
+C:\tmp\CompatibilizaBIM_Entregas_01-50\revit-plugins\CBIM.Revit.Plugin\obj\Release\net8.0-windows\CBIM.Revit.Plugin.AssemblyInfoInputs.cache
+C:\tmp\CompatibilizaBIM_Entregas_01-50\revit-plugins\CBIM.Revit.Plugin\obj\Release\net8.0-windows\CBIM.Revit.Plugin.AssemblyInfo.cs
+C:\tmp\CompatibilizaBIM_Entregas_01-50\revit-plugins\CBIM.Revit.Plugin\obj\Release\net8.0-windows\CBIM.Revit.Plugin.csproj.CoreCompileInputs.cache

@@ -1,0 +1,17 @@
+{
+  "name": "Perfil aprendido - Demo UI",
+  "version": "1.0",
+  "organization": "CompatibilizaBIM Demo",
+  "rules": [
+    {
+      "id": "learned-layer-viga",
+      "target": "beam",
+      "layer": "VIGA",
+      "block": null,
+      "match": "exact",
+      "system": null,
+      "defaults": {},
+      "priority": 100
+    }
+  ]
+}

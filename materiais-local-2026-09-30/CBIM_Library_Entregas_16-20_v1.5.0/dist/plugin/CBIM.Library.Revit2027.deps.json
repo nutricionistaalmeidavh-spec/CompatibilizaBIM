@@ -1,0 +1,39 @@
+{
+  "runtimeTarget": {
+    "name": ".NETCoreApp,Version=v10.0",
+    "signature": ""
+  },
+  "compilationOptions": {},
+  "targets": {
+    ".NETCoreApp,Version=v10.0": {
+      "CBIM.Library.Revit2027/1.5.0": {
+        "dependencies": {
+          "CBIM.Library.Contracts": "1.5.0"
+        },
+        "runtime": {
+          "CBIM.Library.Revit2027.dll": {}
+        }
+      },
+      "CBIM.Library.Contracts/1.5.0": {
+        "runtime": {
+          "CBIM.Library.Contracts.dll": {
+            "assemblyVersion": "1.5.0.0",
+            "fileVersion": "1.5.0.0"
+          }
+        }
+      }
+    }
+  },
+  "libraries": {
+    "CBIM.Library.Revit2027/1.5.0": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    },
+    "CBIM.Library.Contracts/1.5.0": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    }
+  }
+}

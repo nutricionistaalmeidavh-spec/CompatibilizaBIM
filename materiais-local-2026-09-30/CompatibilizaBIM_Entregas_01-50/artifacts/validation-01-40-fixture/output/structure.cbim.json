@@ -1,0 +1,129 @@
+{
+  "id": "project_5939dcae54384588",
+  "schema": "CBIM",
+  "schema_version": "0.2.0",
+  "name": "structure",
+  "created_at": "2026-08-16T18:00:57.278010Z",
+  "units": "m",
+  "coordinate_reference": "local",
+  "sites": [
+    {
+      "id": "site_2ed6e6673d9f4c45",
+      "name": "Local Site",
+      "elevation": 0.0,
+      "properties": {}
+    }
+  ],
+  "buildings": [
+    {
+      "id": "building_8351da3a825c4b0e",
+      "name": "Building",
+      "properties": {}
+    }
+  ],
+  "storeys": [
+    {
+      "id": "storey_07a3c62b3abb409f",
+      "name": "Térreo",
+      "building_id": "building_8351da3a825c4b0e",
+      "elevation": 0.0,
+      "height": 2.8,
+      "properties": {}
+    }
+  ],
+  "materials": [],
+  "systems": [],
+  "elements": [
+    {
+      "id": "beam_5a47f8f7b9cb4bc0",
+      "type": "beam",
+      "storey_id": "storey_07a3c62b3abb409f",
+      "confidence": 0.95,
+      "review_state": "auto",
+      "source_refs": [
+        {
+          "source_id": "dwg:structure",
+          "entity_id": "b1",
+          "source_type": "cad",
+          "layer": "S-BEAM",
+          "metadata": {}
+        },
+        {
+          "source_id": "dwg:structure",
+          "entity_id": "b2",
+          "source_type": "cad",
+          "layer": "S-BEAM",
+          "metadata": {}
+        }
+      ],
+      "material_ids": [],
+      "properties": {
+        "structural": true,
+        "intelligence_action": "keep",
+        "intelligence_evidence_count": 1
+      },
+      "start": {
+        "x": 0.0,
+        "y": 1.125,
+        "z": 2.8
+      },
+      "end": {
+        "x": 5.0,
+        "y": 1.125,
+        "z": 2.8
+      },
+      "width": 0.25,
+      "height": 0.4
+    },
+    {
+      "id": "slab_9b51919cabba4ab3",
+      "type": "slab",
+      "storey_id": "storey_07a3c62b3abb409f",
+      "confidence": 0.95,
+      "review_state": "auto",
+      "source_refs": [
+        {
+          "source_id": "dwg:structure",
+          "entity_id": "slab",
+          "source_type": "cad",
+          "layer": "S-SLAB",
+          "metadata": {}
+        }
+      ],
+      "material_ids": [],
+      "properties": {
+        "structural": true,
+        "structural_role": "slab",
+        "intelligence_action": "keep",
+        "intelligence_evidence_count": 0
+      },
+      "boundary": [
+        {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        {
+          "x": 5.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        {
+          "x": 5.0,
+          "y": 4.0,
+          "z": 0.0
+        },
+        {
+          "x": 0.0,
+          "y": 4.0,
+          "z": 0.0
+        }
+      ],
+      "thickness": 0.12
+    }
+  ],
+  "relations": [],
+  "metadata": {
+    "recognition_intelligence": "deterministic_evidence_v1"
+  }
+}

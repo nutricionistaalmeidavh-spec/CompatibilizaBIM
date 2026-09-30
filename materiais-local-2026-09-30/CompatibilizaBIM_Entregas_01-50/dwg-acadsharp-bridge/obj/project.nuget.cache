@@ -1,0 +1,10 @@
+{
+  "version": 2,
+  "dgSpecHash": "HLU8qIXST8c=",
+  "success": true,
+  "projectFilePath": "C:\\tmp\\CompatibilizaBIM_Entregas_01-50\\dwg-acadsharp-bridge\\CompatibilizaBIM.ACadSharpBridge.csproj",
+  "expectedPackageFiles": [
+    "C:\\Users\\Marcio\\.nuget\\packages\\acadsharp\\3.6.51\\acadsharp.3.6.51.nupkg.sha512"
+  ],
+  "logs": []
+}

@@ -1,0 +1,11 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <PackageId>CBIM.Sdk</PackageId>
+    <Version>0.4.0</Version>
+    <Description>Common BIM Intermediate Model SDK for .NET/Revit adapters</Description>
+  </PropertyGroup>
+</Project>

@@ -1,0 +1,13 @@
+{
+  "workspace_version": "1.0.0",
+  "project_id": "project_1c84c3c4570a40af",
+  "project_name": "Sample Building",
+  "created_at": "2026-08-16T21:59:49.073115Z",
+  "updated_at": "2026-08-16T21:59:49.087617Z",
+  "revision": 0,
+  "project_file": "project/project.cbim.json",
+  "import_plan_file": "project/import-plan.json",
+  "config_file": "project/config.json",
+  "profile_file": null,
+  "latest_report_file": null
+}

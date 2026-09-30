@@ -1,0 +1,3 @@
+C:\tmp\CBIM_Library_Entregas_16-20_v1.5.0\dist\publisher\CBIM.Library.Publisher.pdb
+C:\tmp\CBIM_Library_Entregas_16-20_v1.5.0\dist\publisher\CBIM.Library.Contracts.pdb
+C:\tmp\CBIM_Library_Entregas_16-20_v1.5.0\dist\publisher\CBIM.Library.Publisher.exe

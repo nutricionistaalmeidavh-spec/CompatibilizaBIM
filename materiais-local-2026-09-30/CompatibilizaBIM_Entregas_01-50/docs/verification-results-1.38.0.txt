@@ -1,0 +1,22 @@
+CompatibilizaBIM Core 1.38.0 verification
+Sun Aug 16 23:05:14 UTC 2026
+
+== Core tests ==
+........................................................................ [ 91%]
+.......                                                                  [100%]
+
+== CBIM SDK tests ==
+......                                                                   [100%]
+
+== compileall ==
+PASS
+
+== Core coverage ==
+-----------------------------------------------------------------------------
+TOTAL                                                      3326    296    91%
+
+== Installed wheel smoke ==
+1.38.0
+
+== Performance ==
+50000 segments -> 1 entity in 0.353 s

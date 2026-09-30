@@ -1,0 +1,38 @@
+CompatibilizaBIM Core 1.39.0 verification
+Date: 2026-08-16/17 packaging session
+
+Baseline reproduction on Core 1.38 topology, sparse non-intersecting segments:
+250 segments   0.440 s
+500 segments   1.709 s
+1000 segments  6.844 s
+
+Core 1.39 focused topology tests:
+6/6 PASS
+
+Core 1.39 full suite:
+83/83 PASS
+
+CBIM Python SDK:
+6/6 PASS
+
+Product/commercial artifacts:
+PASS
+
+compileall:
+PASS
+
+Synthetic topology benchmark:
+50000 segments, repair_gaps=true
+100000 nodes
+50000 edges
+candidate_pairs=0
+elapsed=5.991 s
+
+Clean wheel smoke:
+compatibilizabim_core.__version__ == 1.39.0
+1000 sparse segments -> 1000 edges, candidate_pairs=0
+PASS
+
+Environment limitation:
+.NET SDK / ACadSharp bridge not available in this Linux packaging runtime.
+Real QUA-HID DWG post-v1.39 Windows rerun remains pending.

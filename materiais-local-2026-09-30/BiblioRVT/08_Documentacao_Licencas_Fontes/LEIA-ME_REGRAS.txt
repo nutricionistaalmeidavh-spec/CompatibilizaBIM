@@ -1,0 +1,15 @@
+﻿BIBLIOTECA BIM ONE-CLICK V4
+===========================
+
+REGRA:
+- Nenhum cadastro Ã© criado.
+- Nenhum navegador Ã© aberto.
+- Nenhum CAPTCHA Ã© contornado.
+- Nenhuma autenticaÃ§Ã£o Ã© burlada.
+- O script baixa somente arquivos expostos publicamente e anonimamente.
+- Fontes com login/formulÃ¡rio sÃ£o registradas como SEM_BINARIO_PUBLICO ou INACESSIVEL_OU_BLOQUEADO.
+
+FORMATOS BUSCADOS:
+RFA, RVT, IFC, IFCZIP, RTE, RFT, ZIP, DWG, DXF, SAT, STEP, STP e SKP.
+
+A execuÃ§Ã£o pode baixar vÃ¡rios GB. EspaÃ§o livre recomendado: 10 GB ou mais.

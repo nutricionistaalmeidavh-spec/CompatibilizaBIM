@@ -1,0 +1,8 @@
+{
+  "csproj_xml": "PASS",
+  "acadsharp_version_3_6_51": true,
+  "program_brace_balance": true,
+  "uses_dwg_reader": true,
+  "json_bridge": true,
+  "dotnet_present": false
+}

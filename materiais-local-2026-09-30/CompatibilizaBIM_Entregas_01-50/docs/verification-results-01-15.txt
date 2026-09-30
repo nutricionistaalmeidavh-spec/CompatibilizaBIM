@@ -1,0 +1,51 @@
+=== CompatibilizaBIM cumulative 01-15 verification ===
+Sun Aug 16 16:52:43 UTC 2026
+
+.......................                                                  [100%]
+......                                                                   [100%]
+IFC roundtrip PASS {'has_step_header': True, 'has_ifc4_schema': True, 'has_end_marker': True, 'entity_count': 146}
+
+=== wheel inventory ===
+/mnt/data/CompatibilizaBIM_Entregas_01-15/cbim-sdk/python/dist:
+total 8.0K
+-rw-r--r-- 1 root oai_shared 5.5K Aug 16 16:28 cbim_sdk-0.3.0-py3-none-any.whl
+
+/mnt/data/CompatibilizaBIM_Entregas_01-15/compatibilizabim-core/dist:
+total 36K
+-rw-r--r-- 1 root oai_shared 34K Aug 16 16:51 compatibilizabim_core-1.2.0-py3-none-any.whl
+
+=== demo summary ===
+{
+  "entities_cad": 17,
+  "topology_nodes": 20,
+  "topology_edges": 20,
+  "topology_faces": 3,
+  "cbim_elements": 14,
+  "systems": [
+    {
+      "name": "Água fria",
+      "discipline": "plumbing",
+      "classification": "cold_water"
+    },
+    {
+      "name": "Combate a incêndio",
+      "discipline": "fire",
+      "classification": "fire_protection"
+    }
+  ],
+  "walls": 4,
+  "columns": 1,
+  "doors": 1,
+  "beams": 1,
+  "slabs": 1,
+  "spaces": 2,
+  "pipes": 2,
+  "fittings": 0,
+  "equipment": 2,
+  "ifc": {
+    "has_step_header": true,
+    "has_ifc4_schema": true,
+    "has_end_marker": true,
+    "entity_count": 146
+  }
+}

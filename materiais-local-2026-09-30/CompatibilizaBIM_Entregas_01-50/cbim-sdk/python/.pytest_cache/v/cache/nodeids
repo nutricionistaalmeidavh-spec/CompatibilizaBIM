@@ -1,0 +1,9 @@
+[
+  "tests/test_dotnet_contract_static.py::test_dotnet_contract_declares_same_schema_and_all_polymorphic_types",
+  "tests/test_models_v040.py::test_new_architectural_and_mep_objects_round_trip",
+  "tests/test_schema.py::test_schema_exposes_all_required_element_types",
+  "tests/test_schema.py::test_schema_version_default_is_current",
+  "tests/test_sdk.py::test_complete_building_can_be_represented_and_roundtripped",
+  "tests/test_sdk.py::test_duplicate_ids_are_rejected",
+  "tests/test_sdk.py::test_unknown_relation_reference_is_rejected"
+]

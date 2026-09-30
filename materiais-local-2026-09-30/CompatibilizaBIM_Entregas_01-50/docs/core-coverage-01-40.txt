@@ -1,0 +1,117 @@
+Name                                                                                                             Stmts   Miss  Cover   Missing
+----------------------------------------------------------------------------------------------------------------------------------------------
+/mnt/data/CompatibilizaBIM_01_40_work/CompatibilizaBIM_Entregas_01-35/cbim-sdk/python/src/cbim_sdk/__init__.py       4      0   100%
+/mnt/data/CompatibilizaBIM_01_40_work/CompatibilizaBIM_Entregas_01-35/cbim-sdk/python/src/cbim_sdk/models.py       217      9    96%   242, 250, 254, 257, 260, 267, 270, 273, 276
+/mnt/data/CompatibilizaBIM_01_40_work/CompatibilizaBIM_Entregas_01-35/cbim-sdk/python/src/cbim_sdk/schema.py         9      4    56%   10-13
+/mnt/data/CompatibilizaBIM_01_40_work/CompatibilizaBIM_Entregas_01-35/cbim-sdk/python/src/cbim_sdk/sdk.py           68     41    40%   22, 26, 30-31, 34-39, 42-44, 47-48, 51-52, 55-56, 59-60, 63-64, 67-68, 71-72, 75-84, 87-92, 95, 98, 101, 104-105
+src/compatibilizabim_core/__init__.py                                                                               28      0   100%
+src/compatibilizabim_core/advanced_geometry/__init__.py                                                              2      0   100%
+src/compatibilizabim_core/advanced_geometry/engine.py                                                              121     25    79%   35, 37, 49, 62-66, 72-82, 103, 105, 143, 145, 151, 162
+src/compatibilizabim_core/architecture/__init__.py                                                                   2      0   100%
+src/compatibilizabim_core/architecture/recognizer.py                                                                82      1    99%   39
+src/compatibilizabim_core/benchmark/__init__.py                                                                      2      0   100%
+src/compatibilizabim_core/benchmark/xxl.py                                                                          55      0   100%
+src/compatibilizabim_core/cad/__init__.py                                                                            2      0   100%
+src/compatibilizabim_core/cad/dxf.py                                                                                93     21    77%   25, 27, 76-82, 93-94, 104-109, 120-122, 127, 130-131
+src/compatibilizabim_core/cad/model.py                                                                              64      0   100%
+src/compatibilizabim_core/catalog/__init__.py                                                                        3      0   100%
+src/compatibilizabim_core/catalog/model.py                                                                          69      2    97%   42, 45
+src/compatibilizabim_core/catalog/seed.py                                                                            5      0   100%
+src/compatibilizabim_core/complex/__init__.py                                                                        2      0   100%
+src/compatibilizabim_core/complex/buildings.py                                                                      61      2    97%   54-55
+src/compatibilizabim_core/connectivity/__init__.py                                                                   2      0   100%
+src/compatibilizabim_core/connectivity/engine.py                                                                    90      0   100%
+src/compatibilizabim_core/diff/__init__.py                                                                           2      0   100%
+src/compatibilizabim_core/diff/engine.py                                                                            74      8    89%   30, 35, 61-63, 67-69
+src/compatibilizabim_core/dwg/__init__.py                                                                            7      0   100%
+src/compatibilizabim_core/dwg/acadsharp.py                                                                          43      9    79%   24-25, 29-33, 43, 45
+src/compatibilizabim_core/dwg/compatibility.py                                                                      25      5    80%   16, 24-27
+src/compatibilizabim_core/dwg/dwg_pipeline.py                                                                       28      1    96%   25
+src/compatibilizabim_core/dwg/importer.py                                                                           39      5    87%   17, 20-23
+src/compatibilizabim_core/dwg/models.py                                                                             41      0   100%
+src/compatibilizabim_core/dwg/native_xref.py                                                                        25      0   100%
+src/compatibilizabim_core/geometry/__init__.py                                                                       5      0   100%
+src/compatibilizabim_core/geometry/analysis.py                                                                      33      6    82%   23-29
+src/compatibilizabim_core/geometry/blocks.py                                                                        57     25    56%   23-45, 56, 58, 61-62
+src/compatibilizabim_core/geometry/convert.py                                                                       32     25    22%   13-37
+src/compatibilizabim_core/geometry/engine.py                                                                        19      1    95%   20
+src/compatibilizabim_core/geometry/normalize.py                                                                     96      4    96%   44, 63, 84, 105
+src/compatibilizabim_core/geometry/spatial.py                                                                       20      1    95%   26
+src/compatibilizabim_core/georef/__init__.py                                                                         2      0   100%
+src/compatibilizabim_core/georef/frame.py                                                                           55     17    69%   23, 25, 27, 33-35, 48-58
+src/compatibilizabim_core/ifc/__init__.py                                                                            2      0   100%
+src/compatibilizabim_core/ifc/bridge.py                                                                             78      1    99%   62
+src/compatibilizabim_core/integration/__init__.py                                                                    2      0   100%
+src/compatibilizabim_core/integration/gateway.py                                                                    30      0   100%
+src/compatibilizabim_core/intelligence/__init__.py                                                                   2      0   100%
+src/compatibilizabim_core/intelligence/engine.py                                                                    38      0   100%
+src/compatibilizabim_core/levels/__init__.py                                                                         2      0   100%
+src/compatibilizabim_core/levels/reconstruct.py                                                                     28      0   100%
+src/compatibilizabim_core/mep/__init__.py                                                                            3      0   100%
+src/compatibilizabim_core/mep/common.py                                                                             16      3    81%   14-16
+src/compatibilizabim_core/mep/fire.py                                                                               34      3    91%   27, 31-32
+src/compatibilizabim_core/mep/hydraulic.py                                                                          36      1    97%   28
+src/compatibilizabim_core/performance/__init__.py                                                                    3      0   100%
+src/compatibilizabim_core/performance/incremental.py                                                                56      4    93%   23-26
+src/compatibilizabim_core/performance/reprocessing.py                                                               97      4    96%   77, 113, 118, 125
+src/compatibilizabim_core/pipeline.py                                                                               37      0   100%
+src/compatibilizabim_core/production/__init__.py                                                                     2      0   100%
+src/compatibilizabim_core/production/gate.py                                                                        41      0   100%
+src/compatibilizabim_core/profiles/__init__.py                                                                       2      0   100%
+src/compatibilizabim_core/profiles/model.py                                                                         69      2    97%   30, 42
+src/compatibilizabim_core/quantities/__init__.py                                                                     2      0   100%
+src/compatibilizabim_core/quantities/calculator.py                                                                  37      0   100%
+src/compatibilizabim_core/reviewer/__init__.py                                                                       3      0   100%
+src/compatibilizabim_core/reviewer/session.py                                                                       34      6    82%   15, 22, 24, 32-34
+src/compatibilizabim_core/reviewer/web.py                                                                            5      0   100%
+src/compatibilizabim_core/structure/__init__.py                                                                      2      0   100%
+src/compatibilizabim_core/structure/recognizer.py                                                                   36      0   100%
+src/compatibilizabim_core/topology/__init__.py                                                                       3      0   100%
+src/compatibilizabim_core/topology/engine.py                                                                        66      0   100%
+src/compatibilizabim_core/topology/model.py                                                                         14      0   100%
+src/compatibilizabim_core/validation/__init__.py                                                                     4      0   100%
+src/compatibilizabim_core/validation/engine.py                                                                      57      4    93%   27, 48-50
+src/compatibilizabim_core/validation/federation.py                                                                  61      2    97%   14, 19
+src/compatibilizabim_core/validation/models.py                                                                      81      0   100%
+src/compatibilizabim_core/validation/runner.py                                                                      43      3    93%   17, 31-32
+src/compatibilizabim_core/vertical/__init__.py                                                                       2      0   100%
+src/compatibilizabim_core/vertical/intelligence.py                                                                 160     23    86%   65, 67, 70-77, 86-91, 108, 135, 192-196
+src/compatibilizabim_core/xref/__init__.py                                                                           2      0   100%
+src/compatibilizabim_core/xref/composer.py                                                                          52      1    98%   38
+tests/test_acadsharp_provider.py                                                                                    11      0   100%
+tests/test_advanced_geometry.py                                                                                     21      0   100%
+tests/test_architecture.py                                                                                          11      0   100%
+tests/test_catalog.py                                                                                               10      0   100%
+tests/test_complex_buildings.py                                                                                     15      0   100%
+tests/test_connectivity.py                                                                                          12      0   100%
+tests/test_diff.py                                                                                                  16      0   100%
+tests/test_dwg_compatibility_01_35.py                                                                                6      0   100%
+tests/test_dwg_importer.py                                                                                          14      0   100%
+tests/test_dwg_pipeline_01_35.py                                                                                    13      0   100%
+tests/test_dxf_import.py                                                                                            37      0   100%
+tests/test_fire.py                                                                                                   8      0   100%
+tests/test_geometry.py                                                                                              49      0   100%
+tests/test_georef.py                                                                                                18      0   100%
+tests/test_hydraulic.py                                                                                              9      0   100%
+tests/test_ifc_bridge.py                                                                                             9      0   100%
+tests/test_ifc_mep_01_40.py                                                                                         12      0   100%
+tests/test_incremental_reprocessing.py                                                                              19      0   100%
+tests/test_integration.py                                                                                           10      0   100%
+tests/test_intelligence.py                                                                                          10      0   100%
+tests/test_levels_structure.py                                                                                      12      0   100%
+tests/test_native_xref_01_35.py                                                                                     12      0   100%
+tests/test_performance.py                                                                                           19      0   100%
+tests/test_pipeline_01_15.py                                                                                         8      0   100%
+tests/test_pipeline_01_20.py                                                                                        12      0   100%
+tests/test_pipeline_01_25.py                                                                                        22      0   100%
+tests/test_profiles.py                                                                                               8      0   100%
+tests/test_quantities.py                                                                                            12      0   100%
+tests/test_reviewer_pipeline.py                                                                                      6      0   100%
+tests/test_topology.py                                                                                              10      0   100%
+tests/test_validation_01_40.py                                                                                      53      0   100%
+tests/test_validation_policies_01_40.py                                                                              4      0   100%
+tests/test_vertical_intelligence.py                                                                                 22      0   100%
+tests/test_xref.py                                                                                                  29      0   100%
+tests/test_xxl_benchmark_gate.py                                                                                    11      0   100%
+----------------------------------------------------------------------------------------------------------------------------------------------
+TOTAL                                                                                                             3376    269    92%

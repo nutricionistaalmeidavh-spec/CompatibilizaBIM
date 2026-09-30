@@ -1,0 +1,124 @@
+{
+  "version": 3,
+  "targets": {
+    "net8.0": {
+      "ACadSharp/3.6.51": {
+        "type": "package",
+        "compile": {
+          "lib/net8.0/ACadSharp.dll": {
+            "related": ".xml"
+          }
+        },
+        "runtime": {
+          "lib/net8.0/ACadSharp.dll": {
+            "related": ".xml"
+          }
+        }
+      }
+    }
+  },
+  "libraries": {
+    "ACadSharp/3.6.51": {
+      "sha512": "HUAK44Drrws5WADpRQucwb2p+BfmgimKNbs2+PUAla+N0PtKgTWiN+FQs7GK4wG1asEjw3tH/iJ+GxAPGMy+vw==",
+      "type": "package",
+      "path": "acadsharp/3.6.51",
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "README.md",
+        "acadsharp.3.6.51.nupkg.sha512",
+        "acadsharp.nuspec",
+        "lib/net10.0/ACadSharp.dll",
+        "lib/net10.0/ACadSharp.xml",
+        "lib/net48/ACadSharp.dll",
+        "lib/net48/ACadSharp.xml",
+        "lib/net5.0/ACadSharp.dll",
+        "lib/net5.0/ACadSharp.xml",
+        "lib/net6.0/ACadSharp.dll",
+        "lib/net6.0/ACadSharp.xml",
+        "lib/net7.0/ACadSharp.dll",
+        "lib/net7.0/ACadSharp.xml",
+        "lib/net8.0/ACadSharp.dll",
+        "lib/net8.0/ACadSharp.xml",
+        "lib/net9.0/ACadSharp.dll",
+        "lib/net9.0/ACadSharp.xml",
+        "lib/netstandard2.0/ACadSharp.dll",
+        "lib/netstandard2.0/ACadSharp.xml",
+        "lib/netstandard2.1/ACadSharp.dll",
+        "lib/netstandard2.1/ACadSharp.xml"
+      ]
+    }
+  },
+  "projectFileDependencyGroups": {
+    "net8.0": [
+      "ACadSharp >= 3.6.51"
+    ]
+  },
+  "packageFolders": {
+    "C:\\Users\\Marcio\\.nuget\\packages\\": {}
+  },
+  "project": {
+    "version": "1.0.0",
+    "restore": {
+      "projectUniqueName": "C:\\tmp\\CompatibilizaBIM_Entregas_01-50\\artifacts\\CompatibilizaBIM-Desktop-Portable-1.44.0\\bridge-source\\CompatibilizaBIM.ACadSharpBridge.csproj",
+      "projectName": "CompatibilizaBIM.ACadSharpBridge",
+      "projectPath": "C:\\tmp\\CompatibilizaBIM_Entregas_01-50\\artifacts\\CompatibilizaBIM-Desktop-Portable-1.44.0\\bridge-source\\CompatibilizaBIM.ACadSharpBridge.csproj",
+      "packagesPath": "C:\\Users\\Marcio\\.nuget\\packages\\",
+      "outputPath": "C:\\tmp\\CompatibilizaBIM_Entregas_01-50\\artifacts\\CompatibilizaBIM-Desktop-Portable-1.44.0\\bridge-source\\obj\\",
+      "projectStyle": "PackageReference",
+      "configFilePaths": [
+        "C:\\Users\\Marcio\\AppData\\Roaming\\NuGet\\NuGet.Config"
+      ],
+      "originalTargetFrameworks": [
+        "net8.0"
+      ],
+      "sources": {
+        "https://api.nuget.org/v3/index.json": {}
+      },
+      "frameworks": {
+        "net8.0": {
+          "targetAlias": "net8.0",
+          "projectReferences": {}
+        }
+      },
+      "warningProperties": {
+        "warnAsError": [
+          "NU1605"
+        ]
+      },
+      "restoreAuditProperties": {
+        "enableAudit": "true",
+        "auditLevel": "low",
+        "auditMode": "direct"
+      }
+    },
+    "frameworks": {
+      "net8.0": {
+        "targetAlias": "net8.0",
+        "dependencies": {
+          "ACadSharp": {
+            "target": "Package",
+            "version": "[3.6.51, )"
+          }
+        },
+        "imports": [
+          "net461",
+          "net462",
+          "net47",
+          "net471",
+          "net472",
+          "net48",
+          "net481"
+        ],
+        "assetTargetFallback": true,
+        "warn": true,
+        "frameworkReferences": {
+          "Microsoft.NETCore.App": {
+            "privateAssets": "all"
+          }
+        },
+        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.424/PortableRuntimeIdentifierGraph.json"
+      }
+    }
+  }
+}
