@@ -52,3 +52,30 @@ jobs:
         run: python -m pytest -q integrations/cbim-2.1.0/compatibilizabim-core/tests
       - name: SDK regression suite
         run: python -m pytest -q integrations/cbim-2.1.0/cbim-sdk/python/tests
+  lfs-backup-samples:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: backup/all-cbim-materials-2026-09-30-v2
+          path: backup
+          lfs: false
+          sparse-checkout-cone-mode: false
+          sparse-checkout: |
+            .gitattributes
+            materiais-local-2026-09-30/DWG/BARRILETE.dwg
+            materiais-local-2026-09-30/DWG/QUA-HID-LO-0100-TERR-R02.dwg
+      - name: Download LFS samples from remote and verify SHA256
+        working-directory: backup
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "6feeb60e8b376def69d9e8ddb6b3788c56418397"
+          git lfs version
+          git lfs install --local
+          git lfs pull --include="materiais-local-2026-09-30/DWG/BARRILETE.dwg,materiais-local-2026-09-30/DWG/QUA-HID-LO-0100-TERR-R02.dwg" --exclude=""
+          printf '%s  %s\n' \
+            'b2f02c77c3028f3be107b2f06f78508321732015143a87443f884362002f9be5' \
+            'materiais-local-2026-09-30/DWG/BARRILETE.dwg' \
+            'f48290b8b8d9fb626ece26d325f1f2570e134c61c17ebc12f812f6f49190ea17' \
+            'materiais-local-2026-09-30/DWG/QUA-HID-LO-0100-TERR-R02.dwg' | sha256sum -c -
