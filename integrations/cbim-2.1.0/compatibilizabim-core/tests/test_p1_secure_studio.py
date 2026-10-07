@@ -4,6 +4,8 @@ import json
 import threading
 from pathlib import Path
 from urllib.error import HTTPError
+from urllib.parse import urlparse
+from http.client import HTTPConnection
 from urllib.request import Request, urlopen
 
 import pytest
@@ -107,8 +109,18 @@ def test_studio_rejects_payload_above_configured_limit(secured_studio):
     _, store, base = secured_studio
     with request(base, "/?token=test-session-secret") as resp:
         cookie = resp.headers["Set-Cookie"].split(";", 1)[0]
-    payload = {"junk": "A" * (16 * 1024 * 1024)}
-    with pytest.raises(HTTPError) as err:
-        request(base, "/api/project", cookie=cookie, payload=payload)
-    assert err.value.code == 413
+    # Test the advertised length before transmitting a giant body. When a server
+    # rejects early with 413 it may close the client socket (BrokenPipe).
+    uri = urlparse(base)
+    conn = HTTPConnection(uri.hostname, uri.port, timeout=5)
+    try:
+        conn.putrequest("POST", "/api/project")
+        conn.putheader("Cookie", cookie)
+        conn.putheader("Content-Type", "application/json")
+        conn.putheader("Content-Length", str(16 * 1024 * 1024 + 1))
+        conn.endheaders()
+        response = conn.getresponse()
+        assert response.status == 413
+    finally:
+        conn.close()
     assert store.status().revision == 0
