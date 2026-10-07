@@ -73,6 +73,12 @@ try {
     try {
       npm ci
       Assert-Exit 'npm ci'
+      # Vite compila arquivos fora de app/ (storage/), por isso resolvemos
+      # sql.js também a partir da raiz do repo, sem instalar pacote duplicado.
+      $rootModules = Join-Path $root 'node_modules'
+      if (-not (Test-Path -LiteralPath $rootModules)) {
+        New-Item -ItemType Junction -Path $rootModules -Target (Join-Path $root 'app\node_modules') | Out-Null
+      }
       npm run dist:p1:windows
       Assert-Exit 'electron-builder NSIS P1'
     } finally { Pop-Location }
