@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+import mimetypes
 import os
 import tempfile
 import secrets
@@ -174,6 +175,25 @@ class DesktopApplication:
         self.autosave = AutosaveManager(self.store)
         self.session_token = session_token
 
+    def react_ui_dir(self) -> Path | None:
+        candidate = os.environ.get('CBIM_STUDIO_UI_DIR', '').strip()
+        if not candidate:
+            return None
+        path = Path(candidate).resolve()
+        return path if (path / 'studio-react.html').is_file() else None
+
+    def studio_state_payload(self) -> dict:
+        return {
+            'project': self.store.load_project().model_dump(mode='json'),
+            'plan': self.store.load_import_plan().model_dump(mode='json'),
+            'report': build_conversion_report(self.store.load_project(), import_plan=self.store.load_import_plan()).model_dump(mode='json'),
+            'status': self.status_payload(),
+            'history': self.history_payload().get('snapshots', []),
+            'recovery': self.recovery_payload(),
+            'annotations': self.annotations_payload().get('items', []),
+            'audit': self.audit_payload().get('items', []),
+        }
+
     def generate_studio(self) -> Path:
         project = self.store.load_project()
         plan = self.store.load_import_plan()
@@ -328,7 +348,7 @@ class DesktopApplication:
                 self.send_header('X-Content-Type-Options', 'nosniff')
                 self.send_header('Referrer-Policy', 'no-referrer')
                 self.send_header('X-Frame-Options', 'DENY')
-                self.send_header('Content-Security-Policy', "default-src 'none'; connect-src 'self'; img-src data:; style-src 'unsafe-inline'; script-src 'unsafe-inline'")
+                self.send_header('Content-Security-Policy', "default-src 'none'; connect-src 'self'; img-src data:; style-src 'self' 'unsafe-inline'; script-src 'self'")
                 if cookie and application.session_token:
                     self.send_header('Set-Cookie', f'cbim_studio_session={application.session_token}; HttpOnly; SameSite=Strict; Path=/')
                 self.end_headers()
@@ -357,7 +377,18 @@ class DesktopApplication:
                 if not self._authorized() and not allow_cookie:
                     return self._json(403, {'error': 'A sessão do Studio não foi autenticada'})
                 if route.path == '/':
-                    self._send(200, 'text/html; charset=utf-8', application.generate_studio().read_bytes(), cookie=allow_cookie)
+                    ui = application.react_ui_dir()
+                    page = ui / 'studio-react.html' if ui else application.generate_studio()
+                    self._send(200, 'text/html; charset=utf-8', page.read_bytes(), cookie=allow_cookie)
+                elif route.path.startswith('/assets/') and application.react_ui_dir():
+                    ui = application.react_ui_dir()
+                    asset = (ui / route.path.lstrip('/')).resolve()
+                    if ui not in asset.parents or not asset.is_file():
+                        return self._send(404, 'text/plain', b'not found')
+                    mime = mimetypes.guess_type(asset.name)[0] or 'application/octet-stream'
+                    self._send(200, mime, asset.read_bytes())
+                elif route.path == '/api/studio-state':
+                    self._json(200, application.studio_state_payload())
                 elif route.path == '/api/status':
                     self._json(200, application.status_payload())
                 elif route.path == '/api/canonical':
