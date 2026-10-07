@@ -124,8 +124,8 @@ PRODUCTIVITY_CONTROLS = """<script>
     return data;
   }
   async function inspect(){
-    const box=document.getElementById('elementInspector'); if(!box||!window.selected)return;
-    const element=project.elements.find(item=>item.id===window.selected||item.id===selected); if(!element)return;
+    const box=document.getElementById('elementInspector'); if(!box||typeof selected==='undefined'||!selected)return;
+    const element=project.elements.find(item=>item.id===selected); if(!element)return;
     const notes=await json('/api/annotations').catch(()=>({items:[]}));
     const related=notes.items.filter(note=>note.element_id===element.id);
     box.replaceChildren();
