@@ -3,7 +3,7 @@
   <AddIn Type="Application">
     <Name>CBIM Hidráulica</Name>
     <Assembly>__CBIM_PLUGIN_ROOT__\CBIM.Hydraulic.Plugin\CBIM.Hydraulic.Plugin.dll</Assembly>
-    <ClientId>A031C804-1EAB-4D33-A2F8-3D8221A57E16</ClientId>
+    <AddInId>A031C804-1EAB-4D33-A2F8-3D8221A57E16</AddInId>
     <FullClassName>CBIM.Hydraulic.Plugin.App</FullClassName>
     <VendorId>CBIM</VendorId>
     <VendorDescription>CBIM Hydraulic Native MEP for Revit 2027</VendorDescription>
