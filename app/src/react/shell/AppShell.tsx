@@ -1,4 +1,5 @@
 import React from 'react';
+import { Button, Card, Status } from '../components/ui';
 
 const sections=['Projetos','Importação','Conversão','Revisão','Pendências','Histórico'];
 
@@ -7,10 +8,10 @@ export function AppShell(){
   return <div className="studio-shell">
     <header className="studio-topbar">
       <div><span className="studio-product">CompatibilizaBIM</span><strong>Studio</strong></div>
-      <div className="studio-status" role="status">Local · Offline</div>
+      <div className="studio-status" role="status"><Status tone="success">Local · Offline</Status></div>
     </header>
     <aside className="studio-sidebar" aria-label="Navegação do Studio">
-      {sections.map(section=><button key={section} className={active===section?'active':''} onClick={()=>setActive(section)}>{section}</button>)}
+      {sections.map(section=><Button variant="ghost" key={section} className={active===section?'active':''} onClick={()=>setActive(section)}>{section}</Button>)}
     </aside>
     <main className="studio-content">
       <section className="studio-page">
