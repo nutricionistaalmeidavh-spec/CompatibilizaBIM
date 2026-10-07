@@ -27,3 +27,10 @@ __pycache__/
 .DS_Store
 Thumbs.db
 .vscode/
+
+# Artefatos e credenciais gerados na preparação comercial P1
+.p1-build/
+app/dist-installers/
+license/
+*private*.pem
+*.pfx
