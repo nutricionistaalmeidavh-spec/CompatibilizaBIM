@@ -13,16 +13,64 @@
     "electron:dev": "concurrently -k \"vite --host 127.0.0.1\" \"wait-on http://127.0.0.1:5173 && cross-env VITE_DEV_SERVER_URL=http://127.0.0.1:5173 electron .\"",
     "dist:win": "npm run build && electron-builder --win nsis"
   },
-  "dependencies": { "sql.js": "^1.11.0" },
-  "devDependencies": { "vite": "^5.4.0", "concurrently": "^9.0.0", "cross-env": "^7.0.3", "electron": "^35.0.0", "wait-on": "^8.0.0", "electron-builder": "^26.0.12" },
+  "dependencies": {
+    "sql.js": "^1.11.0"
+  },
+  "devDependencies": {
+    "vite": "^5.4.0",
+    "concurrently": "^9.0.0",
+    "cross-env": "^7.0.3",
+    "electron": "^35.0.0",
+    "wait-on": "^8.0.0",
+    "electron-builder": "^26.0.12"
+  },
   "build": {
     "appId": "br.artificialsolution.engenharia360",
     "productName": "Engenharia 360",
-    "directories": { "output": "C:/Users/vh_al/Desktop/Engenharia360Release14" },
-    "files": ["dist/**/*", "electron/**/*", "../storage/**/*", "../src/**/*", "../modules/**/*"],
-    "extraResources": [{ "from": "../runtime_min/python", "to": "runtime" }, { "from": "../modules", "to": "modules" }],
+    "directories": {
+      "output": "C:/Users/vh_al/Desktop/Engenharia360Release14"
+    },
+    "files": [
+      "dist/**/*",
+      "electron/**/*",
+      "../storage/**/*",
+      "../src/**/*",
+      "../modules/**/*"
+    ],
+    "extraResources": [
+      {
+        "from": "../runtime_min/python",
+        "to": "runtime"
+      },
+      {
+        "from": "../modules",
+        "to": "modules"
+      },
+      {
+        "from": "../integrations/cbim-2.1.0",
+        "to": "integrations/cbim-2.1.0",
+        "filter": [
+          "**/*",
+          "!**/tests/**",
+          "!**/benchmarks/**",
+          "!**/*.md",
+          "!**/__pycache__/**",
+          "!**/bin/**",
+          "!**/obj/**",
+          "!**/build/**",
+          "!**/dist/**"
+        ]
+      }
+    ],
     "compression": "store",
-    "win": { "target": "nsis", "signAndEditExecutable": false },
-    "nsis": { "oneClick": false, "perMachine": false, "allowToChangeInstallationDirectory": true }
+    "win": {
+      "target": "nsis",
+      "signAndEditExecutable": false
+    },
+    "nsis": {
+      "oneClick": false,
+      "perMachine": false,
+      "allowToChangeInstallationDirectory": true
+    }
   }
 }
