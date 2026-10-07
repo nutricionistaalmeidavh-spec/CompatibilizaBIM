@@ -1,0 +1,148 @@
+{
+  "id": "project_1c84c3c4570a40af",
+  "schema": "CBIM",
+  "schema_version": "0.2.0",
+  "name": "Sample Building",
+  "created_at": "2026-08-16T16:02:34.678476Z",
+  "units": "m",
+  "coordinate_reference": "local",
+  "sites": [
+    {
+      "id": "site_331f878075e54a16",
+      "name": "Site A",
+      "latitude": null,
+      "longitude": null,
+      "elevation": 0.0,
+      "properties": {}
+    }
+  ],
+  "buildings": [
+    {
+      "id": "building_9fd9bbcaa06d4735",
+      "name": "Building A",
+      "site_id": "site_331f878075e54a16",
+      "properties": {}
+    }
+  ],
+  "storeys": [
+    {
+      "id": "storey_46e500a9dd4240ec",
+      "name": "Ground Floor",
+      "building_id": "building_9fd9bbcaa06d4735",
+      "elevation": 0.0,
+      "height": 2.8,
+      "properties": {}
+    }
+  ],
+  "materials": [
+    {
+      "id": "material_57ced7b8bd204928",
+      "name": "Masonry",
+      "category": "masonry",
+      "manufacturer": null,
+      "product_code": null,
+      "properties": {}
+    }
+  ],
+  "systems": [
+    {
+      "id": "system_da2b97929fcb46bd",
+      "name": "Cold Water",
+      "discipline": "plumbing",
+      "classification": null,
+      "properties": {}
+    }
+  ],
+  "elements": [
+    {
+      "id": "wall_5ca090aacb0e4f8b",
+      "type": "wall",
+      "name": null,
+      "storey_id": "storey_46e500a9dd4240ec",
+      "confidence": 1.0,
+      "review_state": "auto",
+      "source_refs": [],
+      "material_ids": [
+        "material_57ced7b8bd204928"
+      ],
+      "properties": {},
+      "start": {
+        "x": 0.0,
+        "y": 0.0,
+        "z": 0.0
+      },
+      "end": {
+        "x": 5.0,
+        "y": 0.0,
+        "z": 0.0
+      },
+      "thickness": 0.14,
+      "height": 2.8
+    },
+    {
+      "id": "door_184f0c23c2e84edb",
+      "type": "door",
+      "name": null,
+      "storey_id": "storey_46e500a9dd4240ec",
+      "confidence": 1.0,
+      "review_state": "auto",
+      "source_refs": [],
+      "material_ids": [],
+      "properties": {},
+      "position": {
+        "x": 2.0,
+        "y": 0.0,
+        "z": 0.0
+      },
+      "width": 0.8,
+      "height": 2.1,
+      "host_id": "wall_5ca090aacb0e4f8b",
+      "rotation_deg": 0.0
+    },
+    {
+      "id": "pipe_0b43fa7e76164647",
+      "type": "pipe",
+      "name": null,
+      "storey_id": "storey_46e500a9dd4240ec",
+      "confidence": 1.0,
+      "review_state": "auto",
+      "source_refs": [],
+      "material_ids": [],
+      "properties": {},
+      "path": [
+        {
+          "x": 0.0,
+          "y": 1.0,
+          "z": 0.0
+        },
+        {
+          "x": 3.0,
+          "y": 1.0,
+          "z": 0.0
+        }
+      ],
+      "diameter": 0.025,
+      "system_id": "system_da2b97929fcb46bd",
+      "slope": null
+    }
+  ],
+  "relations": [
+    {
+      "id": "relation_16eec0a9481f4b35",
+      "type": "host",
+      "from_id": "wall_5ca090aacb0e4f8b",
+      "to_id": "door_184f0c23c2e84edb",
+      "metadata": {}
+    },
+    {
+      "id": "relation_68fbbcaa86ae4e26",
+      "type": "contains",
+      "from_id": "storey_46e500a9dd4240ec",
+      "to_id": "wall_5ca090aacb0e4f8b",
+      "metadata": {}
+    }
+  ],
+  "metadata": {
+    "delivery": "initial-5"
+  }
+}
