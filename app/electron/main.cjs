@@ -2,6 +2,13 @@ const { app, BrowserWindow, ipcMain, shell } = require('electron');
 const fs = require('node:fs'); const path = require('node:path'); const { spawn } = require('node:child_process');
 const { convertDwg, cancelConversion } = require('./cbimRunner.cjs');
 const { openStudioWindow, listCbimWorkspaces, stopAllStudios } = require('./studioWindow.cjs');
+const { createCbimApplication } = require('./cbimApplication.cjs');
+const cbimApplication = createCbimApplication({
+  convertDwg,
+  cancelConversion,
+  listWorkspaces: listCbimWorkspaces,
+  openStudio: openStudioWindow
+});
 // Alguns computadores sem driver gráfico compatível encerram o renderer ao iniciar.
 // O Engenharia 360 continua funcional offline sem aceleração de hardware.
 let activeBimProcess = null;
@@ -60,8 +67,8 @@ ipcMain.handle('bim:generate-viewer', (_event, files, output) => runBimPython(['
 ipcMain.handle('bim:generate-viewer-base64', async (_event, files) => { const root = path.join(app.getPath('documents'), 'Engenharia360', 'BIM', 'models'); fs.mkdirSync(root, { recursive: true }); const paths = []; for (const file of files || []) { const target = path.join(root, `${Date.now()}-${path.basename(file.name).replace(/[^a-zA-Z0-9._-]/g, '_')}`); fs.writeFileSync(target, Buffer.from(String(file.base64), 'base64')); paths.push(target); } const output = path.join(root, `../viewer-${Date.now()}.html`); await runBimPython(['-m', 'compatibilizabim.viewer_cli', ...paths, '--out', output]); await shell.openPath(output); return { output, paths }; });
 ipcMain.handle('bim:clash-base64', async (event, files, options = {}) => { event.sender.send('bim:progress', { percent: 10, stage: 'Preparando modelos IFC' }); const root = path.join(app.getPath('documents'), 'Engenharia360', 'BIM', 'models'); fs.mkdirSync(root, { recursive: true }); const paths = []; for (const file of files || []) { const target = path.join(root, `${Date.now()}-${path.basename(file.name).replace(/[^a-zA-Z0-9._-]/g, '_')}`); fs.writeFileSync(target, Buffer.from(String(file.base64), 'base64')); paths.push(target); } event.sender.send('bim:progress', { percent: 30, stage: 'Processando geometria com IfcOpenShell' }); const result = await runBimPython(['-m', 'compatibilizabim.bridge_cli', paths[0], paths[1], '--mode', options.mode || 'intersection', '--tolerance', String(options.tolerance ?? .002), '--clearance', String(options.clearance ?? .05)]); event.sender.send('bim:progress', { percent: 100, stage: 'Análise concluída' }); return JSON.parse(result.stdout.trim()); });
 ipcMain.handle('bim:clash', (_event, fileA, fileB, options = {}) => runBimPython([fileA, fileB, '--mode', options.mode || 'intersection', '--tolerance', String(options.tolerance ?? .002), '--clearance', String(options.clearance ?? .05), '--out', options.out || path.join(app.getPath('documents'), 'Engenharia360', 'bim-reports')]));
-ipcMain.handle('cbim:list-workspaces', () => listCbimWorkspaces(app.getPath('documents')));
-ipcMain.handle('cbim:open-studio', (_event, workspacePath) => openStudioWindow({
+ipcMain.handle('cbim:list-workspaces', () => cbimApplication.query('GetHistory', { documentsDir: app.getPath('documents') }));
+ipcMain.handle('cbim:open-studio', (_event, workspacePath) => cbimApplication.execute('OpenProject', {
   workspacePath,
   documentsDir: app.getPath('documents'),
   appSourceDir: path.join(__dirname, '..'),
@@ -69,7 +76,7 @@ ipcMain.handle('cbim:open-studio', (_event, workspacePath) => openStudioWindow({
   BrowserWindow,
   isPackaged: app.isPackaged
 }));
-ipcMain.handle('bim:convert-dwg-base64', async (event, input) => convertDwg({
+ipcMain.handle('bim:convert-dwg-base64', async (event, input) => cbimApplication.execute('StartConversion', {
   input,
   documentsDir: app.getPath('documents'),
   appSourceDir: path.join(__dirname, '..'),
@@ -77,7 +84,7 @@ ipcMain.handle('bim:convert-dwg-base64', async (event, input) => convertDwg({
   isPackaged: app.isPackaged,
   onProgress: (progress) => { if (!event.sender.isDestroyed()) event.sender.send('bim:progress', progress); }
 }));
-ipcMain.handle('bim:cancel', () => { const cbim = cancelConversion(); if (!activeBimProcess) return cbim; activeBimProcess.kill(); activeBimProcess = null; return true; });
+ipcMain.handle('bim:cancel', async () => { const cbim = await cbimApplication.execute('CancelConversion', {}); if (!activeBimProcess) return cbim; activeBimProcess.kill(); activeBimProcess = null; return true; });
 app.whenReady().then(async () => {
   const window = new BrowserWindow({ width: 1440, height: 900, webPreferences: { preload: path.join(__dirname, 'preload.cjs'), contextIsolation: true, nodeIntegration: false, sandbox: true } });
   const dev = process.env.VITE_DEV_SERVER_URL; if (dev) await window.loadURL(dev); else await window.loadFile(path.join(__dirname, '..', 'dist', 'index.html'));
