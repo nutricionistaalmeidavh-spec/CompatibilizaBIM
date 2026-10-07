@@ -28,14 +28,14 @@ def test_revit_bundle_contains_separate_cbim_and_hydraulic_addins_plus_library_c
     assert all(path.exists() for path in required), [str(p) for p in required if not p.exists()]
 
 
-def test_revit_projects_target_net8_and_reference_local_revit_2027_api_only_in_hosts():
+def test_revit_projects_target_net10_and_reference_local_revit_2027_api_only_in_hosts():
     contracts = (PLUGINS / "CBIM.Revit.Contracts" / "CBIM.Revit.Contracts.csproj").read_text(encoding="utf-8")
-    assert "net8.0-windows" in contracts
+    assert "net10.0-windows" in contracts
     assert "RevitAPI" not in contracts
 
     for project in ("CBIM.Revit.Plugin", "CBIM.Hydraulic.Plugin"):
         text = (PLUGINS / project / f"{project}.csproj").read_text(encoding="utf-8")
-        assert "net8.0-windows" in text
+        assert "net10.0-windows" in text
         assert "$(RevitInstallDir)\\RevitAPI.dll" in text
         assert "$(RevitInstallDir)\\RevitAPIUI.dll" in text
         assert "CBIM.Revit.Contracts" in text
@@ -61,7 +61,7 @@ def test_cbim_host_source_exposes_import_analyze_reconstruct_review_and_library_
     app = (PLUGINS / "CBIM.Revit.Plugin" / "App.cs").read_text(encoding="utf-8")
     executor = (PLUGINS / "CBIM.Revit.Plugin" / "BuildPlanExecutor.cs").read_text(encoding="utf-8")
     bridge = (PLUGINS / "CBIM.Library.Contract" / "LibraryBridge.cs").read_text(encoding="utf-8")
-    assert all(label in app for label in ["Importar DWG", "Analisar", "Reconstruir", "Review"])
+    assert all(label in app for label in [r"Importar\nDWG", "Analisar", "Reconstruir", "Revisar"])
     assert "CBIM_ID" in executor
     assert "create_wall" in executor and "create_floor" in executor
     assert "manifest.json" in bridge
