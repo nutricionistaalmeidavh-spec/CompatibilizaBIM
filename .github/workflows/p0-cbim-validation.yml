@@ -1,0 +1,52 @@
+name: P0 CBIM Integration CI
+on:
+  push:
+    branches: [feat/p0-cbim-core-integration]
+  pull_request:
+    branches: [main]
+    paths:
+      - 'src/bim/**'
+      - 'app/**'
+      - 'modules/compatibilizabim/**'
+      - 'integrations/cbim-2.1.0/**'
+      - 'test/**'
+      - '.github/workflows/p0-cbim-validation.yml'
+permissions:
+  contents: read
+jobs:
+  node:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          lfs: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Unit and regression tests
+        run: npm test
+      - name: Electron renderer build
+        working-directory: app
+        run: |
+          npm ci
+          npm run build
+  cbim-python:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          lfs: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install recovered Python core in editable mode
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install -e ./integrations/cbim-2.1.0/cbim-sdk/python
+          python -m pip install -e './integrations/cbim-2.1.0/compatibilizabim-core[dev]'
+      - name: Python syntax
+        run: python -m compileall -q integrations/cbim-2.1.0/compatibilizabim-core/src integrations/cbim-2.1.0/cbim-sdk/python/src
+      - name: Core regression suite
+        run: python -m pytest -q integrations/cbim-2.1.0/compatibilizabim-core/tests
+      - name: SDK regression suite
+        run: python -m pytest -q integrations/cbim-2.1.0/cbim-sdk/python/tests
