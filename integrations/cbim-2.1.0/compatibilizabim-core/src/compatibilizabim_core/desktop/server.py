@@ -4,6 +4,7 @@ import json
 import secrets
 import threading
 import webbrowser
+from uuid import uuid4
 from datetime import datetime, timezone
 from http.cookies import SimpleCookie
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
@@ -203,6 +204,56 @@ class DesktopApplication:
         self.autosave.clear_recovery_candidates()
         return self.status_payload()
 
+
+    def _read_aux_items(self, name: str) -> list[dict]:
+        path = self.store.root / 'project' / name
+        if not path.exists():
+            return []
+        data = json.loads(path.read_text(encoding='utf-8'))
+        return list(data.get('items') or [])
+
+    def _write_aux_items(self, name: str, items: list[dict]) -> None:
+        path = self.store.root / 'project' / name
+        path.write_text(json.dumps({'items': items}, ensure_ascii=False, indent=2), encoding='utf-8')
+
+    def _audit(self, action: str, entity_type: str, entity_id: str, metadata: dict | None = None) -> None:
+        items = self._read_aux_items('audit-log.json')
+        items.append({'id': uuid4().hex, 'timestamp': datetime.now(timezone.utc).isoformat(), 'action': action,
+                      'entity_type': entity_type, 'entity_id': entity_id, 'metadata': metadata or {}})
+        self._write_aux_items('audit-log.json', items[-2000:])
+
+    def annotations_payload(self) -> dict:
+        return {'items': self._read_aux_items('annotations.json')}
+
+    def save_annotation_payload(self, raw: bytes) -> dict:
+        data = json.loads(raw)
+        element_id = str(data.get('element_id') or '').strip()
+        if element_id not in {element.id for element in self.store.load_project().elements}:
+            raise ValueError('Anotação deve referenciar um elemento CBIM existente')
+        text = str(data.get('text') or '').strip()
+        if not text:
+            raise ValueError('Informe o texto da anotação')
+        item = {'id': uuid4().hex, 'element_id': element_id, 'text': text,
+                'tags': [str(tag)[:80] for tag in list(data.get('tags') or [])[:20]],
+                'author': str(data.get('author') or 'local')[:120],
+                'created_at': datetime.now(timezone.utc).isoformat()}
+        items = self._read_aux_items('annotations.json')
+        items.append(item)
+        self._write_aux_items('annotations.json', items)
+        self._audit('annotation.created', 'element', element_id, {'annotation_id': item['id']})
+        return item
+
+    def audit_payload(self) -> dict:
+        return {'items': self._read_aux_items('audit-log.json')}
+
+    def export_payload(self, dataset: str) -> dict:
+        if dataset != 'elements':
+            raise ValueError('Conjunto de exportação não suportado')
+        project = self.store.load_project()
+        columns = ['id', 'type', 'name', 'review_state', 'confidence', 'storey_id']
+        rows = [{key: getattr(element, key, None) for key in columns} for element in project.elements]
+        return {'project_id': project.id, 'dataset': dataset, 'columns': columns, 'rows': rows}
+
     def handler(self):
         application = self
 
@@ -253,6 +304,12 @@ class DesktopApplication:
                     self._json(200, application.recovery_payload())
                 elif route.path == '/api/history':
                     self._json(200, application.history_payload())
+                elif route.path == '/api/annotations':
+                    self._json(200, application.annotations_payload())
+                elif route.path == '/api/audit':
+                    self._json(200, application.audit_payload())
+                elif route.path == '/api/export/elements':
+                    self._json(200, application.export_payload('elements'))
                 else:
                     self._send(404, 'text/plain', b'not found')
 
@@ -263,7 +320,7 @@ class DesktopApplication:
                 if origin and origin != f'http://{self.headers.get("Host", "")}':
                     return self._json(403, {'error': 'Origem não autorizada'})
                 route = urlparse(self.path).path
-                if route not in ('/api/project', '/api/workspace', '/api/restore', '/api/recover'):
+                if route not in ('/api/project', '/api/workspace', '/api/restore', '/api/recover', '/api/annotations'):
                     return self._json(404, {'error': 'Rota não encontrada'})
                 try:
                     n = int(self.headers.get('Content-Length', '-1'))
@@ -276,6 +333,8 @@ class DesktopApplication:
                         return self._json(400, {'error': 'Upload incompleto'})
                     if route == '/api/project':
                         payload = application.save_project_payload(raw)
+                    elif route == '/api/annotations':
+                        payload = application.save_annotation_payload(raw)
                     elif route == '/api/workspace':
                         payload = application.save_workspace_payload(raw)
                     elif route == '/api/recover':
