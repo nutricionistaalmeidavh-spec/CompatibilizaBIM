@@ -1,0 +1,24 @@
+{
+  "schema": "CBIM.RevitLibraryManifest",
+  "version": "1.0.0",
+  "roots": ["C:\\Users\\Public\\Documents\\CBIM Library"],
+  "families": [
+    {
+      "id": "example-elbow-dn25",
+      "family_path": "C:\\Users\\Public\\Documents\\CBIM Library\\Generic\\Elbow90.rfa",
+      "family_name": "CBIM Generic Elbow 90",
+      "type_name": "DN25",
+      "semantic_class": "pipe_fitting",
+      "subtype": "elbow",
+      "manufacturer": null,
+      "systems": ["cold_water"],
+      "materials": ["PVC"],
+      "nominal_diameters_m": [0.025],
+      "angles_deg": [90.0],
+      "connector_count": 2,
+      "revit_versions": [2027],
+      "source": "local",
+      "redistribution": "local-only"
+    }
+  ]
+}

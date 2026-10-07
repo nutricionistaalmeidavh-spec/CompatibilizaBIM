@@ -1,0 +1,18 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "cbim-sdk"
+version = "0.4.0"
+description = "Common BIM Intermediate Model SDK shared by CompatibilizaBIM products"
+requires-python = ">=3.11"
+dependencies = ["pydantic>=2.8,<3"]
+
+[project.optional-dependencies]
+dev = ["pytest>=8", "jsonschema>=4.22"]
+
+[tool.pytest.ini_options]
+pythonpath = ["src"]
+testpaths = ["tests"]
+addopts = "-q"

@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8" standalone="no"?>
+<RevitAddIns>
+  <AddIn Type="Application">
+    <Name>CBIM Revit</Name>
+    <Assembly>__CBIM_PLUGIN_ROOT__\CBIM.Revit.Plugin\CBIM.Revit.Plugin.dll</Assembly>
+    <ClientId>BF1562D5-29AB-4C27-96AF-B50D21EB0A14</ClientId>
+    <FullClassName>CBIM.Revit.Plugin.App</FullClassName>
+    <VendorId>CBIM</VendorId>
+    <VendorDescription>CompatibilizaBIM powered by CBIM</VendorDescription>
+  </AddIn>
+</RevitAddIns>
