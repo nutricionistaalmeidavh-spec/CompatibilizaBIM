@@ -1,6 +1,8 @@
 from __future__ import annotations
 
 import json
+import os
+import tempfile
 import secrets
 import threading
 import webbrowser
@@ -267,7 +269,14 @@ class DesktopApplication:
 
     def _write_aux_items(self, name: str, items: list[dict]) -> None:
         path = self.store.root / 'project' / name
-        path.write_text(json.dumps({'items': items}, ensure_ascii=False, indent=2), encoding='utf-8')
+        payload = json.dumps({'items': items}, ensure_ascii=False, indent=2)
+        fd, tmp = tempfile.mkstemp(prefix=f'.{name}.', suffix='.tmp', dir=path.parent)
+        try:
+            with os.fdopen(fd, 'w', encoding='utf-8') as stream:
+                stream.write(payload); stream.flush(); os.fsync(stream.fileno())
+            os.replace(tmp, path)
+        finally:
+            if os.path.exists(tmp): os.unlink(tmp)
 
     def _audit(self, action: str, entity_type: str, entity_id: str, metadata: dict | None = None) -> None:
         items = self._read_aux_items('audit-log.json')
