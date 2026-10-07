@@ -1,0 +1,25 @@
+name: P1 CBIM Studio and Windows Pilot
+on:
+  push:
+    branches: [feat/p1-cbim-studio-commercial]
+  pull_request:
+    branches: [feat/p0-cbim-core-integration]
+permissions:
+  contents: read
+
+jobs:
+  secure-studio-tests:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          lfs: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install CBIM Core and SDK
+        run: |
+          python -m pip install -e ./integrations/cbim-2.1.0/cbim-sdk/python
+          python -m pip install -e './integrations/cbim-2.1.0/compatibilizabim-core[dev]'
+      - name: P1 Studio security regression
+        run: python -m pytest -q integrations/cbim-2.1.0/compatibilizabim-core/tests/test_p1_secure_studio.py
