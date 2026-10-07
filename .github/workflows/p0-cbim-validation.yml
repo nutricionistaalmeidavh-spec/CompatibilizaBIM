@@ -25,6 +25,7 @@ jobs:
           node-version: '22'
       - name: Install desktop dependencies used by root regression tests
         run: |
+          npm install --package-lock-only --prefix app
           npm ci --prefix app
           ln -s app/node_modules node_modules
       - name: Unit and regression tests
