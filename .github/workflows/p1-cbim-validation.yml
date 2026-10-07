@@ -1,4 +1,7 @@
 name: P1 CBIM Studio and Windows Pilot
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
 on:
   push:
     branches: [feat/p1-cbim-studio-commercial]
