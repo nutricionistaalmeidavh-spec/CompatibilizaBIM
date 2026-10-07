@@ -58,8 +58,10 @@ def test_autosave_detects_crash_recovers_and_rotates(tmp_path):
     for i in range(3):
         changed=p.model_copy(update={'name':f'R{i}'})
         mgr.autosave(changed)
+    assert mgr.recovery_candidates()==[]  # sessão atual não é tratada como falha
+    mgr.begin_session()  # simula reabertura após encerramento sem mark_clean_shutdown
     candidates=mgr.recovery_candidates()
-    assert len(candidates)==2
+    assert len(candidates)==1
     recovered=mgr.recover_latest()
     assert recovered.name=='R2'
     mgr.mark_clean_shutdown()

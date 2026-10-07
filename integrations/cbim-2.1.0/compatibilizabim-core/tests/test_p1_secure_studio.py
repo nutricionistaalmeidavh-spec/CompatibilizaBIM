@@ -124,3 +124,50 @@ def test_studio_rejects_payload_above_configured_limit(secured_studio):
     finally:
         conn.close()
     assert store.status().revision == 0
+
+
+def test_studio_recovers_interrupted_autosave_from_authenticated_ui(secured_studio):
+    app, store, base = secured_studio
+    with request(base, "/?token=test-session-secret") as resp:
+        cookie = resp.headers["Set-Cookie"].split(";", 1)[0]
+
+    recovered = store.load_project()
+    recovered.name = "Versão recuperável"
+    app.autosave.autosave(recovered)
+    app.autosave.begin_session()  # simula nova abertura após encerramento inesperado
+    current = store.load_project()
+    assert current.name != recovered.name
+
+    with request(base, "/api/recovery", cookie=cookie) as resp:
+        candidates = json.load(resp)
+    assert candidates and candidates[0]["id"]
+    assert "path" not in candidates[0]
+
+    with request(base, "/api/recover", cookie=cookie, payload={"candidate": candidates[0]["id"]}) as resp:
+        result = json.load(resp)
+    assert result["project_name"] == "Versão recuperável"
+    assert store.load_project().name == "Versão recuperável"
+    assert list((store.root / "revisions").glob("*.cbim.json"))
+    assert app.autosave.recovery_candidates() == []
+
+
+def test_studio_saves_project_and_import_plan_as_one_workspace_action(secured_studio):
+    _, store, base = secured_studio
+    with request(base, "/?token=test-session-secret") as resp:
+        cookie = resp.headers["Set-Cookie"].split(";", 1)[0]
+
+    project = store.load_project()
+    project.name = "Projeto comercial"
+    plan = store.load_import_plan()
+    plan.config.project_name = project.name
+    plan.config.organization = "ArtiSys"
+    payload = {
+        "project": project.model_dump(mode="json", exclude_computed_fields=True),
+        "plan": plan.model_dump(mode="json"),
+    }
+    with request(base, "/api/workspace", cookie=cookie, payload=payload) as resp:
+        result = json.load(resp)
+
+    assert result["project_name"] == "Projeto comercial"
+    assert store.load_project().name == "Projeto comercial"
+    assert store.load_import_plan().config.organization == "ArtiSys"

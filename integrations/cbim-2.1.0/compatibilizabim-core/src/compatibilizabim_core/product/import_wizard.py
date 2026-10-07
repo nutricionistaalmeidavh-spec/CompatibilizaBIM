@@ -4,16 +4,25 @@ from pathlib import Path
 from .models import ImportPlan,ImportSource,ProjectConfiguration,ProductDiscipline,SourceFormat
 from ..levels import LevelDefinition
 
-PATTERNS={
-'architecture':('ARQ','ARQUIT','ARCH','PLANTA','LAYOUT'),
-'structure':('ESTR','EST_','STRUCT','CONCRETO','FORMA'),
-'hydraulic':('HID','HIDR','AGUA','ÁGUA','ESGOTO','SANIT','PLUV','AF_','AQ_'),
-'fire':('INC','FIRE','SPRINK','HIDRANTE','SPK'),
+EXACT_PATTERNS={
+'architecture':{'ARQ','PLANTA','LAYOUT'},
+'structure':{'ESTR','CONCRETO','FORMA','FORMAS'},
+'hydraulic':{'HID','HIDR','AGUA','ÁGUA','ESGOTO','SANIT','PLUV','AF','AQ'},
+'fire':{'INC','FIRE','SPRINK','HIDRANTE','SPK'},
+}
+PREFIX_PATTERNS={
+'architecture':('ARQUIT','ARCH'),
+'structure':('ESTRUT','STRUCT'),
+'hydraulic':('HIDRAUL','ESGOT','SANIT','PLUV'),
+'fire':('INCEND','SPRINK'),
 }
 
 def detect_discipline(name:str)->tuple[ProductDiscipline,str]:
-    token=re.sub(r'[^A-Z0-9ÁÉÍÓÚ_]+','_',name.upper())
-    hits=[d for d,patterns in PATTERNS.items() if any(p in token for p in patterns)]
+    tokens=[token for token in re.split(r'[^A-Z0-9ÁÉÍÓÚ]+',name.upper()) if token]
+    hits=[discipline for discipline in EXACT_PATTERNS if any(
+        token in EXACT_PATTERNS[discipline] or token.startswith(PREFIX_PATTERNS[discipline])
+        for token in tokens
+    )]
     if len(hits)==1:return hits[0],'filename'
     return 'unknown','ambiguous' if hits else 'unmatched'
 

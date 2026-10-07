@@ -13,6 +13,7 @@ from urllib.parse import parse_qs, urlparse
 from cbim_sdk import CBIMProject
 from compatibilizabim_core.commercial.workspace import WorkspaceStore
 from compatibilizabim_core.commercial.recovery import AutosaveManager
+from compatibilizabim_core.product.models import ImportPlan
 from compatibilizabim_core.product.reporting import build_conversion_report
 from compatibilizabim_core.product.studio import write_studio
 
@@ -71,10 +72,32 @@ HISTORY_CONTROLS = """<script>
         target.append(row);
       });
       if (data.recovery && data.recovery.length) {
-        const warning = document.createElement('p');
-        warning.className = 'warn';
-        warning.textContent = 'Há ' + data.recovery.length + ' autosave(s) de sessão interrompida. Use o comando de recuperação assistida para restaurá-los.';
-        target.prepend(warning);
+        const recovery = document.createElement('div');
+        recovery.className = 'source recovery-card';
+        const heading = document.createElement('strong');
+        heading.textContent = 'Recuperação disponível';
+        const detail = document.createElement('p');
+        detail.className = 'muted';
+        detail.textContent = 'Encontramos uma versão salva automaticamente antes do encerramento inesperado.';
+        const recover = document.createElement('button');
+        recover.className = 'action primary';
+        recover.textContent = 'Recuperar versão mais recente';
+        recover.onclick = async () => {
+          if (!confirm('Recuperar a versão automática mais recente? A versão atual será preservada no histórico.')) return;
+          recover.disabled = true;
+          recover.textContent = 'Recuperando...';
+          try {
+            const result = await request('/api/recover', {method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({candidate:data.recovery[0].id})});
+            alert('Projeto recuperado na revisão ' + result.revision + '.');
+            location.reload();
+          } catch (e) {
+            recover.disabled = false;
+            recover.textContent = 'Tentar novamente';
+            status.textContent = 'Falha na recuperação: ' + e.message;
+          }
+        };
+        recovery.append(heading, detail, recover);
+        target.prepend(recovery);
       }
     } catch (e) { status.textContent = 'Histórico indisponível: ' + e.message; }
   }
@@ -112,7 +135,13 @@ class DesktopApplication:
         return self.store.canonical_state().model_dump(mode='json')
 
     def recovery_payload(self) -> list[dict]:
-        return [c.model_dump(mode='json') for c in self.autosave.recovery_candidates()]
+        return [{
+            'id': c.sha256,
+            'created_at': c.created_at.isoformat(),
+            'sha256': c.sha256,
+            'project_id': c.project_id,
+            'project_name': c.project_name,
+        } for c in self.autosave.recovery_candidates()]
 
     def history_payload(self) -> dict:
         snaps = sorted((self.store.root / 'revisions').glob('r*.cbim.json'), reverse=True)
@@ -129,6 +158,22 @@ class DesktopApplication:
         self.store.save_project(project)
         return self.status_payload()
 
+    def save_workspace_payload(self, raw: bytes) -> dict:
+        data = json.loads(raw)
+        project = CBIMProject.model_validate(data.get('project'))
+        plan = ImportPlan.model_validate(data.get('plan'))
+        current = self.store.load_project()
+        if current.id != project.id:
+            raise ValueError('Projeto não corresponde a este workspace')
+        if plan.config.project_name.strip() != project.name.strip():
+            raise ValueError('Nome do projeto e configuração devem ser iguais')
+        self.autosave.autosave(current)
+        self.store.create_revision_snapshot('before-save')
+        self.store.save_import_plan(plan)
+        self.store.save_config(plan.config)
+        self.store.save_project(project)
+        return self.status_payload()
+
     def restore_snapshot(self, name: str) -> dict:
         if not name or '/' in name or '\\' in name or not name.startswith('r') or not name.endswith('.cbim.json'):
             raise ValueError('Identificador de revisão inválido')
@@ -142,6 +187,20 @@ class DesktopApplication:
         self.autosave.autosave(current)
         self.store.create_revision_snapshot('before-restore')
         self.store.save_project(project)
+        return self.status_payload()
+
+    def recover_autosave(self, candidate_id: str) -> dict:
+        candidates = self.autosave.recovery_candidates()
+        candidate = next((item for item in candidates if secrets.compare_digest(item.sha256, candidate_id)), None)
+        if candidate is None:
+            raise ValueError('Autosave solicitado não foi encontrado')
+        project = CBIMProject.model_validate_json(Path(candidate.path).read_text(encoding='utf-8'))
+        current = self.store.load_project()
+        if project.id != current.id:
+            raise ValueError('Autosave pertence a outro projeto')
+        self.store.create_revision_snapshot('before-recovery')
+        self.store.save_project(project)
+        self.autosave.clear_recovery_candidates()
         return self.status_payload()
 
     def handler(self):
@@ -204,7 +263,7 @@ class DesktopApplication:
                 if origin and origin != f'http://{self.headers.get("Host", "")}':
                     return self._json(403, {'error': 'Origem não autorizada'})
                 route = urlparse(self.path).path
-                if route not in ('/api/project', '/api/restore'):
+                if route not in ('/api/project', '/api/workspace', '/api/restore', '/api/recover'):
                     return self._json(404, {'error': 'Rota não encontrada'})
                 try:
                     n = int(self.headers.get('Content-Length', '-1'))
@@ -217,6 +276,11 @@ class DesktopApplication:
                         return self._json(400, {'error': 'Upload incompleto'})
                     if route == '/api/project':
                         payload = application.save_project_payload(raw)
+                    elif route == '/api/workspace':
+                        payload = application.save_workspace_payload(raw)
+                    elif route == '/api/recover':
+                        data = json.loads(raw)
+                        payload = application.recover_autosave(str(data.get('candidate') or ''))
                     else:
                         data = json.loads(raw)
                         payload = application.restore_snapshot(str(data.get('snapshot') or ''))
