@@ -1,0 +1,1 @@
+import React from'react';import{createRoot}from'react-dom/client';import{StudioApp}from'./StudioApp';import'./studio-react.css';createRoot(document.getElementById('studio-root')!).render(<React.StrictMode><StudioApp/></React.StrictMode>);
