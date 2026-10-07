@@ -111,6 +111,11 @@ def test_desktop_server_serves_status_and_persists_project(tmp_path):
     try:
         status=json.loads(urlopen(base+'/api/status',timeout=3).read())
         assert status['project_name']=='Pilot Project'
+        canonical=json.loads(urlopen(base+'/api/canonical',timeout=3).read())
+        assert canonical['project']['id']==p.id
+        assert canonical['revision']==0
+        assert canonical['elements'][0]['id']=='w1'
+        assert canonical['elements'][0]['review_state']=='confirmed'
         assert b'CompatibilizaBIM Studio' in urlopen(base+'/',timeout=3).read()
         changed=p.model_copy(update={'name':'Saved from Desktop'})
         req=Request(base+'/api/project',data=changed.model_dump_json(by_alias=True,exclude_computed_fields=True).encode(),method='POST',headers={'Content-Type':'application/json'})
