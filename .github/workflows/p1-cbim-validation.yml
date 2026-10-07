@@ -3,10 +3,8 @@ concurrency:
   group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
   cancel-in-progress: true
 on:
-  push:
-    branches: [feat/p1-cbim-studio-commercial]
   pull_request:
-    branches: [feat/p0-cbim-core-integration]
+    branches: [main, feat/p0-cbim-core-integration]
 permissions:
   contents: read
 
@@ -114,7 +112,7 @@ jobs:
             python scripts/p1_compare_real_dwg.py --baseline $baseline --current $current --output p1-results/qua/compare-v1401-v210.json --source 'QUA-HID-LO-0100-TERR-R02.dwg'
             if ($LASTEXITCODE -ne 0) { throw 'Exportação IFC ou provider nativo não validado' }
           }
-          if ($processingExit -ne 0) { throw "Pipeline CBIM 2.1 retornou $processingExit: confira os relatórios" }
+          if ($processingExit -ne 0) { throw "Pipeline CBIM 2.1 retornou ${processingExit}: confira os relatórios" }
       - name: Processar BARRILETE real
         shell: pwsh
         run: |
