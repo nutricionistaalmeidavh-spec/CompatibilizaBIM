@@ -12,7 +12,7 @@
     "preview": "vite preview",
     "electron:dev": "concurrently -k \"vite --host 127.0.0.1\" \"wait-on http://127.0.0.1:5173 && cross-env VITE_DEV_SERVER_URL=http://127.0.0.1:5173 electron .\"",
     "dist:win": "npm run build && electron-builder --win nsis",
-    "dist:p1:windows": "npm run build && electron-builder --win nsis --publish never"
+    "dist:p1:windows": "npm run build && electron-builder --config electron-builder.p1.config.cjs --win nsis --publish never"
   },
   "dependencies": {
     "sql.js": "^1.11.0"
