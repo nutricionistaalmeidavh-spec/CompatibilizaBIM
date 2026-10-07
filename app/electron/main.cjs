@@ -9,7 +9,53 @@ const databasePath = () => { const root = path.join(app.getPath('documents'), 'E
 ipcMain.on('engineering-db:load-sync', (event) => { const file = databasePath(); event.returnValue = fs.existsSync(file) ? fs.readFileSync(file).toString('base64') : null; });
 ipcMain.on('engineering-db:save-sync', (event, base64) => { fs.writeFileSync(databasePath(), Buffer.from(String(base64), 'base64')); event.returnValue = true; });
 ipcMain.handle('engineering-db:path', () => databasePath());
-function runBimPython(args) { return new Promise((resolve, reject) => { const root = path.join(__dirname, '..'); const packagedRoot = process.resourcesPath || root; const moduleRoot = fs.existsSync(path.join(packagedRoot, 'modules')) ? path.join(packagedRoot, 'modules') : path.join(root, 'modules'); const bundled = path.join(packagedRoot, 'runtime', process.platform === 'win32' ? 'python.exe' : 'python'); const bundledExists = fs.existsSync(bundled); const python = bundledExists ? bundled : (process.env.PYTHON || 'python'); const pythonRoot = path.dirname(bundled); const env = { ...process.env, PYTHONHOME: bundledExists ? pythonRoot : process.env.PYTHONHOME, PYTHONPATH: `${moduleRoot};${path.join(pythonRoot, 'Lib', 'site-packages')}` }; const child = spawn(python, args[0] === '-m' ? args : ['-m', 'compatibilizabim', ...args], { cwd: moduleRoot, env, windowsHide: true }); activeBimProcess = child; let stdout = ''; let stderr = ''; child.stdout.on('data', (chunk) => { stdout += chunk; }); child.stderr.on('data', (chunk) => { stderr += chunk; }); child.on('error', reject); child.on('close', (code) => { activeBimProcess = null; code === 0 ? resolve({ stdout, stderr }) : reject(new Error(stderr || stdout || `Backend BIM encerrou com código ${code}`)); }); }); }
+function runBimPython(args) {
+  return new Promise((resolve, reject) => {
+    const root = path.join(__dirname, '..');
+    const packagedRoot = process.resourcesPath || root;
+    const moduleRoot = fs.existsSync(path.join(packagedRoot, 'modules'))
+      ? path.join(packagedRoot, 'modules') : path.join(root, 'modules');
+    const packagedCli = path.join(packagedRoot, 'runtime', 'cbim-runtime.exe');
+    const embeddedPython = path.join(packagedRoot, 'runtime', process.platform === 'win32' ? 'python.exe' : 'python');
+    let program, commandArgs;
+    const env = { ...process.env };
+    if (fs.existsSync(packagedCli)) {
+      program = packagedCli;
+      const commands = {
+        'compatibilizabim.viewer_cli': 'ifc-viewer',
+        'compatibilizabim.bridge_cli': 'ifc-clash',
+        'compatibilizabim.cli': 'ifc-legacy'
+      };
+      if (args[0] === '-m') {
+        const selected = commands[args[1]];
+        if (!selected) return reject(new Error('Comando BIM não suportado pelo runtime empacotado: ' + args[1]));
+        commandArgs = [selected, ...args.slice(2)];
+      } else {
+        commandArgs = ['ifc-legacy', ...args];
+      }
+    } else {
+      program = fs.existsSync(embeddedPython) ? embeddedPython : (process.env.PYTHON || 'python');
+      const pythonRoot = path.dirname(program);
+      if (fs.existsSync(embeddedPython)) env.PYTHONHOME = pythonRoot;
+      env.PYTHONPATH = [moduleRoot, path.join(pythonRoot, 'Lib', 'site-packages'), process.env.PYTHONPATH].filter(Boolean).join(path.delimiter);
+      commandArgs = args[0] === '-m' ? args : ['-m', 'compatibilizabim', ...args];
+    }
+    const child = spawn(program, commandArgs, { cwd: moduleRoot, env, windowsHide: true });
+    activeBimProcess = child;
+    let stdout = '', stderr = '';
+    child.stdout.on('data', chunk => {
+      stdout += chunk.toString();
+      if (stdout.length > 8_000_000) child.kill();
+    });
+    child.stderr.on('data', chunk => { stderr = (stderr + chunk.toString()).slice(-200_000); });
+    child.on('error', error => { activeBimProcess = null; reject(error); });
+    child.on('close', code => {
+      activeBimProcess = null;
+      if (code === 0) resolve({ stdout, stderr });
+      else reject(new Error(stderr || stdout || 'Motor BIM encerrado com código ' + code));
+    });
+  });
+}
 ipcMain.handle('bim:generate-viewer', (_event, files, output) => runBimPython(['-m', 'compatibilizabim.viewer_cli', ...(files || []), '--out', output]));
 ipcMain.handle('bim:generate-viewer-base64', async (_event, files) => { const root = path.join(app.getPath('documents'), 'Engenharia360', 'BIM', 'models'); fs.mkdirSync(root, { recursive: true }); const paths = []; for (const file of files || []) { const target = path.join(root, `${Date.now()}-${path.basename(file.name).replace(/[^a-zA-Z0-9._-]/g, '_')}`); fs.writeFileSync(target, Buffer.from(String(file.base64), 'base64')); paths.push(target); } const output = path.join(root, `../viewer-${Date.now()}.html`); await runBimPython(['-m', 'compatibilizabim.viewer_cli', ...paths, '--out', output]); await shell.openPath(output); return { output, paths }; });
 ipcMain.handle('bim:clash-base64', async (event, files, options = {}) => { event.sender.send('bim:progress', { percent: 10, stage: 'Preparando modelos IFC' }); const root = path.join(app.getPath('documents'), 'Engenharia360', 'BIM', 'models'); fs.mkdirSync(root, { recursive: true }); const paths = []; for (const file of files || []) { const target = path.join(root, `${Date.now()}-${path.basename(file.name).replace(/[^a-zA-Z0-9._-]/g, '_')}`); fs.writeFileSync(target, Buffer.from(String(file.base64), 'base64')); paths.push(target); } event.sender.send('bim:progress', { percent: 30, stage: 'Processando geometria com IfcOpenShell' }); const result = await runBimPython(['-m', 'compatibilizabim.bridge_cli', paths[0], paths[1], '--mode', options.mode || 'intersection', '--tolerance', String(options.tolerance ?? .002), '--clearance', String(options.clearance ?? .05)]); event.sender.send('bim:progress', { percent: 100, stage: 'Análise concluída' }); return JSON.parse(result.stdout.trim()); });
