@@ -107,10 +107,59 @@ HISTORY_CONTROLS = """<script>
 </script>"""
 
 
+
+PRODUCTIVITY_CONTROLS = """<script>
+(function(){
+  const review=document.getElementById('review');
+  const side=review&&review.querySelector('.side');
+  if(side){
+    const inspector=document.createElement('section'); inspector.className='card'; inspector.id='elementInspector';
+    inspector.innerHTML='<strong>Inspector do elemento</strong><p class="muted">Selecione um elemento para ver origem, propriedades e anotações.</p>';
+    side.prepend(inspector);
+  }
+  async function json(path,options){
+    const response=await fetch(path,{credentials:'same-origin',...options});
+    const data=await response.json().catch(()=>({error:'Resposta inválida'}));
+    if(!response.ok) throw new Error(data.error||'Falha na operação');
+    return data;
+  }
+  async function inspect(){
+    const box=document.getElementById('elementInspector'); if(!box||!window.selected)return;
+    const element=project.elements.find(item=>item.id===window.selected||item.id===selected); if(!element)return;
+    const notes=await json('/api/annotations').catch(()=>({items:[]}));
+    const related=notes.items.filter(note=>note.element_id===element.id);
+    box.replaceChildren();
+    const title=document.createElement('strong'); title.textContent=element.name||element.type;
+    const meta=document.createElement('p'); meta.className='muted'; meta.textContent=element.id+' · '+stateLabels[element.review_state]+' · '+Math.round(element.confidence*100)+'%';
+    const origin=document.createElement('p'); origin.className='muted'; origin.textContent='Origem: '+((element.source_refs||[]).map(ref=>ref.layer||ref.entity_id).filter(Boolean).join(', ')||'não informada');
+    const props=document.createElement('pre'); props.className='inspector-props'; props.textContent=JSON.stringify(element.properties||{},null,2);
+    const form=document.createElement('form'); form.innerHTML='<label class="field"><span>Comentário</span><textarea rows="2" required placeholder="Registrar observação da revisão"></textarea></label><button class="action" type="submit">Adicionar comentário</button>';
+    const list=document.createElement('div'); list.className='annotation-list';
+    related.forEach(note=>{const row=document.createElement('p');row.className='muted';row.textContent=note.text+' · '+note.author;list.append(row)});
+    form.onsubmit=async event=>{event.preventDefault();const input=form.querySelector('textarea');await json('/api/annotations',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({element_id:element.id,text:input.value,tags:['revisão'],author:'local'})});input.value='';inspect()};
+    box.append(title,meta,origin,props,form,list);
+  }
+  const originalSelect=window.selectElement;
+  window.selectElement=function(node){originalSelect(node);inspect()};
+  document.addEventListener('keydown',event=>{
+    if((event.ctrlKey||event.metaKey)&&event.key.toLowerCase()==='s'){event.preventDefault();saveWorkspaceProject()}
+    else if((event.ctrlKey||event.metaKey)&&event.key.toLowerCase()==='z'){event.preventDefault();event.shiftKey?redo():undo()}
+    else if(event.key==='Escape'){selected=null;draw()}
+    else if(event.key==='/'&&!/INPUT|TEXTAREA|SELECT/.test(document.activeElement?.tagName||'')){event.preventDefault();document.getElementById('elementSearch')?.focus()}
+  });
+  const report=document.getElementById('report');
+  if(report){
+    const button=document.createElement('button');button.className='action';button.textContent='Exportar elementos CSV';
+    button.onclick=async()=>{const data=await json('/api/export/elements');const quote=v=>'"'+String(v??'').replaceAll('"','""')+'"';const csv=[data.columns.join(','),...data.rows.map(row=>data.columns.map(k=>quote(row[k])).join(','))].join('\\n');const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv;charset=utf-8'}));a.download='elementos-cbim.csv';a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1000)};
+    report.querySelector('.title>div:last-child')?.append(' ',button);
+  }
+})();
+</script>"""
+
 def _studio_with_history(html: str) -> str:
     html = html.replace('</nav>', '<button data-page="history">6. Histórico</button></nav>', 1)
     html = html.replace('</main>', '<section id="history" class="page"><div class="title"><div><h1>Histórico e recuperação</h1><p class="muted">Revise versões anteriores; restauração sempre preserva o estado atual.</p></div></div><p id="historyStatus" role="status" aria-live="polite"></p><div id="historyRows"></div></section></main>', 1)
-    return html.replace('</body>', HISTORY_CONTROLS + '</body>', 1)
+    return html.replace('</body>', HISTORY_CONTROLS + PRODUCTIVITY_CONTROLS + '</body>', 1)
 
 
 class DesktopApplication:
