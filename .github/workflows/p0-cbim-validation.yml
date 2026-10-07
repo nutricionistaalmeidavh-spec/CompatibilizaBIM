@@ -23,13 +23,15 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
+      - name: Install desktop dependencies used by root regression tests
+        run: |
+          npm ci --prefix app
+          ln -s app/node_modules node_modules
       - name: Unit and regression tests
         run: npm test
       - name: Electron renderer build
         working-directory: app
-        run: |
-          npm ci
-          npm run build
+        run: npm run build
   cbim-python:
     runs-on: ubuntu-latest
     steps:
