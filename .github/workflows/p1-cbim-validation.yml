@@ -22,4 +22,23 @@ jobs:
           python -m pip install -e ./integrations/cbim-2.1.0/cbim-sdk/python
           python -m pip install -e './integrations/cbim-2.1.0/compatibilizabim-core[dev]'
       - name: P1 Studio security regression
-        run: python -m pytest -q integrations/cbim-2.1.0/compatibilizabim-core/tests/test_p1_secure_studio.py
+        run: python -m pytest -q integrations/cbim-2.1.0/compatibilizabim-core/tests/test_p1_secure_studio.py integrations/cbim-2.1.0/compatibilizabim-core/tests/test_p1_studio_launcher.py
+
+  node-and-frontend:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          lfs: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Install app dependencies
+        run: |
+          npm ci --prefix app
+          ln -s app/node_modules node_modules
+      - name: Node regression
+        run: npm test
+      - name: Build renderer
+        working-directory: app
+        run: npm run build
