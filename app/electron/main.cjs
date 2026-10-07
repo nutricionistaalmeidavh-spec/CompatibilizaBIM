@@ -3,8 +3,10 @@ const fs = require('node:fs'); const path = require('node:path'); const { spawn 
 const { convertDwg, cancelConversion } = require('./cbimRunner.cjs');
 const { openStudioWindow, listCbimWorkspaces, stopAllStudios } = require('./studioWindow.cjs');
 const { createCbimApplication } = require('./cbimApplication.cjs');
+const { createJobQueue } = require('./cbimJobQueue.cjs');
+const cbimConversionQueue = createJobQueue((context) => convertDwg(context));
 const cbimApplication = createCbimApplication({
-  convertDwg,
+  convertDwg: async context => cbimConversionQueue.enqueue(context).promise,
   cancelConversion,
   listWorkspaces: listCbimWorkspaces,
   openStudio: openStudioWindow
@@ -67,6 +69,7 @@ ipcMain.handle('bim:generate-viewer', (_event, files, output) => runBimPython(['
 ipcMain.handle('bim:generate-viewer-base64', async (_event, files) => { const root = path.join(app.getPath('documents'), 'Engenharia360', 'BIM', 'models'); fs.mkdirSync(root, { recursive: true }); const paths = []; for (const file of files || []) { const target = path.join(root, `${Date.now()}-${path.basename(file.name).replace(/[^a-zA-Z0-9._-]/g, '_')}`); fs.writeFileSync(target, Buffer.from(String(file.base64), 'base64')); paths.push(target); } const output = path.join(root, `../viewer-${Date.now()}.html`); await runBimPython(['-m', 'compatibilizabim.viewer_cli', ...paths, '--out', output]); await shell.openPath(output); return { output, paths }; });
 ipcMain.handle('bim:clash-base64', async (event, files, options = {}) => { event.sender.send('bim:progress', { percent: 10, stage: 'Preparando modelos IFC' }); const root = path.join(app.getPath('documents'), 'Engenharia360', 'BIM', 'models'); fs.mkdirSync(root, { recursive: true }); const paths = []; for (const file of files || []) { const target = path.join(root, `${Date.now()}-${path.basename(file.name).replace(/[^a-zA-Z0-9._-]/g, '_')}`); fs.writeFileSync(target, Buffer.from(String(file.base64), 'base64')); paths.push(target); } event.sender.send('bim:progress', { percent: 30, stage: 'Processando geometria com IfcOpenShell' }); const result = await runBimPython(['-m', 'compatibilizabim.bridge_cli', paths[0], paths[1], '--mode', options.mode || 'intersection', '--tolerance', String(options.tolerance ?? .002), '--clearance', String(options.clearance ?? .05)]); event.sender.send('bim:progress', { percent: 100, stage: 'Análise concluída' }); return JSON.parse(result.stdout.trim()); });
 ipcMain.handle('bim:clash', (_event, fileA, fileB, options = {}) => runBimPython([fileA, fileB, '--mode', options.mode || 'intersection', '--tolerance', String(options.tolerance ?? .002), '--clearance', String(options.clearance ?? .05), '--out', options.out || path.join(app.getPath('documents'), 'Engenharia360', 'bim-reports')]));
+ipcMain.handle('cbim:conversion-jobs', () => cbimConversionQueue.snapshot());
 ipcMain.handle('cbim:list-workspaces', () => cbimApplication.query('GetHistory', { documentsDir: app.getPath('documents') }));
 ipcMain.handle('cbim:open-studio', (_event, workspacePath) => cbimApplication.execute('OpenProject', {
   workspacePath,
