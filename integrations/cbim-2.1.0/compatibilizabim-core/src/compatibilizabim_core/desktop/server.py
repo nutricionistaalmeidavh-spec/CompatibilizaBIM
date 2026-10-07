@@ -108,6 +108,9 @@ class DesktopApplication:
     def status_payload(self) -> dict:
         return self.store.status().model_dump(mode='json')
 
+    def canonical_payload(self) -> dict:
+        return self.store.canonical_state().model_dump(mode='json')
+
     def recovery_payload(self) -> list[dict]:
         return [c.model_dump(mode='json') for c in self.autosave.recovery_candidates()]
 
@@ -185,6 +188,8 @@ class DesktopApplication:
                     self._send(200, 'text/html; charset=utf-8', application.generate_studio().read_bytes(), cookie=allow_cookie)
                 elif route.path == '/api/status':
                     self._json(200, application.status_payload())
+                elif route.path == '/api/canonical':
+                    self._json(200, application.canonical_payload())
                 elif route.path == '/api/recovery':
                     self._json(200, application.recovery_payload())
                 elif route.path == '/api/history':
