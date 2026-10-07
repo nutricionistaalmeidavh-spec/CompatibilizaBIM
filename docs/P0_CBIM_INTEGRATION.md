@@ -17,7 +17,7 @@
 
 Requer Node 22, Python 3.12, .NET SDK 10, instalador Git e dependências listadas nos manifestos. O runtime comercial completo ainda não foi homologado. Na raiz da branch:
 
-\`\`\`powershell
+```powershell
 python -m pip install -e .\integrations\cbim-2.1.0\cbim-sdk\python
 python -m pip install -e .\integrations\cbim-2.1.0\compatibilizabim-core
 python -m pip install -r .\modules\compatibilizabim-requirements.txt
@@ -25,7 +25,7 @@ dotnet build .\integrations\cbim-2.1.0\dwg-acadsharp-bridge\CompatibilizaBIM.ACa
 Set-Location .\app
 npm ci
 npm run electron:dev
-\`\`\`
+```
 
 A ponte ACadSharp pode ser resolvida pelo projeto .NET na árvore da branch. Alternativamente, após compilar o executável no Windows, configure a variável de ambiente CBIM_ACADSHARP_BRIDGE para o caminho da ponte. O executor local do Electron adiciona Core e SDK ao PYTHONPATH.
 
