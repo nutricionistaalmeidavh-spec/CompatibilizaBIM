@@ -72,6 +72,10 @@ HISTORY_CONTROLS = """<script>
         row.append(name, detail, restore);
         target.append(row);
       });
+      const audit = await request('/api/audit').catch(() => ({items:[]}));
+      const auditTarget = document.getElementById('auditRows');
+      audit.items.slice(-50).reverse().forEach(entry => { const row=document.createElement('div'); row.className='source'; const title=document.createElement('strong'); title.textContent=entry.action; const detail=document.createElement('p'); detail.className='muted'; detail.textContent=new Date(entry.timestamp).toLocaleString('pt-BR')+' · '+entry.entity_type+' · '+entry.entity_id; row.append(title,detail); auditTarget.append(row); });
+      if (!audit.items.length) auditTarget.textContent='Nenhuma ação auditável registrada ainda.';
       if (data.recovery && data.recovery.length) {
         const recovery = document.createElement('div');
         recovery.className = 'source recovery-card';
@@ -158,7 +162,7 @@ PRODUCTIVITY_CONTROLS = """<script>
 
 def _studio_with_history(html: str) -> str:
     html = html.replace('</nav>', '<button data-page="history">6. Histórico</button></nav>', 1)
-    html = html.replace('</main>', '<section id="history" class="page"><div class="title"><div><h1>Histórico e recuperação</h1><p class="muted">Revise versões anteriores; restauração sempre preserva o estado atual.</p></div></div><p id="historyStatus" role="status" aria-live="polite"></p><div id="historyRows"></div></section></main>', 1)
+    html = html.replace('</main>', '<section id="history" class="page"><div class="title"><div><h1>Histórico e recuperação</h1><p class="muted">Revise versões anteriores; restauração sempre preserva o estado atual.</p></div></div><p id="historyStatus" role="status" aria-live="polite"></p><div id="historyRows"></div><h2>Atividade auditável</h2><div id="auditRows"></div></section></main>', 1)
     return html.replace('</body>', HISTORY_CONTROLS + PRODUCTIVITY_CONTROLS + '</body>', 1)
 
 
