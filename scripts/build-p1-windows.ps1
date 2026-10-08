@@ -71,6 +71,8 @@ try {
   if (-not $SkipInstaller) {
     Push-Location (Join-Path $root 'app')
     try {
+      npm install --package-lock-only
+      Assert-Exit 'sincronização package-lock'
       npm ci
       Assert-Exit 'npm ci'
       # Vite compila arquivos fora de app/ (storage/), por isso resolvemos

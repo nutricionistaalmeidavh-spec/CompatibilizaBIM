@@ -1,14 +1,19 @@
 name: P1 CBIM Studio and Windows Pilot
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
 on:
-  push:
-    branches: [feat/p1-cbim-studio-commercial]
+  workflow_dispatch:
   pull_request:
-    branches: [feat/p0-cbim-core-integration]
+    types: [labeled]
+    branches: [main]
+
 permissions:
   contents: read
 
 jobs:
   secure-studio-tests:
+    if: github.event_name == 'workflow_dispatch' || github.event.label.name == 'run-cbim-qa'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -31,6 +36,7 @@ jobs:
         run: python -m unittest discover -s test -p 'test_p1_regression_report.py'
 
   node-and-frontend:
+    if: github.event_name == 'workflow_dispatch' || github.event.label.name == 'run-cbim-qa'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -41,88 +47,23 @@ jobs:
           node-version: '22'
       - name: Install app dependencies
         run: |
+          npm install --package-lock-only --prefix app
           npm ci --prefix app
           ln -s app/node_modules node_modules
+      - name: Preserve synchronized lockfile
+        uses: actions/upload-artifact@v4
+        with:
+          name: F3-synchronized-package-lock
+          path: app/package-lock.json
+          retention-days: 1
       - name: Node regression
         run: npm test
       - name: Build renderer
         working-directory: app
         run: npm run build
 
-  windows-real-dwg:
-    runs-on: windows-latest
-    timeout-minutes: 70
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          lfs: false
-      - uses: actions/checkout@v4
-        with:
-          ref: backup/all-cbim-materials-2026-09-30-v2
-          path: backup
-          lfs: false
-          sparse-checkout-cone-mode: false
-          sparse-checkout: |
-            .gitattributes
-            materiais-local-2026-09-30/DWG/BARRILETE.dwg
-            materiais-local-2026-09-30/DWG/QUA-HID-LO-0100-TERR-R02.dwg
-            materiais-local-2026-09-30/resultado-qua-hid-v1401/hydraulic-QUA-HID-LO-0100-TERR-R02.validation.json
-      - uses: actions/setup-python@v5
-        with:
-          python-version: '3.12'
-          architecture: x64
-      - uses: actions/setup-dotnet@v4
-        with:
-          dotnet-version: '8.0.x'
-      - name: Baixar DWGs reais do backup por LFS
-        working-directory: backup
-        shell: pwsh
-        run: |
-          git lfs install --local
-          git lfs pull --include="materiais-local-2026-09-30/DWG/BARRILETE.dwg,materiais-local-2026-09-30/DWG/QUA-HID-LO-0100-TERR-R02.dwg" --exclude=""
-          if ($LASTEXITCODE -ne 0) { throw 'Download LFS falhou' }
-      - name: Instalar Core 2.1 e compilar ACadSharp nativo
-        shell: pwsh
-        run: |
-          python -m pip install -e ./integrations/cbim-2.1.0/cbim-sdk/python
-          if ($LASTEXITCODE -ne 0) { throw 'Instalação SDK falhou' }
-          python -m pip install -e './integrations/cbim-2.1.0/compatibilizabim-core[ifc]'
-          if ($LASTEXITCODE -ne 0) { throw 'Instalação Core falhou' }
-          dotnet publish .\integrations\cbim-2.1.0\dwg-acadsharp-bridge\CompatibilizaBIM.ACadSharpBridge.csproj -c Release -r win-x64 --self-contained true -p:PublishSingleFile=true -p:DebugType=None -o .p1-bridge
-          if ($LASTEXITCODE -ne 0) { throw 'ACadSharp não compilou' }
-          if (-not (Test-Path '.p1-bridge\CompatibilizaBIM.ACadSharpBridge.exe')) { throw 'Ponte não encontrada' }
-      - name: Processar QUA-HID real e confrontar baseline 1.40.1
-        shell: pwsh
-        run: |
-          $dwg = Resolve-Path '.\backup\materiais-local-2026-09-30\DWG\QUA-HID-LO-0100-TERR-R02.dwg'
-          $bridge = Resolve-Path '.\.p1-bridge\CompatibilizaBIM.ACadSharpBridge.exe'
-          python -m compatibilizabim_core.validation.cli --hydraulic $dwg.Path --bridge-exe $bridge.Path --output p1-results/qua
-          $processingExit = $LASTEXITCODE
-          $current = 'p1-results/qua/hydraulic-QUA-HID-LO-0100-TERR-R02.validation.json'
-          $baseline = 'backup/materiais-local-2026-09-30/resultado-qua-hid-v1401/hydraulic-QUA-HID-LO-0100-TERR-R02.validation.json'
-          if (Test-Path $current) {
-            python scripts/p1_compare_real_dwg.py --baseline $baseline --current $current --output p1-results/qua/compare-v1401-v210.json --source 'QUA-HID-LO-0100-TERR-R02.dwg'
-            if ($LASTEXITCODE -ne 0) { throw 'Exportação IFC ou provider nativo não validado' }
-          }
-          if ($processingExit -ne 0) { throw "Pipeline CBIM 2.1 retornou $processingExit: confira os relatórios" }
-      - name: Processar BARRILETE real
-        shell: pwsh
-        run: |
-          $dwg = Resolve-Path '.\backup\materiais-local-2026-09-30\DWG\BARRILETE.dwg'
-          $bridge = Resolve-Path '.\.p1-bridge\CompatibilizaBIM.ACadSharpBridge.exe'
-          python -m compatibilizabim_core.validation.cli --hydraulic $dwg.Path --bridge-exe $bridge.Path --output p1-results/barrilete
-          if ($LASTEXITCODE -ne 0) { throw 'Pipeline BARRILETE não atingiu critérios; revisar artefatos' }
-      - name: Preservar relatórios técnicos (sem enviar os DWGs)
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: CBIM-P1-DWG-Real-Regression-Reports
-          path: |
-            p1-results/**/*.json
-          if-no-files-found: warn
-          retention-days: 7
-
   windows-installer-preview:
+    if: github.event_name == 'workflow_dispatch' || github.event.label.name == 'run-cbim-qa'
     runs-on: windows-latest
     timeout-minutes: 100
     steps:

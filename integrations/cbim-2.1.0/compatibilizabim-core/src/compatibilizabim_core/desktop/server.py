@@ -1,9 +1,13 @@
 from __future__ import annotations
 
 import json
+import mimetypes
+import os
+import tempfile
 import secrets
 import threading
 import webbrowser
+from uuid import uuid4
 from datetime import datetime, timezone
 from http.cookies import SimpleCookie
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
@@ -71,6 +75,10 @@ HISTORY_CONTROLS = """<script>
         row.append(name, detail, restore);
         target.append(row);
       });
+      const audit = await request('/api/audit').catch(() => ({items:[]}));
+      const auditTarget = document.getElementById('auditRows');
+      audit.items.slice(-50).reverse().forEach(entry => { const row=document.createElement('div'); row.className='source'; const title=document.createElement('strong'); title.textContent=entry.action; const detail=document.createElement('p'); detail.className='muted'; detail.textContent=new Date(entry.timestamp).toLocaleString('pt-BR')+' · '+entry.entity_type+' · '+entry.entity_id; row.append(title,detail); auditTarget.append(row); });
+      if (!audit.items.length) auditTarget.textContent='Nenhuma ação auditável registrada ainda.';
       if (data.recovery && data.recovery.length) {
         const recovery = document.createElement('div');
         recovery.className = 'source recovery-card';
@@ -106,10 +114,59 @@ HISTORY_CONTROLS = """<script>
 </script>"""
 
 
+
+PRODUCTIVITY_CONTROLS = """<script>
+(function(){
+  const review=document.getElementById('review');
+  const side=review&&review.querySelector('.side');
+  if(side){
+    const inspector=document.createElement('section'); inspector.className='card'; inspector.id='elementInspector';
+    inspector.innerHTML='<strong>Inspector do elemento</strong><p class="muted">Selecione um elemento para ver origem, propriedades e anotações.</p>';
+    side.prepend(inspector);
+  }
+  async function json(path,options){
+    const response=await fetch(path,{credentials:'same-origin',...options});
+    const data=await response.json().catch(()=>({error:'Resposta inválida'}));
+    if(!response.ok) throw new Error(data.error||'Falha na operação');
+    return data;
+  }
+  async function inspect(){
+    const box=document.getElementById('elementInspector'); if(!box||typeof selected==='undefined'||!selected)return;
+    const element=project.elements.find(item=>item.id===selected); if(!element)return;
+    const notes=await json('/api/annotations').catch(()=>({items:[]}));
+    const related=notes.items.filter(note=>note.element_id===element.id);
+    box.replaceChildren();
+    const title=document.createElement('strong'); title.textContent=element.name||element.type;
+    const meta=document.createElement('p'); meta.className='muted'; meta.textContent=element.id+' · '+stateLabels[element.review_state]+' · '+Math.round(element.confidence*100)+'%';
+    const origin=document.createElement('p'); origin.className='muted'; origin.textContent='Origem: '+((element.source_refs||[]).map(ref=>ref.layer||ref.entity_id).filter(Boolean).join(', ')||'não informada');
+    const props=document.createElement('pre'); props.className='inspector-props'; props.textContent=JSON.stringify(element.properties||{},null,2);
+    const form=document.createElement('form'); form.innerHTML='<label class="field"><span>Comentário</span><textarea rows="2" required placeholder="Registrar observação da revisão"></textarea></label><button class="action" type="submit">Adicionar comentário</button>';
+    const list=document.createElement('div'); list.className='annotation-list';
+    related.forEach(note=>{const row=document.createElement('p');row.className='muted';row.textContent=note.text+' · '+note.author;list.append(row)});
+    form.onsubmit=async event=>{event.preventDefault();const input=form.querySelector('textarea');await json('/api/annotations',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({element_id:element.id,text:input.value,tags:['revisão'],author:'local'})});input.value='';inspect()};
+    box.append(title,meta,origin,props,form,list);
+  }
+  const originalSelect=window.selectElement;
+  window.selectElement=function(node){originalSelect(node);inspect()};
+  document.addEventListener('keydown',event=>{
+    if((event.ctrlKey||event.metaKey)&&event.key.toLowerCase()==='s'){event.preventDefault();saveWorkspaceProject()}
+    else if((event.ctrlKey||event.metaKey)&&event.key.toLowerCase()==='z'){event.preventDefault();event.shiftKey?redo():undo()}
+    else if(event.key==='Escape'){selected=null;draw()}
+    else if(event.key==='/'&&!/INPUT|TEXTAREA|SELECT/.test(document.activeElement?.tagName||'')){event.preventDefault();document.getElementById('elementSearch')?.focus()}
+  });
+  const report=document.getElementById('report');
+  if(report){
+    const button=document.createElement('button');button.className='action';button.textContent='Exportar elementos CSV';
+    button.onclick=async()=>{const data=await json('/api/export/elements');const quote=v=>'"'+String(v??'').replaceAll('"','""')+'"';const csv=[data.columns.join(','),...data.rows.map(row=>data.columns.map(k=>quote(row[k])).join(','))].join('\\n');const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv;charset=utf-8'}));a.download='elementos-cbim.csv';a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1000)};
+    report.querySelector('.title>div:last-child')?.append(' ',button);
+  }
+})();
+</script>"""
+
 def _studio_with_history(html: str) -> str:
     html = html.replace('</nav>', '<button data-page="history">6. Histórico</button></nav>', 1)
-    html = html.replace('</main>', '<section id="history" class="page"><div class="title"><div><h1>Histórico e recuperação</h1><p class="muted">Revise versões anteriores; restauração sempre preserva o estado atual.</p></div></div><p id="historyStatus" role="status" aria-live="polite"></p><div id="historyRows"></div></section></main>', 1)
-    return html.replace('</body>', HISTORY_CONTROLS + '</body>', 1)
+    html = html.replace('</main>', '<section id="history" class="page"><div class="title"><div><h1>Histórico e recuperação</h1><p class="muted">Revise versões anteriores; restauração sempre preserva o estado atual.</p></div></div><p id="historyStatus" role="status" aria-live="polite"></p><div id="historyRows"></div><h2>Atividade auditável</h2><div id="auditRows"></div></section></main>', 1)
+    return html.replace('</body>', HISTORY_CONTROLS + PRODUCTIVITY_CONTROLS + '</body>', 1)
 
 
 class DesktopApplication:
@@ -117,6 +174,25 @@ class DesktopApplication:
         self.store = WorkspaceStore(workspace)
         self.autosave = AutosaveManager(self.store)
         self.session_token = session_token
+
+    def react_ui_dir(self) -> Path | None:
+        candidate = os.environ.get('CBIM_STUDIO_UI_DIR', '').strip()
+        if not candidate:
+            return None
+        path = Path(candidate).resolve()
+        return path if (path / 'studio-react.html').is_file() else None
+
+    def studio_state_payload(self) -> dict:
+        return {
+            'project': self.store.load_project().model_dump(mode='json'),
+            'plan': self.store.load_import_plan().model_dump(mode='json'),
+            'report': build_conversion_report(self.store.load_project(), import_plan=self.store.load_import_plan()).model_dump(mode='json'),
+            'status': self.status_payload(),
+            'history': self.history_payload().get('snapshots', []),
+            'recovery': self.recovery_payload(),
+            'annotations': self.annotations_payload().get('items', []),
+            'audit': self.audit_payload().get('items', []),
+        }
 
     def generate_studio(self) -> Path:
         project = self.store.load_project()
@@ -203,6 +279,63 @@ class DesktopApplication:
         self.autosave.clear_recovery_candidates()
         return self.status_payload()
 
+
+    def _read_aux_items(self, name: str) -> list[dict]:
+        path = self.store.root / 'project' / name
+        if not path.exists():
+            return []
+        data = json.loads(path.read_text(encoding='utf-8'))
+        return list(data.get('items') or [])
+
+    def _write_aux_items(self, name: str, items: list[dict]) -> None:
+        path = self.store.root / 'project' / name
+        payload = json.dumps({'items': items}, ensure_ascii=False, indent=2)
+        fd, tmp = tempfile.mkstemp(prefix=f'.{name}.', suffix='.tmp', dir=path.parent)
+        try:
+            with os.fdopen(fd, 'w', encoding='utf-8') as stream:
+                stream.write(payload); stream.flush(); os.fsync(stream.fileno())
+            os.replace(tmp, path)
+        finally:
+            if os.path.exists(tmp): os.unlink(tmp)
+
+    def _audit(self, action: str, entity_type: str, entity_id: str, metadata: dict | None = None) -> None:
+        items = self._read_aux_items('audit-log.json')
+        items.append({'id': uuid4().hex, 'timestamp': datetime.now(timezone.utc).isoformat(), 'action': action,
+                      'entity_type': entity_type, 'entity_id': entity_id, 'metadata': metadata or {}})
+        self._write_aux_items('audit-log.json', items[-2000:])
+
+    def annotations_payload(self) -> dict:
+        return {'items': self._read_aux_items('annotations.json')}
+
+    def save_annotation_payload(self, raw: bytes) -> dict:
+        data = json.loads(raw)
+        element_id = str(data.get('element_id') or '').strip()
+        if element_id not in {element.id for element in self.store.load_project().elements}:
+            raise ValueError('Anotação deve referenciar um elemento CBIM existente')
+        text = str(data.get('text') or '').strip()
+        if not text:
+            raise ValueError('Informe o texto da anotação')
+        item = {'id': uuid4().hex, 'element_id': element_id, 'text': text,
+                'tags': [str(tag)[:80] for tag in list(data.get('tags') or [])[:20]],
+                'author': str(data.get('author') or 'local')[:120],
+                'created_at': datetime.now(timezone.utc).isoformat()}
+        items = self._read_aux_items('annotations.json')
+        items.append(item)
+        self._write_aux_items('annotations.json', items)
+        self._audit('annotation.created', 'element', element_id, {'annotation_id': item['id']})
+        return item
+
+    def audit_payload(self) -> dict:
+        return {'items': self._read_aux_items('audit-log.json')}
+
+    def export_payload(self, dataset: str) -> dict:
+        if dataset != 'elements':
+            raise ValueError('Conjunto de exportação não suportado')
+        project = self.store.load_project()
+        columns = ['id', 'type', 'name', 'review_state', 'confidence', 'storey_id']
+        rows = [{key: getattr(element, key, None) for key in columns} for element in project.elements]
+        return {'project_id': project.id, 'dataset': dataset, 'columns': columns, 'rows': rows}
+
     def handler(self):
         application = self
 
@@ -215,7 +348,7 @@ class DesktopApplication:
                 self.send_header('X-Content-Type-Options', 'nosniff')
                 self.send_header('Referrer-Policy', 'no-referrer')
                 self.send_header('X-Frame-Options', 'DENY')
-                self.send_header('Content-Security-Policy', "default-src 'none'; connect-src 'self'; img-src data:; style-src 'unsafe-inline'; script-src 'unsafe-inline'")
+                self.send_header('Content-Security-Policy', "default-src 'none'; connect-src 'self'; img-src data:; style-src 'self' 'unsafe-inline'; script-src 'self'")
                 if cookie and application.session_token:
                     self.send_header('Set-Cookie', f'cbim_studio_session={application.session_token}; HttpOnly; SameSite=Strict; Path=/')
                 self.end_headers()
@@ -244,7 +377,18 @@ class DesktopApplication:
                 if not self._authorized() and not allow_cookie:
                     return self._json(403, {'error': 'A sessão do Studio não foi autenticada'})
                 if route.path == '/':
-                    self._send(200, 'text/html; charset=utf-8', application.generate_studio().read_bytes(), cookie=allow_cookie)
+                    ui = application.react_ui_dir()
+                    page = ui / 'studio-react.html' if ui else application.generate_studio()
+                    self._send(200, 'text/html; charset=utf-8', page.read_bytes(), cookie=allow_cookie)
+                elif route.path.startswith('/assets/') and application.react_ui_dir():
+                    ui = application.react_ui_dir()
+                    asset = (ui / route.path.lstrip('/')).resolve()
+                    if ui not in asset.parents or not asset.is_file():
+                        return self._send(404, 'text/plain', b'not found')
+                    mime = mimetypes.guess_type(asset.name)[0] or 'application/octet-stream'
+                    self._send(200, mime, asset.read_bytes())
+                elif route.path == '/api/studio-state':
+                    self._json(200, application.studio_state_payload())
                 elif route.path == '/api/status':
                     self._json(200, application.status_payload())
                 elif route.path == '/api/canonical':
@@ -253,6 +397,12 @@ class DesktopApplication:
                     self._json(200, application.recovery_payload())
                 elif route.path == '/api/history':
                     self._json(200, application.history_payload())
+                elif route.path == '/api/annotations':
+                    self._json(200, application.annotations_payload())
+                elif route.path == '/api/audit':
+                    self._json(200, application.audit_payload())
+                elif route.path == '/api/export/elements':
+                    self._json(200, application.export_payload('elements'))
                 else:
                     self._send(404, 'text/plain', b'not found')
 
@@ -263,7 +413,7 @@ class DesktopApplication:
                 if origin and origin != f'http://{self.headers.get("Host", "")}':
                     return self._json(403, {'error': 'Origem não autorizada'})
                 route = urlparse(self.path).path
-                if route not in ('/api/project', '/api/workspace', '/api/restore', '/api/recover'):
+                if route not in ('/api/project', '/api/workspace', '/api/restore', '/api/recover', '/api/annotations'):
                     return self._json(404, {'error': 'Rota não encontrada'})
                 try:
                     n = int(self.headers.get('Content-Length', '-1'))
@@ -276,6 +426,8 @@ class DesktopApplication:
                         return self._json(400, {'error': 'Upload incompleto'})
                     if route == '/api/project':
                         payload = application.save_project_payload(raw)
+                    elif route == '/api/annotations':
+                        payload = application.save_annotation_payload(raw)
                     elif route == '/api/workspace':
                         payload = application.save_workspace_payload(raw)
                     elif route == '/api/recover':

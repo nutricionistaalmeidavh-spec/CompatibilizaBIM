@@ -82,6 +82,9 @@ function pythonStudioCommand({ appSourceDir, resourcesDir }) {
 async function openStudioWindow({ workspacePath, documentsDir, appSourceDir, resourcesDir, BrowserWindow, isPackaged }) {
   const workspace = resolveCbimWorkspace(documentsDir, workspacePath);
   const command = pythonStudioCommand({ appSourceDir, resourcesDir });
+  const packagedUi = path.join(resourcesDir || '', 'studio-ui');
+  const developmentUi = path.join(appSourceDir, 'dist');
+  command.env.CBIM_STUDIO_UI_DIR = isPackaged ? packagedUi : developmentUi;
   const args = [...command.prefix, 'serve', '--workspace', workspace];
   if (isPackaged) {
     const publicKey = path.join(resourcesDir, 'license', 'public.pem');

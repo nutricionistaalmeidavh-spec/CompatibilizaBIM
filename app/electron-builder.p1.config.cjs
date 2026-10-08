@@ -5,7 +5,7 @@ const fs = require('node:fs');
 const path = require('node:path');
 const pkg = require('./package.json');
 const publicKey = path.resolve(__dirname, '..', 'license', 'public.pem');
-const resources = [...pkg.build.extraResources];
+const resources = [...pkg.build.extraResources, { from: 'dist', to: 'studio-ui' }];
 if (fs.existsSync(publicKey)) {
   const firstLine = fs.readFileSync(publicKey, 'utf8').split(/\r?\n/,1)[0];
   if (firstLine !== '-----BEGIN PUBLIC KEY-----') {
