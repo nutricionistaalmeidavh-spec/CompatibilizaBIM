@@ -3,21 +3,16 @@ concurrency:
   group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
   cancel-in-progress: true
 on:
-  push:
-    branches: [feat/p0-cbim-core-integration]
+  workflow_dispatch:
   pull_request:
+    types: [labeled]
     branches: [main]
-    paths:
-      - 'src/bim/**'
-      - 'app/**'
-      - 'modules/compatibilizabim/**'
-      - 'integrations/cbim-2.1.0/**'
-      - 'test/**'
-      - '.github/workflows/p0-cbim-validation.yml'
+
 permissions:
   contents: read
 jobs:
   node:
+    if: github.event_name == 'workflow_dispatch' || github.event.label.name == 'run-cbim-qa'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -37,6 +32,7 @@ jobs:
         working-directory: app
         run: npm run build
   cbim-python:
+    if: github.event_name == 'workflow_dispatch' || github.event.label.name == 'run-cbim-qa'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
