@@ -14,10 +14,18 @@ def build_conversion_report(project:CBIMProject,*,import_plan:ImportPlan|None=No
     accepted=states.get('confirmed',0)+states.get('edited',0)
     q=QuantityCalculator().calculate(project)
     warnings=[];blockers=[]
-    if low:warnings.append(f'{low} elements below {confidence_threshold:.0%} confidence')
-    if states.get('rejected',0):blockers.append(f"{states['rejected']} rejected elements remain")
-    if states.get('auto',0):blockers.append(f"{states['auto']} automatic elements still require review")
-    if import_plan and not import_plan.ready:blockers.extend(import_plan.warnings)
+    if low:warnings.append(f'{low} elemento(s) abaixo de {confidence_threshold:.0%} de confiança')
+    if not total:blockers.append('A conversão não contém elementos exportáveis')
+    if states.get('rejected',0):blockers.append(f"{states['rejected']} elemento(s) rejeitado(s) permanecem no projeto")
+    if states.get('auto',0):blockers.append(f"{states['auto']} elemento(s) automático(s) ainda requer(em) revisão")
+    if import_plan:
+        enabled=import_plan.enabled_sources()
+        if not enabled:blockers.append('Nenhuma fonte de projeto está habilitada')
+        if any(source.discipline=='unknown' for source in enabled):blockers.append('Confirme a disciplina de todas as fontes habilitadas')
+        if not import_plan.config.project_name.strip():blockers.append('Informe o nome do projeto')
+        if not import_plan.config.storeys:blockers.append('Cadastre pelo menos um pavimento')
+        if not import_plan.ready:
+            blockers.extend(warning for warning in import_plan.warnings if warning not in blockers)
     completion=accepted/total if total else 1.0
     return ConversionReport(project_id=project.id,project_name=project.name,source_files=len(import_plan.enabled_sources()) if import_plan else 0,element_counts=project.element_counts(),total_elements=total,review_states=states,mean_confidence=sum(conf)/len(conf) if conf else 1.0,low_confidence=low,pending_review=pending,confirmed_or_edited=accepted,completion_rate=completion,quantity_totals=q.totals_by_type,warnings=warnings,blockers=blockers,ready_to_export=not blockers)
 

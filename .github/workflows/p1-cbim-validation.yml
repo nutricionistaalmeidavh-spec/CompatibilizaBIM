@@ -1,0 +1,95 @@
+name: P1 CBIM Studio and Windows Pilot
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+on:
+  workflow_dispatch:
+  pull_request:
+    types: [labeled]
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  secure-studio-tests:
+    if: github.event_name == 'workflow_dispatch' || github.event.label.name == 'run-cbim-qa'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          lfs: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install CBIM Core and SDK
+        run: |
+          python -m pip install -e ./integrations/cbim-2.1.0/cbim-sdk/python
+          python -m pip install -e './integrations/cbim-2.1.0/compatibilizabim-core[dev]'
+      - name: P1 Studio security regression
+        run: python -m pytest -q integrations/cbim-2.1.0/compatibilizabim-core/tests/test_p1_secure_studio.py integrations/cbim-2.1.0/compatibilizabim-core/tests/test_p1_studio_launcher.py
+      - name: Core and SDK full regression
+        run: |
+          python -m pytest -q integrations/cbim-2.1.0/compatibilizabim-core/tests
+          python -m pytest -q integrations/cbim-2.1.0/cbim-sdk/python/tests
+      - name: Real DWG comparator unit tests
+        run: python -m unittest discover -s test -p 'test_p1_regression_report.py'
+
+  node-and-frontend:
+    if: github.event_name == 'workflow_dispatch' || github.event.label.name == 'run-cbim-qa'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          lfs: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Install app dependencies
+        run: |
+          npm install --package-lock-only --prefix app
+          npm ci --prefix app
+          ln -s app/node_modules node_modules
+      - name: Preserve synchronized lockfile
+        uses: actions/upload-artifact@v4
+        with:
+          name: F3-synchronized-package-lock
+          path: app/package-lock.json
+          retention-days: 1
+      - name: Node regression
+        run: npm test
+      - name: Build renderer
+        working-directory: app
+        run: npm run build
+
+  windows-installer-preview:
+    if: github.event_name == 'workflow_dispatch' || github.event.label.name == 'run-cbim-qa'
+    runs-on: windows-latest
+    timeout-minutes: 100
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          lfs: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+          architecture: x64
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.0.x'
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Gerar runtime Windows e instalador NSIS (sem publicar)
+        shell: pwsh
+        run: |
+          .\scripts\build-p1-windows.ps1
+      - name: Disponibilizar instalador apenas como artefato QA
+        if: success()
+        uses: actions/upload-artifact@v4
+        with:
+          name: CompatibilizaBIM-Studio-P1-Windows-Preview
+          path: |
+            app/dist-installers/*.exe
+          if-no-files-found: error
+          retention-days: 7

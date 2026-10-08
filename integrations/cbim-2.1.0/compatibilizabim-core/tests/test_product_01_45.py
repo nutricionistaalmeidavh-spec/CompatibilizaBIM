@@ -16,6 +16,8 @@ def test_import_wizard_detects_disciplines_and_requires_unknown_confirmation():
     assert [s.discipline for s in plan.sources]==['architecture','structure','hydraulic','fire']
     unknown=build_import_plan(['coordenacao.dwg'])
     assert not unknown.ready and unknown.sources[0].discipline=='unknown'
+    ordinary_name=build_import_plan(['arquivo.dwg'])
+    assert not ordinary_name.ready and ordinary_name.sources[0].discipline=='unknown'
 
 def test_project_configuration_rejects_duplicate_storeys():
     import pytest
@@ -35,11 +37,25 @@ def test_conversion_report_blocks_auto_elements():
     assert not r.ready_to_export
     assert r.element_counts['wall']==3
 
+def test_conversion_report_blocks_empty_or_unidentified_source_projects():
+    empty=CBIMProject(name='Projeto vazio',elements=[])
+    ready_plan=build_import_plan(['Torre_ARQ.dwg'])
+    report=build_conversion_report(empty,import_plan=ready_plan)
+    assert not report.ready_to_export
+    assert any('não contém elementos' in blocker for blocker in report.blockers)
+
+    reviewed=make_project()
+    for element in reviewed.elements: element.review_state='confirmed'
+    unknown_plan=build_import_plan(['arquivo.dwg'])
+    report=build_conversion_report(reviewed,import_plan=unknown_plan)
+    assert not report.ready_to_export
+    assert any('disciplina' in blocker.lower() for blocker in report.blockers)
+
 def test_studio_is_self_contained_and_embeds_workflow():
     p=make_project();plan=build_import_plan(['Torre_ARQ.dwg']);r=build_conversion_report(p,import_plan=plan)
     s=build_studio_html(p,plan,r)
-    for label in ['Importar projeto','Configuração','Revisar reconhecimento','Aprendizado de perfil CAD','Relatório final']:
+    for label in ['Fontes do projeto','Configuração','Revisar reconhecimento','Aprendizado de perfil CAD','Validar e exportar']:
         assert label in s
-    assert 'A-WALL' in s and 'reviewed.cbim.json' in s and 'Salvar no projeto' in s and "fetch('/api/project'" in s
+    assert 'A-WALL' in s and 'reviewed.cbim.json' in s and 'Salvar alterações' in s and "fetch('/api/workspace'" in s
     assert '<script src=' not in s
     assert '"length":' not in s

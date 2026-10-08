@@ -20,7 +20,7 @@ export function renderBimWorkspace(projetos, projeto, esc) {
       ? (ultimaAnalise.conflitos.length === 0 ? 'Análise concluída pelo motor identificado: nenhum conflito detectado neste par.' : 'Análise concluída com conflitos para revisar.')
       : 'Análise antiga sem rastreabilidade do motor: execute novamente para confirmar os resultados.';
   const modeloSelect = modelos.map((m, i) => `<option value="${esc(m.id)}">${esc(m.nome)} (${esc(m.disciplina || 'sem disciplina')})</option>`).join('');
-  return `<section class="workspace bim-workspace"><div class="section-head"><div><p class="eyebrow">COMPATIBILIDADE BIM</p><h2>Estudos e conflitos</h2><p>Compatibilize modelos com ou sem vínculo a uma obra.</p></div><span class="tag">offline</span></div><div class="bim-workspace-toolbar"><label>Estudo BIM<select id="bimProjetoSelect"><option value="">Selecione ou crie um estudo</option>${projetos.map((item) => `<option value="${esc(item.id)}" ${item.id === active?.id ? 'selected' : ''}>${esc(item.nome)}${item.obra_codigo ? ` · ${esc(item.obra_codigo)}` : ' · independente'}</option>`).join('')}</select></label><button class="small" id="novoBimProjeto">+ Novo estudo</button>${active ? `<button class="small" id="importarBimAvulso">Importar IFC/JSON</button><button class="small" id="converterDwgAvulso">Converter DWG → IFC</button><button class="small" id="analisarBimAvulso" ${modelos.length < 2 ? 'disabled' : ''}>Analisar par selecionado</button><button class="small" id="viewerBimAvulso" ${modelos.length < 1 ? 'disabled' : ''}>Viewer 3D</button>` : ''}</div>${active ? `<div class="bim-model-choices"><label>Modelo A<select id="bimModeloA">${modeloSelect}</select></label><label>Modelo B<select id="bimModeloB">${modelos.map((m,i)=>`<option value="${esc(m.id)}" ${i===1?'selected':''}>${esc(m.nome)}</option>`).join('')}</select></label></div><p id="bimActionFeedback" role="status" aria-live="polite">${esc(bimProcessando ? 'Processando, aguarde a conclusão real do motor...' : bimMensagem || statusTexto)}</p>` : ''}${!active ? '<div class="empty"><h3>Compatibilidade BIM independente</h3><p>Crie um estudo para importar dois modelos IFC sem precisar cadastrar uma obra.</p></div>' : `<div class="bim-explainer"><strong>Como ler os resultados</strong><span>Alta = elementos ocupam a mesma região; média = afastamento dentro da tolerância; baixa = revisar regra antes de liberar a revisão.</span></div><div class="model-summary-grid">${modelos.map((m) => `<article class="model-summary"><p class="eyebrow">${esc(m.disciplina)}</p><h3>${esc(m.nome)}</h3><p>${formatoModeloBim(m) === 'ifc' && !m.elementos.length ? 'IFC importado · geometria ainda não processada' : `${m.elementos.length} elementos`} · revisão ${m.revisao}</p><small>Classes: ${esc([...new Set(m.elementos.map((e) => e.ifcClass).filter(Boolean))].join(', ') || 'não informadas')}</small></article>`).join('') || '<div class="empty">Importe os modelos A e B para começar.</div>'}</div><div class="panel bim-conflicts-panel"><div class="panel-head"><div><h3>Conflitos encontrados</h3><p class="muted">Cada conflito explica o impacto e sugere a próxima ação.</p></div><div class="bim-filters"><select id="bimAvulsoFiltro"><option value="todos">Todos os status</option><option value="aberto">Abertos</option><option value="resolvido">Resolvidos</option><option value="ignorado">Ignorados</option></select><select id="bimAvulsoGravidade"><option value="todos">Todas as gravidades</option><option value="high">Alta</option><option value="medium">Média</option><option value="low">Baixa</option></select></div></div>${conflitos.length ? conflitos.map((c) => { const info = explicarConflitoBim(c); return `<article class="bim-conflict-card" data-status="${esc(info.gravidade)}" data-bim-status="${esc(c.status || 'aberto')}"><div class="conflict-title"><span class="severity severity-${info.gravidade}">${info.gravidadeLabel}</span><strong>#${c.indice} · ${esc(info.titulo)}</strong><span class="status-label">${esc(c.status || 'aberto')}</span></div><p>${esc(info.resumo)} ${esc(info.detalhe)}</p><small>${esc(info.localizacao)} · ${esc(info.recomendacao)}</small><div class="conflict-actions"><button class="small" data-independent-action="resolver" data-analise="${esc(c.analiseId)}" data-indice="${c.indice}">Resolver</button><button class="small" data-independent-action="ignorar" data-analise="${esc(c.analiseId)}" data-indice="${c.indice}">Ignorar</button><button class="small" data-independent-action="reabrir" data-analise="${esc(c.analiseId)}" data-indice="${c.indice}">Reabrir</button></div></article>`; }).join('') : '<p class="muted">Nenhum conflito listado. Confira o status da análise acima antes de concluir que não há interferências.</p>'}</div>`}</section>`;
+  return `<section class="workspace bim-workspace"><div class="section-head"><div><p class="eyebrow">COMPATIBILIDADE BIM</p><h2>Estudos e conflitos</h2><p>Compatibilize modelos com ou sem vínculo a uma obra.</p></div><span class="tag">offline</span></div><div class="bim-workspace-toolbar"><label>Estudo BIM<select id="bimProjetoSelect"><option value="">Selecione ou crie um estudo</option>${projetos.map((item) => `<option value="${esc(item.id)}" ${item.id === active?.id ? 'selected' : ''}>${esc(item.nome)}${item.obra_codigo ? ` · ${esc(item.obra_codigo)}` : ' · independente'}</option>`).join('')}</select></label><button class="small" id="novoBimProjeto">+ Novo estudo</button>${active ? `<button class="small" id="importarBimAvulso">Importar IFC/JSON</button><button class="small" id="converterDwgAvulso">Converter DWG → IFC</button><button class="small" id="abrirCbimStudio">Revisar no Studio</button><button class="small" id="analisarBimAvulso" ${modelos.length < 2 ? 'disabled' : ''}>Analisar par selecionado</button><button class="small" id="viewerBimAvulso" ${modelos.length < 1 ? 'disabled' : ''}>Viewer 3D</button>` : ''}</div>${active ? `<div class="bim-model-choices"><label>Modelo A<select id="bimModeloA">${modeloSelect}</select></label><label>Modelo B<select id="bimModeloB">${modelos.map((m,i)=>`<option value="${esc(m.id)}" ${i===1?'selected':''}>${esc(m.nome)}</option>`).join('')}</select></label></div><p id="bimActionFeedback" role="status" aria-live="polite">${esc(bimProcessando ? 'Processando, aguarde a conclusão real do motor...' : bimMensagem || statusTexto)}</p>` : ''}${!active ? '<div class="empty"><h3>Compatibilidade BIM independente</h3><p>Crie um estudo para importar dois modelos IFC sem precisar cadastrar uma obra.</p></div>' : `<div class="bim-explainer"><strong>Como ler os resultados</strong><span>Alta = elementos ocupam a mesma região; média = afastamento dentro da tolerância; baixa = revisar regra antes de liberar a revisão.</span></div><div class="model-summary-grid">${modelos.map((m) => `<article class="model-summary"><p class="eyebrow">${esc(m.disciplina)}</p><h3>${esc(m.nome)}</h3><p>${formatoModeloBim(m) === 'ifc' && !m.elementos.length ? 'IFC importado · geometria ainda não processada' : `${m.elementos.length} elementos`} · revisão ${m.revisao}</p><small>Classes: ${esc([...new Set(m.elementos.map((e) => e.ifcClass).filter(Boolean))].join(', ') || 'não informadas')}</small></article>`).join('') || '<div class="empty">Importe os modelos A e B para começar.</div>'}</div><div class="panel bim-conflicts-panel"><div class="panel-head"><div><h3>Conflitos encontrados</h3><p class="muted">Cada conflito explica o impacto e sugere a próxima ação.</p></div><div class="bim-filters"><select id="bimAvulsoFiltro"><option value="todos">Todos os status</option><option value="aberto">Abertos</option><option value="resolvido">Resolvidos</option><option value="ignorado">Ignorados</option></select><select id="bimAvulsoGravidade"><option value="todos">Todas as gravidades</option><option value="high">Alta</option><option value="medium">Média</option><option value="low">Baixa</option></select></div></div>${conflitos.length ? conflitos.map((c) => { const info = explicarConflitoBim(c); return `<article class="bim-conflict-card" data-status="${esc(info.gravidade)}" data-bim-status="${esc(c.status || 'aberto')}"><div class="conflict-title"><span class="severity severity-${info.gravidade}">${info.gravidadeLabel}</span><strong>#${c.indice} · ${esc(info.titulo)}</strong><span class="status-label">${esc(c.status || 'aberto')}</span></div><p>${esc(info.resumo)} ${esc(info.detalhe)}</p><small>${esc(info.localizacao)} · ${esc(info.recomendacao)}</small><div class="conflict-actions"><button class="small" data-independent-action="resolver" data-analise="${esc(c.analiseId)}" data-indice="${c.indice}">Resolver</button><button class="small" data-independent-action="ignorar" data-analise="${esc(c.analiseId)}" data-indice="${c.indice}">Ignorar</button><button class="small" data-independent-action="reabrir" data-analise="${esc(c.analiseId)}" data-indice="${c.indice}">Reabrir</button></div></article>`; }).join('') : '<p class="muted">Nenhum conflito listado. Confira o status da análise acima antes de concluir que não há interferências.</p>'}</div>`}</section>`;
 }
 
 export function wireBimWorkspaceEvents({ db, projetos, projetoId, obraId = null, setProjetoId, render, modal }) {
@@ -78,18 +78,70 @@ export function wireBimWorkspaceEvents({ db, projetos, projetoId, obraId = null,
         const source = form.get('arquivo');
         if (!source?.name?.toLowerCase().endsWith('.dwg')) throw new Error('Selecione um desenho .dwg.');
         const discipline = form.get('disciplina');
-        const result = await backend({ name: source.name, base64: await base64Arquivo(source), discipline });
-        if (!result?.ifcBase64 || !result?.report?.ifc_sanity_passed) throw new Error('Conversor não confirmou IFC válido; nenhum modelo foi cadastrado.');
-        salvarModeloBimProjeto(db, projeto.id, {
-          nome: result.ifcName, arquivoNome: result.ifcName,
-          arquivoHash: hashTexto(result.ifcBase64.slice(0,4096)),
-          arquivoBase64: result.ifcBase64,
-          disciplina: discipline, elementos: []
-        });
-        bimMensagem = `DWG convertido: ${result.ifcName}. Cobertura de importação: ${(100*(result.report.import_coverage||0)).toFixed(1)}%. Pendências para revisão: ${result.report.review_pending_count||0}. ${result.report.passed ? 'Critérios automáticos atendidos.' : 'Há critérios que exigem revisão.'} Arquivos mantidos em ${result.outputDir}.`;
+        const runtime = globalThis.engineeringStorage?.bim;
+        const offProgress = typeof runtime?.onProgress === 'function' ? runtime.onProgress(info => {
+          const label = document.querySelector('#bimActionFeedback');
+          if (label && info?.stage) label.textContent = 'CBIM · ' + info.stage;
+        }) : null;
+        let result;
+        try { result = await backend({ name: source.name, base64: await base64Arquivo(source), discipline }); }
+        finally { if (typeof offProgress === 'function') offProgress(); }
+        if (!result?.report?.ifc_sanity_passed) throw new Error('Conversor não confirmou IFC válido; a análise permanece pendente.');
+        if (result.ifcBase64) {
+          salvarModeloBimProjeto(db, projeto.id, {
+            nome: result.ifcName, arquivoNome: result.ifcName,
+            arquivoHash: hashTexto(result.ifcBase64.slice(0,4096)),
+            arquivoBase64: result.ifcBase64,
+            disciplina: discipline, elementos: []
+          });
+        }
+        bimMensagem = 'DWG convertido: ' + result.ifcName
+          + '. Cobertura ' + (100 * (result.report.import_coverage || 0)).toFixed(1) + '%.'
+          + ' Pendências: ' + (result.report.review_pending_count || 0) + '.'
+          + (result.needsReview ? ' Revisão técnica necessária.' : ' Critérios automáticos atendidos.')
+          + (result.tooLarge ? ' IFC grande: salvo no disco; não importado automaticamente na lista.' : '')
+          + ' Artefatos em: ' + result.outputDir + '.';
+        if (result.workspaceDir && typeof runtime?.openStudio === 'function') {
+          try {
+            await runtime.openStudio(result.workspaceDir);
+            bimMensagem += ' Studio aberto para revisão.';
+          } catch (error) {
+            bimMensagem += ' O Studio não abriu: ' + error.message + '. Você pode tentar pelo botão Revisar no Studio.';
+          }
+        } else if (result.studioError) {
+          bimMensagem += ' ' + result.studioError;
+        }
       } catch (error) { bimMensagem = 'Conversão DWG não concluída: ' + error.message; }
       finally { bimProcessando = false; render(); }
     });
+  });
+  document.querySelector('#abrirCbimStudio')?.addEventListener('click', async () => {
+    try {
+      const backend = globalThis.engineeringStorage?.bim;
+      if (!backend?.listWorkspaces || !backend?.openStudio) throw new Error('Studio disponível somente no desktop integrado.');
+      const workspaces = await backend.listWorkspaces();
+      if (!workspaces.length) throw new Error('Nenhum workspace convertido. Primeiro importe e converta um DWG.');
+      if (workspaces.length === 1) {
+        await backend.openStudio(workspaces[0].path);
+        bimMensagem = 'Studio aberto para revisão: ' + workspaces[0].project_name;
+        render();
+        return;
+      }
+      const options = workspaces.map((w, i) => '<option value="' + i + '">' + esc(w.project_name) + ' · revisão ' + w.revision + ' · ' + esc(w.job) + '</option>').join('');
+      modal('Abrir histórico de projetos CBIM', '<label>Projeto e revisão<select name="workspace" required>' + options + '</select></label><p>Os projetos permanecem salvos localmente, inclusive após fechar o aplicativo.</p>', async form => {
+        try {
+          const index = Number(form.get('workspace'));
+          const chosen = workspaces[index];
+          if (!chosen) throw new Error('Seleção inválida.');
+          await backend.openStudio(chosen.path);
+          bimMensagem = 'Studio aberto para revisão: ' + chosen.project_name;
+        } catch (error) { bimMensagem = 'Falha ao abrir Studio: ' + error.message; }
+        render();
+      });
+    } catch (error) {
+      bimMensagem = 'Studio indisponível: ' + error.message;
+      render();
+    }
   });
   const applyFilters = () => { const status = document.querySelector('#bimAvulsoFiltro')?.value || 'todos'; const severity = document.querySelector('#bimAvulsoGravidade')?.value || 'todos'; document.querySelectorAll('.bim-conflict-card').forEach((card) => { card.hidden = (status !== 'todos' && card.dataset.bimStatus !== status) || (severity !== 'todos' && card.dataset.status !== severity); }); };
   document.querySelector('#bimAvulsoFiltro')?.addEventListener('change', applyFilters); document.querySelector('#bimAvulsoGravidade')?.addEventListener('change', applyFilters);

@@ -12,6 +12,7 @@ from typing import Any
 from pydantic import BaseModel, ConfigDict, Field
 from cbim_sdk import CBIMProject
 from compatibilizabim_core.product.models import ImportPlan, ProjectConfiguration
+from compatibilizabim_core.product.canonical import CanonicalProjectState, build_canonical_project_state
 
 
 def _utcnow() -> datetime:
@@ -122,6 +123,10 @@ class WorkspaceStore:
 
     def load_project(self) -> CBIMProject:
         return CBIMProject.model_validate_json(self.project_path().read_text(encoding='utf-8'))
+
+    def canonical_state(self) -> CanonicalProjectState:
+        manifest = self.manifest()
+        return build_canonical_project_state(self.load_project(), revision=manifest.revision)
 
     def save_import_plan(self, plan: ImportPlan) -> Path:
         manifest = self.manifest()
