@@ -7,9 +7,10 @@ type Props={calculator:string;entry:{fields:[string,string,number][];fn:(values:
 export function CalculationStudy({calculator,entry,result}:Props) {
   const rows=listarResultadosTecnicos(result.output);
   const numeric=rows.filter(row=>typeof row.value==='number'&&Number.isFinite(row.value));
+  const prefix=result.output?.resultados?'resultados.':'';
   const [parameter,setParameter]=React.useState(entry.fields[0]?.[0]||'');
   const firstVerified=result.validation?.verificacoes?.[0]?.campo;
-  const [metric,setMetric]=React.useState(firstVerified||numeric[0]?.path||'');
+  const [metric,setMetric]=React.useState(firstVerified||(numeric[0]?prefix+numeric[0].path:''));
   const sensitivity=React.useMemo(()=>{
     try{return metric?gerarSensibilidade({definition:entry,inputs:result.inputs,inputKey:parameter,resultPath:metric}):null;}
     catch{return null;}
@@ -43,10 +44,10 @@ export function CalculationStudy({calculator,entry,result}:Props) {
           {entry.fields.map(([key,label])=><option key={key} value={key}>{label}</option>)}
         </select></label>
         <label>Grandeza de saída<select value={metric} onChange={e=>setMetric(e.target.value)}>
-          {numeric.map(row=><option key={row.path} value={row.path}>{row.label}</option>)}
+          {numeric.map(row=><option key={row.path} value={prefix+row.path}>{row.label}</option>)}
         </select></label>
       </div>
-      {sensitivity?<><EngineeringPlot title="Variação paramétrica" points={sensitivity.points} xUnit={entry.fields.find(f=>f[0]===parameter)?.[1].match(/\((.*?)\)/)?.[1]||''} yUnit={rows.find(row=>row.path===metric)?.unit||''}/><div className="cbim-math-table"><table><thead><tr><th>Parâmetro</th><th>Resultado</th></tr></thead><tbody>
+      {sensitivity?<><EngineeringPlot title="Variação paramétrica" points={sensitivity.points} xUnit={entry.fields.find(f=>f[0]===parameter)?.[1].match(/\((.*?)\)/)?.[1]||''} yUnit={rows.find(row=>prefix+row.path===metric)?.unit||''}/><div className="cbim-math-table"><table><thead><tr><th>Parâmetro</th><th>Resultado</th></tr></thead><tbody>
         {sensitivity.points.map((p,i)=><tr key={i}><td>{formatarValorTecnico(p.x)}</td><td>{p.y===null?'Não calculável':formatarValorTecnico(p.y)}</td></tr>)}
       </tbody></table></div></>:<p role="status">A combinação selecionada não gerou uma série numérica comparável.</p>}
     </section>
