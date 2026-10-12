@@ -27,7 +27,7 @@ test('React gives access to all local domain operations and exports',()=>{
   const calc=read('src/react/shell/CalculatorsPage.tsx');
   for(const s of ['exportarDetalhamentoCsv','exportarDetalhamentoDxf','gerarPdfRelatorio','validarCalculoIndependente'])assert.ok(calc.includes(s),s);
   const structural=read('src/react/shell/StructuralPage.tsx');
-  for(const s of ['analisarModeloEstruturalPlano','analisarPorticoEspacial3D','salvarCargaEstrutural'])assert.ok(structural.includes(s),s);
+  for(const s of ['analisarModeloEstruturalPlano','analisarModeloEstruturalEspacial','salvarCargaEstrutural'])assert.ok(structural.includes(s),s);
 });
 test('SQLite schema and workspace paths remain unchanged during UI migration',()=>{
   const store=fs.readFileSync(new URL('../storage/sqliteStore.js',import.meta.url),'utf8');
