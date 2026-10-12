@@ -15,8 +15,8 @@ const runtime=()=> (globalThis as any).engineeringStorage?.bim;
 const fingerprint=async(file:File)=>contentFingerprint(new Uint8Array(await file.arrayBuffer()));
 const toBase64=async(file:File)=>{const bytes=new Uint8Array(await file.arrayBuffer());let out='';for(let i=0;i<bytes.length;i+=32768)out+=String.fromCharCode(...bytes.subarray(i,i+32768));return btoa(out);};
 const download=(name:string,text:string,type:string)=>{const url=URL.createObjectURL(new Blob([text],{type}));const a=document.createElement('a');a.href=url;a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);};
-type Props={db:any;obraId:string|null;version:number;onChange:()=>void;studyId?:string;onSelectStudy?:(id:string)=>void};
-export function BimPage({db,obraId,version,onChange,studyId='',onSelectStudy}:Props) {
+type Props={db:any;obraId:string|null;version:number;onChange:()=>void;studyId?:string;onSelectStudy?:(id:string)=>void;target?:any;onNavigate?:(route:string,target?:any)=>void};
+export function BimPage({db,obraId,version,onChange,studyId='',onSelectStudy,target,onNavigate}:Props) {
   const [creating,setCreating]=React.useState(false);
   const [step,setStep]=React.useState<'Estudo'|'Coordenação'|'4D/5D'|'Revisão CBIM'|'Legado da obra'>('Estudo');
   const [left,setLeft]=React.useState('');
@@ -27,6 +27,7 @@ export function BimPage({db,obraId,version,onChange,studyId='',onSelectStudy}:Pr
   const [error,setError]=React.useState('');
   const [unitlessScale,setUnitlessScale]=React.useState('1');
   const [progress,setProgress]=React.useState('');
+  React.useEffect(()=>{if(target?.kind==='bim-conciliacao')setStep('4D/5D');},[target?.kind,target?.id]);
   const [workspaces,setWorkspaces]=React.useState<any[]>([]);
   const [discipline,setDiscipline]=React.useState('hydraulic');
   const projects=listarProjetosBim(db);
@@ -115,7 +116,7 @@ export function BimPage({db,obraId,version,onChange,studyId='',onSelectStudy}:Pr
       <div className="cbim-react-toolbar"><button disabled={busy||!models.length} onClick={view}>Gerar visualizador geométrico</button></div>
     </div>}
     {project&&step==='Coordenação'&&<BimCoordinationPanel db={db} project={project} onChange={onChange}/>}
-    {project&&step==='4D/5D'&&<><Bim4D5DPanel key={project.id} project={project}/><BimMeasurementReconciliationPanel key={project.id} db={db} project={project} onChange={onChange}/></>}
+    {project&&step==='4D/5D'&&<><Bim4D5DPanel key={project.id} project={project}/><BimMeasurementReconciliationPanel key={project.id} db={db} project={project} onChange={onChange} target={target} onNavigate={onNavigate}/></>}
     {!project&&['Coordenação','4D/5D'].includes(step)&&<div className="cbim-react-panel">Selecione um estudo para acessar suas análises e quantitativos.</div>}
     {step==='Revisão CBIM'&&<ReviewTraceabilityPanel db={db} project={project} workspaces={workspaces} busy={busy} onReview={review} onRefresh={()=>{void runtime()?.listWorkspaces?.().then(setWorkspaces).catch(()=>setWorkspaces([]));}} onChange={onChange}/>}
     {step==='Legado da obra'&&<><p className="studio-muted">Modelos e conflitos gravados diretamente na obra, mantidos no SQLite original. Não são somados às análises dos estudos BIM e não serão migrados automaticamente.</p><LinkedBimPanel db={db} obraId={obraId} onChange={onChange}/></>}
