@@ -95,7 +95,7 @@ export function AppShell(){
       <label>Fim<input type="date" value={context.periodo?.fim||''} onChange={e=>updateContext({periodo:{fim:e.target.value||null}})}/></label>
       <label>Estudo BIM<select value={selectedStudy?.id||''} onChange={e=>updateContext({projetoBimId:e.target.value||null})}><option value="">Escolher no módulo BIM</option>{studies.map((p:any)=><option key={p.id} value={p.id}>{p.nome}{p.obra_id?' · Vinculado':' · Independente'}</option>)}</select></label>
       <label>Vínculo BIM<select value={context.bimMode||'independente'} onChange={e=>updateContext({bimMode:e.target.value})}><option value="independente">Independente</option><option value="vinculado">Vinculado</option></select></label>
-      <button onClick={()=>{selectWork(null);updateContext({obraId:null,frenteId:null,periodo:{inicio:null,fim:null},bimMode:'independente'});}}>Limpar contexto</button>
+      <button onClick={()=>{selectWork(null);updateContext({obraId:null,frenteId:null,periodo:{inicio:null,fim:null},bimMode:'independente',projetoBimId:null});}}>Limpar contexto</button>
     </section>
     <aside className="studio-sidebar" aria-label="Navegação única">
       {sections.map(group=><div className="studio-nav-group" key={group.section}><p className="studio-nav-label">{group.section}</p>{group.routes.map(route=><button key={route.key} type="button" aria-current={active===route.key?'page':undefined} className={active===route.key?'active':''} onClick={()=>setActive(route.key)}>{route.key}</button>)}</div>)}
