@@ -88,7 +88,7 @@ function pythonStudioCommand({ appSourceDir, resourcesDir }) {
   };
 }
 
-async function openStudioWindow({ workspacePath, documentsDir, appSourceDir, resourcesDir, BrowserWindow, isPackaged, hostWindow = null }) {
+async function openStudioWindow({ workspacePath, documentsDir, appSourceDir, resourcesDir, BrowserWindow, isPackaged, hostWindow = null, startProcess = spawn }) {
   if (hostWindow && hostedStudioSessions.has(hostWindow)) throw new Error('Uma revisão já está aberta nesta janela.');
   const workspace = resolveCbimWorkspace(documentsDir, workspacePath);
   const command = pythonStudioCommand({ appSourceDir, resourcesDir });
@@ -111,7 +111,7 @@ async function openStudioWindow({ workspacePath, documentsDir, appSourceDir, res
     let pending = '';
     let stderr = '';
     let win = null;
-    const child = spawn(command.program, args, {
+    const child = startProcess(command.program, args, {
       cwd: workspace, env: command.env, windowsHide: true, stdio: ['pipe', 'pipe', 'pipe']
     });
     activeStudioSessions.add(child);
