@@ -1,0 +1,40 @@
+name: CompatibilizaBIM Canonical Visual QA
+
+on:
+  push:
+    branches:
+      - feat/studio-canonical-resizable-gantt-qto-grid
+    paths:
+      - .github/workflows/cbim-canonical-visual-qa.yml
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  canonical-visual:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Synchronize offline application lockfile
+        run: npm install --package-lock-only --prefix app
+      - name: Install exact dependency tree
+        run: npm ci --prefix app
+      - name: Expose app dependencies to root tests
+        run: ln -s app/node_modules node_modules
+      - name: Regression tests (including data-boundary adapters)
+        run: npm test
+      - name: Build canonical React renderer
+        run: npm run build --prefix app
+      - name: Save lockfile for branch synchronization
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: CBIM-visual-synchronized-package-lock
+          path: app/package-lock.json
+          retention-days: 7
+          if-no-files-found: warn

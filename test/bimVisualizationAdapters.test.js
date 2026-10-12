@@ -41,3 +41,12 @@ test('budget cells display currencies without modifying the authoritative amount
   assert.match(quantityGridDisplay(record, 'budget', 5), /413,53/);
   assert.equal(record.total_cost, 413.53125);
 });
+
+test('Gantt ignores references to activities absent from the valid timeline', () => {
+  const tasks = scheduleToGanttTasks([
+    { activity_id: 'invalid', name: 'A', start_date: '2026-02-30', end_date: '2026-03-01' },
+    { activity_id: 'valid', name: 'B', start_date: '2026-03-02', end_date: '2026-03-05', predecessors: ['invalid'] }
+  ]);
+  assert.equal(tasks.length, 1);
+  assert.equal(tasks[0].dependencies, '');
+});

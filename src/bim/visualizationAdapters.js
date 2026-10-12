@@ -7,11 +7,11 @@ const validDate = value => {
 
 export function scheduleToGanttTasks(activities = []) {
   if (!Array.isArray(activities)) throw new TypeError('Atividades devem ser uma lista.');
-  const ids = new Set(activities.map(item => String(item?.activity_id ?? '')));
-  return activities.filter(item => item && String(item.activity_id ?? '').trim()
+  const eligible = activities.filter(item => item && String(item.activity_id ?? '').trim()
     && validDate(item.start_date) && validDate(item.end_date)
-    && item.end_date >= item.start_date)
-    .map(item => {
+    && item.end_date >= item.start_date);
+  const ids = new Set(eligible.map(item => String(item.activity_id)));
+  return eligible.map(item => {
       const id = String(item.activity_id);
       const predecessors = Array.isArray(item.predecessors) ? item.predecessors : [];
       const amount = Number(item.actual_progress ?? 0);
