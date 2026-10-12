@@ -22,6 +22,16 @@ export function Bim4D5DPanel({project}:Props){
    try{const result=await api(action,params);await reload();setNotice(success);return result;}
    catch(e:any){setError(e.message||String(e));return null;}finally{setBusy(false);}
  };
+ const downloadReport=async(action:string,format:string)=>{
+  setBusy(true);setError('');
+  try{
+   const output=await api(action,{format});
+   const raw=atob(String(output.base64||'')),buf=new Uint8Array(raw.length);
+   for(let i=0;i<raw.length;i++)buf[i]=raw.charCodeAt(i);
+   const url=URL.createObjectURL(new Blob([buf],{type:format==='pdf'?'application/pdf':format==='json'?'application/json':'text/csv'}));
+   const a=document.createElement('a');a.href=url;a.download=output.name;a.click();setTimeout(()=>URL.revokeObjectURL(url),1500);
+  }catch(e:any){setError(e.message||String(e));}finally{setBusy(false);}
+ };
  const models=(project.modelos||[]).filter((m:any)=>String(m.arquivo_nome||'').toLowerCase().endsWith('.ifc')&&m.arquivo_base64);
  const records=quant?.records||[],activities=overview?.activities||[],batches=overview?.measurements||[];
  const guidRecords=records.filter((r:any)=>r.global_id===guid&&r.source!=='geometry_fallback');
@@ -40,7 +50,7 @@ export function Bim4D5DPanel({project}:Props){
    <p>{models.length} IFC(s) disponíveis · {overview?.quantities?.record_count||0} registro(s) persistidos.</p>
    <button disabled={busy||!models.length||!bridge()} onClick={()=>void run('quantities',{models:models.map((m:any)=>({id:m.id,name:m.arquivo_nome,discipline:m.disciplina,base64:m.arquivo_base64})),allowGeometryFallback:false},'Quantitativos IFC/QTO verificados, sem fallback geométrico.')}>Extrair QTO do IFC</button>
    <p className="studio-muted">A ausência de QTO real não gera valores fictícios. Detalhes permanecem no arquivo quantities.json do estudo.</p>
-   {records.length>0&&<div className="p2-scroll"><table><thead><tr><th>GUID</th><th>Classe</th><th>Pavimento</th><th>Quantidade</th><th>Fonte</th></tr></thead><tbody>{records.slice(0,120).map((r:any,i:number)=><tr key={i}><td><code>{r.global_id}</code></td><td>{r.ifc_class}</td><td>{r.storey||'—'}</td><td>{Number(r.value).toLocaleString('pt-BR')} {r.unit}</td><td>{r.source}</td></tr>)}</tbody></table></div>}
+   {records.length>0&&<><div className="cbim-react-toolbar"><button disabled={busy} onClick={()=>void downloadReport('export_quantities','csv')}>Exportar QTO CSV</button><button disabled={busy} onClick={()=>void downloadReport('export_quantities','json')}>Exportar QTO JSON</button></div><div className="p2-scroll"><table><thead><tr><th>GUID</th><th>Classe</th><th>Pavimento</th><th>Quantidade</th><th>Fonte</th></tr></thead><tbody>{records.slice(0,120).map((r:any,i:number)=><tr key={i}><td><code>{r.global_id}</code></td><td>{r.ifc_class}</td><td>{r.storey||'—'}</td><td>{Number(r.value).toLocaleString('pt-BR')} {r.unit}</td><td>{r.source}</td></tr>)}</tbody></table></div></>}
    {quant?.truncated&&<p>Prévia limitada; o relatório completo permanece armazenado no disco.</p>}
    <h3>2. Tabela de composições e custos locais</h3>
    <label>Catálogo JSON com fonte, competência, BDI, composições e mapeamentos IFC
@@ -49,7 +59,7 @@ export function Bim4D5DPanel({project}:Props){
    <p>{overview?.pricebook?'Fonte: '+overview.pricebook.source+' · '+overview.pricebook.reference_date:'Nenhuma tabela de preços fornecida. Nenhum valor será presumido.'}</p>
    <h3>3. Orçamento 5D</h3>
    <button disabled={busy||!overview?.quantities||!overview?.pricebook} onClick={()=>void run('budget',{},'Orçamento 5D calculado; examine grupos não precificados.')}>Calcular orçamento</button>
-   {budget&&<><div className="p2-kpis"><strong>{money(budget.total_cost)}<small>Subtotal precificado</small></strong><strong>{budget.matched_group_count}<small>Grupos precificados</small></strong><strong>{budget.unmatched_group_count}<small>Sem composição</small></strong></div><p>Base: {budget.source} · {budget.reference_date} · BDI {budget.bdi_percent}%</p>
+   {budget&&<><div className="cbim-react-toolbar"><button disabled={busy} onClick={()=>void downloadReport('export_budget','csv')}>Exportar orçamento CSV</button><button disabled={busy} onClick={()=>void downloadReport('export_budget','json')}>Exportar JSON</button><button disabled={busy} onClick={()=>void downloadReport('export_budget','pdf')}>Exportar PDF</button></div><div className="p2-kpis"><strong>{money(budget.total_cost)}<small>Subtotal precificado</small></strong><strong>{budget.matched_group_count}<small>Grupos precificados</small></strong><strong>{budget.unmatched_group_count}<small>Sem composição</small></strong></div><p>Base: {budget.source} · {budget.reference_date} · BDI {budget.bdi_percent}%</p>
     {budget.unmatched_group_count>0&&<p role="status">Orçamento parcial. Grupos não precificados não compõem o subtotal.</p>}
     <div className="p2-scroll"><table><thead><tr><th>Código</th><th>Serviço</th><th>Quantidade</th><th>Unidade</th><th>Unitário</th><th>Total</th></tr></thead><tbody>{(budget.lines||[]).slice(0,120).map((r:any)=><tr key={r.line_id}><td>{r.composition_code}</td><td>{r.description}</td><td>{r.quantity}</td><td>{r.unit}</td><td>{money(r.final_unit_cost)}</td><td>{money(r.total_cost)}</td></tr>)}</tbody></table></div>
    </>}
@@ -74,7 +84,17 @@ export function Bim4D5DPanel({project}:Props){
     <button disabled={busy||!activities.length} onClick={async()=>{setBusy(true);try{setSimulation(await api('simulate',{date}));}catch(e:any){setError(e.message);}finally{setBusy(false);}}}>Simular 4D na data</button>
    </div>
    {simulation&&<><div className="p2-kpis"><strong>{simulation.overall.planned_progress}%<small>Previsto</small></strong><strong>{simulation.overall.actual_progress}%<small>Real</small></strong><strong>{simulation.overall.variance_percent}%<small>Desvio</small></strong></div>
-    {simulation.activities.map((a:any)=><p key={a.activity_id}>{a.name} · {a.status} · {a.planned_progress}% previsto / {a.actual_progress}% real</p>)}</>}
+    <div className="p2-gantt" role="group" aria-label="Cronograma gráfico por atividade">
+      {simulation.activities.map((a:any)=><div className="p2-gantt-row" key={a.activity_id}>
+       <span>{a.name}</span><div className="p2-gantt-track"><div className="p2-gantt-plan" style={{width:a.planned_progress+'%'}}/><div className="p2-gantt-real" style={{width:a.actual_progress+'%'}}/></div><small>{a.status}</small>
+      </div>)}
+    </div>
+    {simulation.curve?.length>1&&<div className="p2-curve"><h4>Curva S · Planejado × executado</h4>
+      <svg viewBox="0 0 600 180" role="img" aria-label="Curva S de progresso planejado e executado em porcentagem">
+       {[0,25,50,75,100].map(v=><g key={v}><line x1="35" y1={165-v*1.45} x2="585" y2={165-v*1.45} stroke="#d5dee9"/><text x="3" y={170-v*1.45} fontSize="10">{v}%</text></g>)}
+       {(['planned_progress','actual_progress'] as const).map((field,idx)=><polyline key={field} fill="none" stroke={idx?'#1c8d72':'#315a92'} strokeWidth="2.5" points={simulation.curve.map((p:any,i:number)=>(35+i*550/(simulation.curve.length-1))+','+(165-Number(p[field]||0)*1.45)).join(' ')}/>)}
+      </svg><p>Azul: planejado · Verde: executado. Pontos calculados pelo motor de simulação 4D.</p>
+    </div>}</>}
   </>}
   {tab==='med'&&<>
    <h3>Medição física cumulativa por GUID</h3>
