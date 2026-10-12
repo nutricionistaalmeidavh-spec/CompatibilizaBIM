@@ -1,6 +1,6 @@
 const PROFILES = Object.freeze({
   'NBR 6118:2014': { vigente: 'ABNT NBR 6118:2026', status: 'reconciliacao_pendente' },
-  'NBR 8800:2008': { vigente: 'ABNT NBR 8800:2024', status: 'reconciliacao_pendente' },
+  'NBR 8800:2008': { vigente: 'ABNT NBR 8800:2024 Versão Corrigida:2025', status: 'reconciliacao_pendente' },
   'NBR 5626:2020': { vigente: 'ABNT NBR 5626:2020', status: 'referencia_atual' },
   'NBR 6122:2019': { vigente: 'ABNT NBR 6122:2019', status: 'referencia_atual' },
   'NBR 10844:1989': { vigente: 'ABNT NBR 10844:1989', status: 'referencia_atual' },
