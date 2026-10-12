@@ -33,17 +33,17 @@ export function prepareRdoPayload(draft,original=null){
  if(!isDay(draft?.data))throw Error('Data do RDO inválida.');
  if(!text(draft?.responsavel))throw Error('Informe o responsável pelo RDO.');
  const equipes=rows(draft.equipes,'equipes').map((r,i)=>({
-  ...(original?.equipes?.[r.__sourceIndex??i]||{}),funcao:text(r.funcao),quantidade:quantity(r.quantidade,'equipe')
+  ...((r.__sourceIndex===undefined?{}:(original?.equipes?.[r.__sourceIndex]||{}))||{}),funcao:text(r.funcao),quantidade:quantity(r.quantidade,'equipe')
  }));
  if(equipes.some(x=>!x.funcao))throw Error('Informe a função da equipe.');
- const servicos=rows(draft.servicos,'servicos').map((r,i)=>({...original?.servicosExecutados?.[r.__sourceIndex??i],descricao:text(r.descricao)}));
+ const servicos=rows(draft.servicos,'servicos').map((r,i)=>({...(r.__sourceIndex===undefined?{}:(original?.servicosExecutados?.[r.__sourceIndex]||{})),descricao:text(r.descricao)}));
  if(!servicos.length||servicos.some(x=>!x.descricao))throw Error('Informe pelo menos um serviço executado.');
  const materiais=rows(draft.materiais,'materiais').map((r,i)=>({
-  ...original?.materiaisRecebidos?.[r.__sourceIndex??i],material:text(r.material),quantidade:quantity(r.quantidade,'material'),unidade:text(r.unidade)
+  ...(r.__sourceIndex===undefined?{}:(original?.materiaisRecebidos?.[r.__sourceIndex]||{})),material:text(r.material),quantidade:quantity(r.quantidade,'material'),unidade:text(r.unidade)
  }));
  if(materiais.some(x=>!x.material||!x.unidade))throw Error('Material e unidade são obrigatórios.');
- const ocorrencias=rows(draft.ocorrencias,'ocorrencias').map((r,i)=>({...original?.ocorrencias?.[r.__sourceIndex??i],descricao:text(r.descricao)}));
- const impedimentos=rows(draft.impedimentos,'impedimentos').map((r,i)=>({...original?.impedimentos?.[r.__sourceIndex??i],descricao:text(r.descricao),resolvido:!!r.resolvido}));
+ const ocorrencias=rows(draft.ocorrencias,'ocorrencias').map((r,i)=>({...(r.__sourceIndex===undefined?{}:(original?.ocorrencias?.[r.__sourceIndex]||{})),descricao:text(r.descricao)}));
+ const impedimentos=rows(draft.impedimentos,'impedimentos').map((r,i)=>({...(r.__sourceIndex===undefined?{}:(original?.impedimentos?.[r.__sourceIndex]||{})),descricao:text(r.descricao),resolvido:!!r.resolvido}));
  if(ocorrencias.some(x=>!x.descricao)||impedimentos.some(x=>!x.descricao))throw Error('Descreva ocorrência ou impedimento.');
  return {
   data:draft.data,turno:text(draft.turno),responsavel:text(draft.responsavel),
