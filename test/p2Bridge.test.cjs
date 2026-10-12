@@ -1,8 +1,8 @@
 'use strict';const test=require('node:test'),assert=require('node:assert/strict'),fs=require('node:fs'),os=require('node:os'),path=require('node:path');
 const { p2Request, validateP2Request }=require('../app/electron/p2Bridge.cjs');
 test('P2 IPC rejects traversal, unknown actions, oversized or spoofed IFC',()=>{
- assert.throws(()=>validateP2Request({projectId:'../secrets',action:'status',params:{}}),/identificador/);
- assert.throws(()=>validateP2Request({projectId:'study-a',action:'system',params:{}}),/operação/);
+ assert.throws(()=>validateP2Request({projectId:'../secrets',action:'status',params:{}}),/identificador/i);
+ assert.throws(()=>validateP2Request({projectId:'study-a',action:'system',params:{}}),/operação/i);
  assert.throws(()=>validateP2Request({projectId:'study-a',action:'quantities',params:{models:[{id:'a',name:'foo.exe',base64:'QUJD'}]}}),/IFC/);
 });
 test('P2 backend only handles isolated study under documents, invokes real module and validates JSON response',async()=>{
