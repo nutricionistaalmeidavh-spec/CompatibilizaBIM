@@ -27,3 +27,9 @@
 .cbim-react-section pre { padding:12px; max-height:400px; overflow:auto; background:#edf3fa; white-space:pre-wrap; word-break:break-word; }
 .cbim-react-calc-groups summary { cursor:pointer; display:flex; justify-content:space-between; padding:8px; }
 @media(max-width:760px){.cbim-react-app .studio-content{padding:14px}.cbim-react-card-grid,.cbim-react-form-grid{grid-template-columns:1fr}}
+
+.cbim-contextbar{display:flex;gap:12px;flex-wrap:wrap;align-items:end;padding:10px 20px;background:#f3f6fa;border-bottom:1px solid #d6dfe8;color:#243a52}
+.cbim-contextbar label{display:flex;flex-direction:column;min-width:140px;flex:1;gap:4px;font-size:12px}
+.cbim-contextbar select,.cbim-contextbar input{max-width:100%;padding:7px;border:1px solid #aabacc;border-radius:6px;background:#fff;font:inherit}
+.cbim-contextbar button{padding:7px 12px;border:1px solid #99b3ce;border-radius:7px;background:#fff;color:#173451;cursor:pointer}
+@media(max-width:760px){.cbim-contextbar{gap:7px;padding:8px 12px}.cbim-contextbar label{min-width:110px}}
