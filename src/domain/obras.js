@@ -1,3 +1,4 @@
+import {calculateWorkProgress} from './workProgress.js';
 const STATUS_OBRA = Object.freeze(['planejamento', 'em_andamento', 'pausada', 'concluida', 'cancelada']);
 const STATUS_ETAPA = Object.freeze(['nao_iniciada', 'em_andamento', 'bloqueada', 'concluida']);
 
@@ -108,10 +109,10 @@ export function atualizarStatusObra(obra, status) {
 
 export function resumoObra(obra) {
   const etapas = obra.etapas ?? [];
-  const pesoTotal = etapas.reduce((total, etapa) => total + etapa.percentualPeso, 0);
-  const progresso = pesoTotal > 0
-    ? etapas.reduce((total, etapa) => total + etapa.percentualConcluido * etapa.percentualPeso, 0) / pesoTotal
-    : 0;
+  const progresso = calculateWorkProgress(etapas.map(etapa=>({
+    percentual_concluido:etapa.percentualConcluido,
+    percentual_peso:etapa.percentualPeso
+  }))).value ?? 0;
   return {
     etapasTotal: etapas.length,
     etapasConcluidas: etapas.filter((etapa) => etapa.status === 'concluida').length,

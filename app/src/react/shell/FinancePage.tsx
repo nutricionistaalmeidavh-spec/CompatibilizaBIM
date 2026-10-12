@@ -1,9 +1,10 @@
 import React from 'react';
+import {brlReais} from '../../../../src/factory/format.js';
 import {reconciliarFinanceiroObra} from '../../../../src/domain/financialReconciliation.js';
 import {filterScopedRecords,financialScopeRows} from '../../../../src/domain/workspaceScope.js';
 import { listarLancamentosFinanceiros, salvarLancamentoFinanceiro, listarFolhaPagamentos, salvarFolhaPagamento, listarContratos, listarMedicoes, listarCompras, listarFrentes } from '../../../../storage/sqliteStore.js';
 
-const money=(v:any)=>new Intl.NumberFormat('pt-BR',{style:'currency',currency:'BRL'}).format(Number(v)||0);
+const money=brlReais;
 const safe=(d:FormData,k:string)=>String(d.get(k)||'').trim();
 
 export function FinancePage({db,obraId,scope={},onChange}:{db:any;obraId:string|null;scope?:any;onChange:()=>void}){
