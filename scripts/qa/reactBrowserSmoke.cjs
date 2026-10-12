@@ -78,7 +78,7 @@ const {chromium}=require('../../app/node_modules/playwright');
     await screenshots('f7-rdo-with-photo');
     await page.getByRole('textbox',{name:'Nome do aprovador'}).fill('Coordenador QA');
     await page.getByRole('button',{name:'Aprovar',exact:true}).click();
-    await page.getByText('aprovado',{exact:true}).first().waitFor();
+    await page.locator('article').filter({hasText:'Responsável QA'}).getByText(/aprovado/).waitFor();
     assert.equal(await page.getByRole('button',{name:'Editar',exact:true}).count(),0,'Approved RDO must be immutable from UI');
     await section('Financeiro','Financeiro local');
     await section('BIM','Compatibilização BIM');
