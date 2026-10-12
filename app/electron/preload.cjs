@@ -12,6 +12,7 @@ if (trustedApp) {
     loadSync: () => ipcRenderer.sendSync('engineering-db:load-sync'),
     saveSync: (base64) => ipcRenderer.sendSync('engineering-db:save-sync', base64),
     path: () => ipcRenderer.invoke('engineering-db:path'),
+    math: { calculate: (request) => ipcRenderer.invoke('math:calculate', request) },
     bim: {
       p2: (request) => ipcRenderer.invoke('bim:p2', request),
       generateViewer: (files, output) => ipcRenderer.invoke('bim:generate-viewer', files, output),
