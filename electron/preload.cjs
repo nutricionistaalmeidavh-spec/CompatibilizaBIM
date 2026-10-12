@@ -3,6 +3,7 @@ const { contextBridge, ipcRenderer } = require('electron')
 contextBridge.exposeInMainWorld('engineeringStorage', {
   loadSync: () => ipcRenderer.sendSync('engineering-db:load-sync'),
   saveSync: (base64) => ipcRenderer.sendSync('engineering-db:save-sync', base64),
+  math: { calculate: (request) => ipcRenderer.invoke('math:calculate', request) },
   path: () => ipcRenderer.invoke('engineering-db:path')
   ,bim: {
     generateViewer: (files, output) => ipcRenderer.invoke('bim:generate-viewer', files, output),

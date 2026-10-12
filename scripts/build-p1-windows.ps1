@@ -49,7 +49,7 @@ try {
     '--paths', (Join-Path $core 'src'), '--paths', (Join-Path $sdk 'src'),
     '--collect-all', 'ifcopenshell', '--collect-all', 'shapely',
     '--collect-all', 'ezdxf', '--collect-all', 'cryptography',
-    '--collect-all', 'pydantic', $script
+    '--collect-all', 'pydantic', '--collect-all', 'sympy', '--collect-all', 'mpmath', $script
   )
   python -m PyInstaller @pyArgs
   Assert-Exit 'Runtime Python autocontido'
