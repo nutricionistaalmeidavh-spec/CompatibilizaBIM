@@ -18,17 +18,22 @@ export function reconciliarConflitos(next,previous=[]){
    return {...issue,status:'aberto',responsavel:'',prazo:'',motivo:'',comentarios:[],revisaoAlterada:Boolean(prior)};
  });
 }
-const revision=m=>String(m.id)+'@'+String(m.arquivo_hash||m.arquivoHash||m.revisao||'sem-hash');
+const revision=m=>{
+ const raw=JSON.stringify((m.elementos||[]).map(e=>[e.id,e.bbox,e.bounds]));
+ let hash=2166136261;for(let i=0;i<raw.length;i++)hash=Math.imul(hash^raw.charCodeAt(i),16777619);
+ return String(m.id)+'@'+String(m.arquivo_hash||m.arquivoHash||'sem-hash')+':r'+String(m.revisao||1)+':geo'+(hash>>>0).toString(16);
+};
 export async function federarModelos(modelos,config={},services={}){
- if(!Array.isArray(modelos)||modelos.length<2)throw new Error('Selecione ao menos dois modelos diferentes para federar.');
+ if(!Array.isArray(modelos)||modelos.length<2||modelos.length>12)throw new Error('Selecione ao menos dois modelos diferentes para federar.');
  if(new Set(modelos.map(m=>m.id)).size!==modelos.length)throw new Error('O mesmo modelo não pode participar duas vezes.');
  const mode=validarConfiguracaoFederacao(config);
- const formats=[...new Set(modelos.map(formatoModeloBim))];
+ const ordered=[...modelos].sort((a,b)=>String(a.id).localeCompare(String(b.id)));
+ const formats=[...new Set(ordered.map(formatoModeloBim))];
  if(formats.length!==1||formats[0]==='desconhecido')throw new Error('Federação exige modelos do mesmo formato IFC ou manifesto; não misture evidências de motores.');
  const engine=formats[0]==='ifc'?'ifcopenshell_real':'manifesto_bbox';
  const pairs=[],clashes=[];
- for(let i=0;i<modelos.length;i++)for(let j=i+1;j<modelos.length;j++){
-   const [a,b]=[modelos[i],modelos[j]];
+ for(let i=0;i<ordered.length;i++)for(let j=i+1;j<ordered.length;j++){
+   const [a,b]=[ordered[i],ordered[j]];
    const result=await executarAnaliseBim([a,b],{
      analisarIfc:services.analisarIfc,
      analisarManifestos:services.analisarManifestos||(([x,y])=>detectarConflitosBim(criarModeloBim(x),criarModeloBim(y),{modo:mode.modo,tolerancia:mode.tolerancia,afastamento:mode.afastamento})),
@@ -56,4 +61,15 @@ export function validarDecisaoConflito(input={}){
  const prazo=String(input.prazo||'').trim();
  if(prazo&&!/^\d{4}-\d{2}-\d{2}$/.test(prazo))throw new Error('Prazo deve usar AAAA-MM-DD.');
  return {status,responsavel,prazo,motivo,comentario:String(input.comentario||'').trim().slice(0,2000)};
+}
+
+export function compararRevisoesConflitos(anteriores=[],atuais=[]){
+ const before=new Map(anteriores.map(c=>[c.chave,c]));
+ const after=new Map(atuais.map(c=>[c.chave,c]));
+ return {
+  novos:atuais.filter(c=>!before.has(c.chave)),
+  persistentes:atuais.filter(c=>before.has(c.chave)&&before.get(c.chave).fingerprint===c.fingerprint),
+  reaparecidos:atuais.filter(c=>before.has(c.chave)&&before.get(c.chave).fingerprint!==c.fingerprint),
+  naoObservados:anteriores.filter(c=>!after.has(c.chave)).map(c=>({...c,observacao:'Não observado na nova análise; não é resolução aprovada'}))
+ };
 }
