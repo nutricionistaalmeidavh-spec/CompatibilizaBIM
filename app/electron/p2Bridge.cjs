@@ -1,6 +1,6 @@
 'use strict';
 const fs=require('node:fs'), path=require('node:path'), crypto=require('node:crypto');
-const allowed=new Set(['status','quantities','pricebook','budget','import_schedule','activity','link','progress','simulate','measurements','measure','approve','reject','finance','bcf']);
+const allowed=new Set(['status','quantities','quantity_records','pricebook','budget','budget_report','import_schedule','activity','link','progress','simulate','measurements','measure','approve','reject','finance','bcf']);
 function validateP2Request(request){
  if(!request||typeof request!=='object')throw Error('Requisição BIM P2 inválida');
  const {projectId,action}=request;
