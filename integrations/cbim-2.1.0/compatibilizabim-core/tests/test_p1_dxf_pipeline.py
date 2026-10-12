@@ -42,3 +42,14 @@ def test_dxf_cli_never_accepts_wrong_extension_or_unitless_negative(tmp_path):
         main(['--source',str(bad),'--discipline','hydraulic','--output',str(tmp_path/'out')])
     with pytest.raises(SystemExit):
         main(['--source',str(bad.with_suffix('.dxf')),'--discipline','hydraulic','--output',str(tmp_path/'out'),'--unitless-scale-to-m','-1'])
+
+def test_dxf_unsupported_entities_are_counted_not_marked_as_full_coverage(tmp_path):
+    source=tmp_path/'ARQ-unknown.dxf'
+    doc=ezdxf.new('R2013');doc.modelspace().add_line((0,0),(1,0))
+    doc.modelspace().add_point((1,1))
+    doc.saveas(source)
+    result=NativeDXFAdapter().read_result(source)
+    assert result.diagnostics.total_entities==2
+    assert result.diagnostics.converted_entities==1
+    assert result.diagnostics.unsupported_types['POINT']==1
+    assert result.diagnostics.coverage==.5
