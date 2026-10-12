@@ -9,7 +9,7 @@ test('F7 RDO photo annex embeds binary JPEG as a visible PDF image page',async()
  assert.match(text,/\/Filter \/DCTDecode/);
  assert.match(text,/\/Count 2/);
  assert.match(text,/\/Im1 Do/);
- assert.match(text,/Frente de servico/);
+ assert.match(text,/Frente de serviço/);
 });
 test('F7 invalid photo bytes cannot masquerade as a valid annex',()=>{
  assert.throws(()=>gerarPdfRelatorioComFotos('RDO',{},[{jpeg:new Uint8Array([1,2,3]),width:1,height:1}]),/JPEG inválido/);
