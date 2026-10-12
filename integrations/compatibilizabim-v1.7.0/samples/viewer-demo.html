@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>CompatibilizaBIM Viewer</title>
+<style>
+html,body{margin:0;width:100%;height:100%;font-family:Inter,system-ui,sans-serif;background:#101317;color:#eef2f6;overflow:hidden}
+#app{display:grid;grid-template-columns:320px 1fr;height:100%}.panel{background:#171b21;border-right:1px solid #2a3038;overflow:auto;padding:16px;box-sizing:border-box}
+h1{font-size:18px;margin:0 0 6px}.muted{color:#9ea9b6;font-size:12px}.group{margin-top:18px}.group h2{font-size:12px;text-transform:uppercase;letter-spacing:.08em;color:#9ea9b6}
+button,.row{width:100%;box-sizing:border-box;border:1px solid #303844;background:#20262e;color:#eef2f6;border-radius:7px;padding:8px 10px;margin:4px 0;text-align:left;cursor:pointer}
+button:hover,.row:hover{background:#28313b}.toolbar{display:flex;gap:6px}.toolbar button{width:auto;flex:1}.badge{display:inline-block;padding:2px 6px;border-radius:999px;background:#303844;font-size:11px;margin-left:5px}
+label{font-size:12px;display:flex;gap:8px;align-items:center;margin:6px 0}input[type=range]{width:100%}.stage{position:relative;min-width:0}canvas{display:block;width:100%;height:100%}
+#status{position:absolute;left:12px;bottom:12px;background:#171b21dd;border:1px solid #303844;border-radius:7px;padding:8px 10px;font-size:12px;pointer-events:none}.selected{outline:1px solid #8ec5ff}
+</style>
+</head>
+<body>
+<div id="app"><aside class="panel"><h1>CompatibilizaBIM</h1><div class="muted">Visualizador federado local</div>
+<div class="group"><div class="toolbar"><button data-action="fit">Enquadrar</button><button data-action="viewpoint">Viewpoint</button></div></div>
+<div class="group"><h2>Transparência</h2><input id="opacity" type="range" min="0.15" max="1" step="0.05" value="1"></div>
+<div class="group"><h2>Disciplinas</h2><div id="disciplines"></div></div>
+<div class="group"><h2>Clashes</h2><div id="clashes"></div></div>
+<div class="group"><h2>Elementos</h2><div id="elements"></div></div>
+</aside><main class="stage"><canvas id="viewer-canvas"></canvas><div id="status">Arraste para orbitar · Shift+arraste para pan · roda para zoom</div></main></div>
+<script id="session-data" type="application/json">{"version":1,"origin":[0.0,0.0,0.0],"bounds":{"minimum":[-3.0,-2.5,-0.55],"maximum":[3.0,2.5,0.55]},"disciplines":["MEP","Structure"],"elements":[{"global_id":"DEMO-BEAM","ifc_class":"IfcBeam","name":"Viga V-12","discipline":"Structure","source_file":"estrutura-demo.ifc","vertices":[-3.0,-0.55,-0.55,3.0,-0.55,-0.55,3.0,0.55,-0.55,-3.0,0.55,-0.55,-3.0,-0.55,0.55,3.0,-0.55,0.55,3.0,0.55,0.55,-3.0,0.55,0.55],"triangles":[0,1,2,0,2,3,4,6,5,4,7,6,0,4,5,0,5,1,1,5,6,1,6,2,2,6,7,2,7,3,3,7,4,3,4,0],"bounds":{"minimum":[-3.0,-0.55,-0.55],"maximum":[3.0,0.55,0.55]}},{"global_id":"DEMO-PIPE","ifc_class":"IfcPipeSegment","name":"Tubulação H-203","discipline":"MEP","source_file":"mep-demo.ifc","vertices":[-0.35,-2.5,-0.35,0.35,-2.5,-0.35,0.35,2.5,-0.35,-0.35,2.5,-0.35,-0.35,-2.5,0.35,0.35,-2.5,0.35,0.35,2.5,0.35,-0.35,2.5,0.35],"triangles":[0,1,2,0,2,3,4,6,5,4,7,6,0,4,5,0,5,1,1,5,6,1,6,2,2,6,7,2,7,3,3,7,4,3,4,0],"bounds":{"minimum":[-0.35,-2.5,-0.35],"maximum":[0.35,2.5,0.35]}}],"clashes":[{"rule_id":"demo-pipe-beam","rule_name":"Tubulação x Viga","severity":"critical","a_global_id":"DEMO-PIPE","b_global_id":"DEMO-BEAM","point":[0.0,0.0,0.0],"depth_m":0.7}]}</script>
+<script>
+(()=>{
+const data=JSON.parse(document.getElementById('session-data').textContent),canvas=document.getElementById('viewer-canvas'),gl=canvas.getContext('webgl',{alpha:false,antialias:true});
+if(!gl){document.getElementById('status').textContent='WebGL não disponível neste navegador.';return;}
+const vs=`attribute vec3 p;uniform mat4 mvp;void main(){gl_Position=mvp*vec4(p,1.0);}`;
+const fs=`precision mediump float;uniform vec4 color;void main(){gl_FragColor=color;}`;
+function shader(t,s){const x=gl.createShader(t);gl.shaderSource(x,s);gl.compileShader(x);if(!gl.getShaderParameter(x,gl.COMPILE_STATUS))throw new Error(gl.getShaderInfoLog(x));return x}
+const prog=gl.createProgram();gl.attachShader(prog,shader(gl.VERTEX_SHADER,vs));gl.attachShader(prog,shader(gl.FRAGMENT_SHADER,fs));gl.linkProgram(prog);gl.useProgram(prog);
+const locP=gl.getAttribLocation(prog,'p'),locM=gl.getUniformLocation(prog,'mvp'),locC=gl.getUniformLocation(prog,'color');
+const colors={Architecture:[0.65,0.72,0.8],Structure:[0.72,0.72,0.68],MEP:[0.35,0.7,0.95],Unknown:[0.7,0.7,0.7]};
+const uintExt=gl.getExtension('OES_element_index_uint');const objs=data.elements.map(e=>{const vb=gl.createBuffer();gl.bindBuffer(gl.ARRAY_BUFFER,vb);gl.bufferData(gl.ARRAY_BUFFER,new Float32Array(e.vertices),gl.STATIC_DRAW);let maxIndex=0;for(const n of e.triangles)if(n>maxIndex)maxIndex=n;const use32=maxIndex>65535;if(use32&&!uintExt)throw new Error('Modelo exige índices de 32 bits, mas OES_element_index_uint não está disponível.');const ib=gl.createBuffer();gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER,ib);gl.bufferData(gl.ELEMENT_ARRAY_BUFFER,use32?new Uint32Array(e.triangles):new Uint16Array(e.triangles),gl.STATIC_DRAW);return{e,vb,ib,count:e.triangles.length,indexType:use32?gl.UNSIGNED_INT:gl.UNSIGNED_SHORT,visible:true}});
+let opacity=1,selected=new Set(),target=[0,0,0],yaw=.8,pitch=.45,dist=Math.max(10,diag(data.bounds)*1.7);
+function diag(b){const a=b.minimum,c=b.maximum;return Math.hypot(c[0]-a[0],c[1]-a[1],c[2]-a[2])||10}
+function mul(a,b){const o=new Array(16).fill(0);for(let r=0;r<4;r++)for(let c=0;c<4;c++)for(let k=0;k<4;k++)o[c*4+r]+=a[k*4+r]*b[c*4+k];return o}
+function perspective(f,a,n,z){const t=1/Math.tan(f/2),q=1/(n-z);return[t/a,0,0,0,0,t,0,0,0,0,(z+n)*q,-1,0,0,2*z*n*q,0]}
+function normalize(v){const l=Math.hypot(...v)||1;return v.map(x=>x/l)}function cross(a,b){return[a[1]*b[2]-a[2]*b[1],a[2]*b[0]-a[0]*b[2],a[0]*b[1]-a[1]*b[0]]}
+function lookAt(eye,ctr,up){const z=normalize([eye[0]-ctr[0],eye[1]-ctr[1],eye[2]-ctr[2]]),x=normalize(cross(up,z)),y=cross(z,x);return[x[0],y[0],z[0],0,x[1],y[1],z[1],0,x[2],y[2],z[2],0,-x[0]*eye[0]-x[1]*eye[1]-x[2]*eye[2],-y[0]*eye[0]-y[1]*eye[1]-y[2]*eye[2],-z[0]*eye[0]-z[1]*eye[1]-z[2]*eye[2],1]}
+function eye(){const cp=Math.cos(pitch);return[target[0]+dist*cp*Math.cos(yaw),target[1]+dist*cp*Math.sin(yaw),target[2]+dist*Math.sin(pitch)]}
+function resize(){const d=devicePixelRatio||1,w=Math.floor(canvas.clientWidth*d),h=Math.floor(canvas.clientHeight*d);if(canvas.width!==w||canvas.height!==h){canvas.width=w;canvas.height=h}gl.viewport(0,0,w,h)}
+function render(){resize();gl.clearColor(.06,.075,.09,1);gl.clear(gl.COLOR_BUFFER_BIT|gl.DEPTH_BUFFER_BIT);gl.enable(gl.DEPTH_TEST);gl.enable(gl.BLEND);gl.blendFunc(gl.SRC_ALPHA,gl.ONE_MINUS_SRC_ALPHA);const mvp=mul(perspective(Math.PI/4,canvas.width/canvas.height,.01,Math.max(100000,dist*100)),lookAt(eye(),target,[0,0,1]));gl.uniformMatrix4fv(locM,false,new Float32Array(mvp));for(const o of objs){if(!o.visible)continue;gl.bindBuffer(gl.ARRAY_BUFFER,o.vb);gl.enableVertexAttribArray(locP);gl.vertexAttribPointer(locP,3,gl.FLOAT,false,0,0);gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER,o.ib);const c=selected.has(o.e.global_id)?[1,.28,.14]:colors[o.e.discipline]||colors.Unknown;gl.uniform4f(locC,c[0],c[1],c[2],selected.has(o.e.global_id)?1:opacity);gl.drawElements(gl.TRIANGLES,o.count,o.indexType,0)}}
+function focusBounds(b){target=[(b.minimum[0]+b.maximum[0])/2,(b.minimum[1]+b.maximum[1])/2,(b.minimum[2]+b.maximum[2])/2];dist=Math.max(2,diag(b)*2);render()}
+function selectGuid(g){selected=new Set([g]);const o=objs.find(x=>x.e.global_id===g);if(o)focusBounds(o.e.bounds);refreshSelected()}
+function focusClash(c){selected=new Set([c.a_global_id,c.b_global_id]);target=c.point.slice();const matches=objs.filter(x=>selected.has(x.e.global_id));if(matches.length){const mins=[Infinity,Infinity,Infinity],maxs=[-Infinity,-Infinity,-Infinity];for(const o of matches){for(let i=0;i<3;i++){mins[i]=Math.min(mins[i],o.e.bounds.minimum[i]);maxs[i]=Math.max(maxs[i],o.e.bounds.maximum[i])}}dist=Math.max(2,diag({minimum:mins,maximum:maxs})*2)}render();refreshSelected()}
+function refreshSelected(){document.querySelectorAll('.row').forEach(x=>x.classList.toggle('selected',selected.has(x.dataset.guid)))}
+const disc=document.getElementById('disciplines');for(const d of data.disciplines){const l=document.createElement('label'),i=document.createElement('input');i.type='checkbox';i.checked=true;i.onchange=()=>{objs.filter(o=>o.e.discipline===d).forEach(o=>o.visible=i.checked);render()};l.append(i,document.createTextNode(d));disc.append(l)}
+const clashes=document.getElementById('clashes');data.clashes.forEach((c,i)=>{const b=document.createElement('button');b.className='row';b.append(document.createTextNode(`#${i+1} ${c.rule_name}`));const badge=document.createElement('span');badge.className='badge';badge.textContent=c.severity;b.append(badge);b.onclick=()=>focusClash(c);clashes.append(b)});if(!data.clashes.length){const empty=document.createElement('div');empty.className='muted';empty.textContent='Nenhum clash carregado.';clashes.append(empty)};
+const elements=document.getElementById('elements');data.elements.slice(0,500).forEach(e=>{const b=document.createElement('button');b.className='row';b.dataset.guid=e.global_id;b.textContent=`${e.ifc_class} · ${e.name||e.global_id||'sem GUID'}`;b.onclick=()=>selectGuid(e.global_id);elements.append(b)});if(data.elements.length>500)elements.insertAdjacentHTML('beforeend',`<div class="muted">Mostrando 500 de ${data.elements.length} elementos.</div>`);
+document.getElementById('opacity').oninput=e=>{opacity=Number(e.target.value);render()};document.querySelector('[data-action="fit"]').onclick=()=>{target=[0,0,0];dist=Math.max(10,diag(data.bounds)*1.7);render()};
+document.querySelector('[data-action="viewpoint"]').onclick=()=>{const blob=new Blob([JSON.stringify({origin:data.origin,target,yaw,pitch,distance:dist,selected:[...selected]},null,2)],{type:'application/json'}),a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='viewpoint.json';a.click();URL.revokeObjectURL(a.href)};
+let drag=false,last=[0,0],pan=false;canvas.onmousedown=e=>{drag=true;last=[e.clientX,e.clientY];pan=e.shiftKey};window.onmouseup=()=>drag=false;window.onmousemove=e=>{if(!drag)return;const dx=e.clientX-last[0],dy=e.clientY-last[1];last=[e.clientX,e.clientY];if(pan){const s=dist*.0015;target[0]-=dx*s;target[2]+=dy*s}else{yaw-=dx*.008;pitch=Math.max(-1.45,Math.min(1.45,pitch+dy*.008))}render()};canvas.onwheel=e=>{e.preventDefault();dist*=Math.exp(e.deltaY*.001);dist=Math.max(.2,dist);render()};window.onresize=render;render();
+})();
+</script>
+</body></html>

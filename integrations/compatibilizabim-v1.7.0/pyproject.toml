@@ -1,0 +1,44 @@
+[build-system]
+requires = ["setuptools>=69", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "compatibilizabim-poc"
+version = "1.7.0"
+description = "Proof of concept for IFC clash detection using IfcOpenShell"
+readme = "README.md"
+requires-python = ">=3.10,<3.15"
+dependencies = [
+  "ifcopenshell==0.8.5",
+  "reportlab>=4.0",
+  "openpyxl>=3.1",
+]
+
+[project.optional-dependencies]
+dev = ["pytest>=8"]
+
+[project.scripts]
+compatibilizabim = "compatibilizabim.cli:main"
+compatibilizabim-selftest = "compatibilizabim.selftest:main"
+compatibilizabim-preflight = "compatibilizabim.preflight_cli:main"
+compatibilizabim-rules = "compatibilizabim.rules_cli:main"
+compatibilizabim-viewer = "compatibilizabim.viewer_cli:main"
+compatibilizabim-issues = "compatibilizabim.issues_cli:main"
+compatibilizabim-revisions = "compatibilizabim.revisions_cli:main"
+compatibilizabim-export = "compatibilizabim.exports_cli:main"
+compatibilizabim-desktop = "compatibilizabim.desktop_cli:main"
+compatibilizabim-quantities = "compatibilizabim.quantities_cli:main"
+compatibilizabim-budget = "compatibilizabim.budget_cli:main"
+compatibilizabim-sinapi = "compatibilizabim.sinapi_cli:main"
+compatibilizabim-4d = "compatibilizabim.schedule_cli:main"
+compatibilizabim-measurements = "compatibilizabim.measurements_cli:main"
+compatibilizabim-measurement-report = "compatibilizabim.measurement_report_cli:main"
+
+[tool.setuptools]
+package-dir = {"" = "src"}
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.setuptools.package-data]
+compatibilizabim = ["data/synthetic/*.ifc"]

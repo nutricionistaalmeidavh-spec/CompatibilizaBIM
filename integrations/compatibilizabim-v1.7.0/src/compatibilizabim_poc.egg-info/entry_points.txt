@@ -1,0 +1,16 @@
+[console_scripts]
+compatibilizabim = compatibilizabim.cli:main
+compatibilizabim-4d = compatibilizabim.schedule_cli:main
+compatibilizabim-budget = compatibilizabim.budget_cli:main
+compatibilizabim-desktop = compatibilizabim.desktop_cli:main
+compatibilizabim-export = compatibilizabim.exports_cli:main
+compatibilizabim-issues = compatibilizabim.issues_cli:main
+compatibilizabim-measurement-report = compatibilizabim.measurement_report_cli:main
+compatibilizabim-measurements = compatibilizabim.measurements_cli:main
+compatibilizabim-preflight = compatibilizabim.preflight_cli:main
+compatibilizabim-quantities = compatibilizabim.quantities_cli:main
+compatibilizabim-revisions = compatibilizabim.revisions_cli:main
+compatibilizabim-rules = compatibilizabim.rules_cli:main
+compatibilizabim-selftest = compatibilizabim.selftest:main
+compatibilizabim-sinapi = compatibilizabim.sinapi_cli:main
+compatibilizabim-viewer = compatibilizabim.viewer_cli:main
