@@ -53,6 +53,20 @@ const {chromium}=require('../../app/node_modules/playwright');
     await section('Histórico','Carteira de obras');
     const current=await page.locator('main').first().innerText();
     assert.match(current,/Obra de regressão React/);
+    // Authenticated reviewer is mounted by the same React entry; mock only the
+    // localhost API payload, not the React component or navigation itself.
+    await page.route('**/api/studio-state',route=>route.fulfill({
+      status:200,contentType:'application/json',
+      body:JSON.stringify({
+        project:{id:'qa-review',name:'Revisão CBIM QA',elements:[]},
+        plan:{sources:[],config:{project_name:'Revisão CBIM QA',organization:'QA',units:'m',coordinate_reference:'local',storeys:[{name:'Térreo',elevation:0,height:3}]}},
+        status:{revision:1},
+        history:[],recovery:[],annotations:[],audit:[]
+      })
+    }));
+    await page.goto('http://127.0.0.1:5173/?surface=review');
+    await page.getByRole('heading',{name:'Fontes',exact:true}).waitFor({timeout:15000});
+    await screenshots('review-react-same-entry');
     assert.deepEqual(errors,[],'Uncaught browser errors: '+errors.join('\n'));
     console.log('PASS: React-only main app, SQLite works, calculators, BIM, structural, operations, RDO, financial and history.');
   }finally{

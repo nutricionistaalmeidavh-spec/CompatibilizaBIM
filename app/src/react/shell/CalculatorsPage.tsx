@@ -69,7 +69,7 @@ export function CalculatorsPage({db, obraId, onSaved}:{db:any;obraId:string|null
   };
   return <section className="cbim-react-section">
     <h1>Biblioteca de cálculos</h1><p>Mesmo catálogo, motores matemáticos e validador independente do renderer original.</p>
-    <div className="cbim-react-calc-groups">{CALCULATOR_GROUPS.map((group:any)=><details key={group.id} open={group.ids.includes(calculator)||undefined}>
+    <div className="cbim-react-calc-groups">{CALCULATOR_GROUPS.map((group:any,index:number)=><details key={group.id} open={index===0||group.ids.includes(calculator)||undefined}>
       <summary><strong>{group.label}</strong><span>{group.ids.length} cálculos</span></summary>
       <div className="cbim-react-card-grid">{group.ids.map((id:string)=><button className={calculator===id?'selected':''} key={id} onClick={()=>select(id)}>{catalog[id]?.label}</button>)}</div>
     </details>)}</div>
