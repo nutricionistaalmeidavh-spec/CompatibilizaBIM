@@ -122,3 +122,10 @@ export function summarizePurchaseFinanceTrace(purchases=[],entries=[],links=[]){
    state:!trace?'nao_vinculada':!entry?'referencia_invalida':Math.abs(delta)<=0.01&&paymentCompatible?'conferida':'divergente'};
  });
 }
+
+export function assertStudyWorkAssociation(project,obraId){
+ const id=required(project?.id,'Estudo BIM');
+ const target=required(obraId,'Obra');
+ if(project.obra_id&&project.obra_id!==target)throw Error('O estudo já está associado a outra obra. A transferência exige um processo de migração explícito.');
+ return project.obra_id!==target;
+}

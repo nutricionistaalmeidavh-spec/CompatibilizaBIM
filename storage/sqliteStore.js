@@ -1,4 +1,5 @@
 import {garantirRdoMutavel,garantirMedicaoTransicao,validarQuantidadeRecebida} from '../src/domain/approvalGuards.js';
+import {assertStudyWorkAssociation} from '../src/domain/p1Traceability.js';
 import initSqlJs from 'sql.js';
 import schemaSql from './schema.sql?raw';
 import { migrarBancoCompatibilidade } from './schemaMigrations.js';
@@ -326,6 +327,20 @@ export function listarProjetosBim(db) {
     COALESCE((SELECT COUNT(*) FROM bim_modelos_avulsos m WHERE m.projeto_id = p.id), 0) AS modelos_total,
     COALESCE((SELECT COUNT(*) FROM bim_analises_avulsas a WHERE a.projeto_id = p.id), 0) AS analises_total
     FROM bim_projetos p LEFT JOIN obras o ON o.id = p.obra_id ORDER BY p.atualizado_em DESC`);
+}
+
+export function vincularProjetoBimObra(db,projetoId,obraId) {
+  const project=linhas(db,'SELECT id,obra_id FROM bim_projetos WHERE id = ?',[projetoId])[0];
+  const change=assertStudyWorkAssociation(project,obraId);
+  if(!change)return false;
+  if(!linhas(db,'SELECT id FROM obras WHERE id = ?',[obraId])[0])throw Error('Obra não encontrada: nenhum vínculo foi salvo.');
+  db.run('BEGIN TRANSACTION');
+  try{
+    db.run('UPDATE bim_projetos SET obra_id = ?, atualizado_em = ? WHERE id = ? AND obra_id IS NULL',[obraId,new Date().toISOString(),projetoId]);
+    registrarHistorico(db,obraId,'bim_projeto',projetoId,'associado_a_obra',{projetoId,obraId,origem:'vinculo_explicito_p1'});
+    db.run('COMMIT');
+  }catch(e){db.run('ROLLBACK');throw e;}
+  salvarBanco(db);return true;
 }
 
 export function buscarProjetoBim(db, projetoId) {

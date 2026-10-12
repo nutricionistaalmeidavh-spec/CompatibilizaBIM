@@ -6,7 +6,7 @@ import { BimCoordinationPanel } from './BimCoordinationPanel';
 import { Bim4D5DPanel } from './Bim4D5DPanel';
 import { ReviewTraceabilityPanel } from './ReviewTraceabilityPanel';
 import { BimMeasurementReconciliationPanel } from './BimMeasurementReconciliationPanel';
-import {listarProjetosBim,buscarProjetoBim,criarProjetoBimPersistido,salvarModeloBimProjeto,salvarAnaliseBimProjeto,atualizarConflitoBimProjeto} from '../../../../storage/sqliteStore.js';
+import {listarProjetosBim,buscarProjetoBim,vincularProjetoBimObra,criarProjetoBimPersistido,salvarModeloBimProjeto,salvarAnaliseBimProjeto,atualizarConflitoBimProjeto} from '../../../../storage/sqliteStore.js';
 import {criarModeloBim,detectarConflitosBim,validarCabecalhoIfc} from '../../../../src/bim/compatibility.js';
 import {executarAnaliseBim,formatoModeloBim} from '../../../../src/bim/p0Workflow.js';
 import {criarManifestoViewer,gerarViewerFederadoHtml} from '../../../../src/bim/viewer.js';
@@ -107,6 +107,7 @@ export function BimPage({db,obraId,version,onChange,studyId='',onSelectStudy}:Pr
     <div className="cbim-react-toolbar"><label>Estudo BIM<select value={selected} onChange={e=>{setId(e.target.value);onSelectStudy?.(e.target.value);}}><option value="">Selecione estudo</option>{projects.map((p:any)=><option key={p.id} value={p.id}>{p.nome}</option>)}</select></label><button onClick={()=>setCreating(v=>!v)}>+ Estudo</button></div>
     {creating&&<form className="cbim-react-panel cbim-react-form-grid" onSubmit={create}><label>Nome<input name="name" required/></label><label>Descrição<input name="description"/></label>{obraId&&<label><input type="checkbox" name="linked"/> Vincular à obra atual</label>}<button type="submit">Criar estudo</button></form>}
     {project&&<p className="studio-muted">Contexto: {project.obra_id?'Estudo vinculado à obra '+(project.obra_id===obraId?'atual.':'de origem '+project.obra_id+'.'):'Estudo BIM independente.'} {project.obra_id&&obraId&&project.obra_id!==obraId?'A obra selecionada no cabeçalho não altera o conteúdo deste estudo.':''}</p>}
+    {project&&!project.obra_id&&obraId&&<div className="cbim-react-panel"><p>Este estudo é independente. Para conferir medições de serviço da obra, vincule-o explicitamente ao cadastro operacional. Modelos e revisões existentes não serão alterados.</p><button type="button" onClick={()=>{try{vincularProjetoBimObra(db,project.id,obraId);setMessage('Estudo vinculado à obra. Medições operacionais disponíveis para conferência.');setError('');onChange();}catch(e:any){setError(e.message||String(e));}}}>Vincular estudo à obra atual</button></div>}
     <nav className="cbim-p1-steps" aria-label="Etapas do estudo BIM">{(['Estudo','Coordenação','4D/5D','Revisão CBIM','Legado da obra'] as const).map(item=><button key={item} type="button" className={step===item?'selected':''} aria-pressed={step===item} onClick={()=>setStep(item)}>{item}</button>)}</nav>
     {project&&step==='Estudo'&&<div className="cbim-react-panel"><h2>{project.nome} · {models.length} modelos</h2>
       <div className="cbim-react-form-grid"><label>Disciplina<select value={discipline} onChange={e=>setDiscipline(e.target.value)}><option value="hydraulic">Hidráulica</option><option value="structure">Estrutura</option><option value="architecture">Arquitetura</option><option value="fire">Incêndio</option></select></label>

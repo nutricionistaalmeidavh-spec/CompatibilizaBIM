@@ -46,6 +46,8 @@ const {chromium}=require('../../app/node_modules/playwright');
     await page.getByRole('button',{name:'+ Estudo'}).click();
     await page.locator('form input[name="name"]').fill('Estudo P2 QA');
     await page.getByRole('button',{name:'Criar estudo'}).click();
+    await page.getByRole('button',{name:'Vincular estudo à obra atual'}).click();
+    await page.getByText(/Estudo vinculado à obra/).first().waitFor();
     await page.getByRole('button',{name:'Coordenação',exact:true}).click();
     await page.getByRole('heading',{name:/Coordenação.*Federação e conflitos/}).waitFor();
     assert.equal(await page.getByRole('heading',{name:/Quantitativos 5D, cronograma 4D e medições/}).count(),0,'No duplicate 4D panel in coordination step');
