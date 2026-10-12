@@ -111,12 +111,18 @@ jobs:
         shell: pwsh
         run: |
           .\scripts\f0-smoke-real-dwg.ps1 -SamplesDir (Join-Path (Get-Location) '.f0-real-samples/materiais-local-2026-09-30/DWG')
+      - name: Create F0 artifact provenance and SHA256 manifest
+        shell: pwsh
+        run: |
+          node scripts/f0-release-manifest.cjs
       - name: Save F0 sanitized Windows smoke summary
         if: always()
         uses: actions/upload-artifact@v4
         with:
           name: CompatibilizaBIM-F0-RealDWG-Windows-QA
-          path: .p1-build/f0-smoke/f0-windows-smoke-summary.json
+          path: |
+            .p1-build/f0-smoke/f0-windows-smoke-summary.json
+            .p1-build/f0-smoke/release-manifest.json
           if-no-files-found: warn
           retention-days: 7
       - name: Disponibilizar instalador apenas como artefato QA
