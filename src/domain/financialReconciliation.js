@@ -7,13 +7,14 @@ export function reconciliarFinanceiroObra({obraId,entries=[],measures=[],purchas
  const incoming=local.filter(e=>e.tipo==='receita'),outgoing=local.filter(e=>e.tipo==='despesa');
  const receitasPrevistas=sum(incoming,'valor'),despesasPrevistas=sum(outgoing,'valor');
  const receitasConfirmadas=sum(incoming.filter(e=>['confirmado','recebido','pago'].includes(e.status)),'valor');
+ const receitasRecebidas=sum(incoming.filter(e=>e.status==='recebido'),'valor');
  const despesasPagas=sum(outgoing.filter(e=>e.status==='pago'),'valor');
  const medicoesAprovadas=measures.filter(m=>m.status==='aprovada').reduce((s,m)=>s+finite(m.quantidade,'quantidade')*finite(m.preco_unitario,'preco_unitario'),0);
  const contratado=contracts.reduce((s,c)=>s+finite(c.valor,'contrato')+sum(c.aditivos||[],'valor'),0);
  const comprasAReceber=purchases.reduce((s,p)=>s+Math.max(0,finite(p.quantidade,'quantidade compra')-finite(p.recebido,'recebimento')),0);
  const comprasPendentesPagamento=sum(purchases.filter(p=>p.pagamento_status!=='pago'),'valor_total');
- return {receitasPrevistas,despesasPrevistas,receitasConfirmadas,despesasPagas,
-   saldoCaixaRegistrado:receitasConfirmadas-despesasPagas,medicoesAprovadas,contratado,comprasAReceber,
+ return {receitasPrevistas,despesasPrevistas,receitasConfirmadas,receitasRecebidas,despesasPagas,
+   saldoCaixaRegistrado:receitasRecebidas-despesasPagas,medicoesAprovadas,contratado,comprasAReceber,
    comprasPendentesPagamento,indicadoresSaoEstimativas:true,
    observacao:'Saldo calculado apenas de lançamentos locais confirmados/pagos. Não prova movimentação bancária, competência contábil nem recebimento de medição.'};
 }
