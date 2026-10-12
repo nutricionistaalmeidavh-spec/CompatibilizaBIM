@@ -2,6 +2,7 @@
 import React from 'react';
 import {buscarObra,salvarRdo,atualizarRdo,aprovarRdo,excluirRdo} from '../../../../storage/sqliteStore.js';
 import {gerarPdfRelatorio} from '../../pdfTemplates.js';
+import {validarFotosRdo,resumoEvidenciasRdo} from '../../../../src/domain/rdoEvidence.js';
 
 const rows=(v:string)=>v.split(/\r?\n/).map(x=>x.trim()).filter(Boolean);
 const printable=(v:any)=>String(v||'');
@@ -23,12 +24,13 @@ function readValues(r:any):Values{
 async function makePhotos(files:FileList|null) {
   const photos=[];
   for(const f of Array.from(files||[])){
-    if(!f.type.startsWith('image/'))throw Error('Somente fotos podem ser incluídas.');
+    if(!['image/jpeg','image/png','image/webp'].includes(f.type))throw Error('Fotos devem ser JPEG, PNG ou WebP.');
+    if(!f.size||f.size>4*1024*1024)throw Error('Cada foto deve ter até 4 MiB.');
     const bytes=new Uint8Array(await f.arrayBuffer());
     let bin='';for(let i=0;i<bytes.length;i+=32768)bin+=String.fromCharCode(...bytes.subarray(i,i+32768));
     photos.push({uri:'data:'+f.type+';base64,'+btoa(bin),legenda:f.name});
   }
-  return photos;
+  return validarFotosRdo(photos);
 }
 export function RdoPage({db,obraId,onChange}:{db:any;obraId:string|null;onChange:()=>void}){
   const [editing,setEditing]=React.useState<string|null>(null);
@@ -43,6 +45,7 @@ export function RdoPage({db,obraId,onChange}:{db:any;obraId:string|null;onChange
     e.preventDefault();if(!work||busy)return;setBusy(true);
     const old=rdos.find((r:any)=>r.id===editing);
     try{
+      if(old?.status_aprovacao==='aprovado')throw Error('RDO aprovado não pode ser editado. Crie um RDO de retificação, referenciando o original nas observações.');
       const photos=await makePhotos(e.currentTarget.querySelector('input[type=file]')?.files||null);
       const payload={
         data:form.data,turno:form.turno,responsavel:form.responsavel,
@@ -80,12 +83,13 @@ export function RdoPage({db,obraId,onChange}:{db:any;obraId:string|null;onChange
       Ocorrências:(r.ocorrencias||[]).map((x:any)=>x.descricao),
       Impedimentos:(r.impedimentos||[]).map((x:any)=>x.descricao),
       Observações:[r.observacoes||'-'],
+      'Evidências fotográficas':(r.fotos||[]).map((p:any,i:number)=>'Foto '+(i+1)+' · '+(p.legenda||'Sem legenda')+' · '+(p.local||'Local não informado')+' · imagem preservada no banco local (anexo visual não embutido no PDF)'),
       Aprovação:['Aprovado por: '+(r.aprovado_por||'pendente'),'Assinatura: _________________________']
     }),'RDO-'+work.codigo+'-'+r.data+'.pdf');
   };
   if(!work)return <section className="cbim-react-section"><h1>Diário de obra</h1><p>Selecione uma obra para consultar e registrar RDOs.</p></section>;
   return <section className="cbim-react-section"><h1>RDO · {work.nome}</h1><p>Diário completo, fotos, aprovação e PDF usando os mesmos dados persistidos na aplicação anterior.</p>
-    <button onClick={()=>choose(null)}>+ Novo RDO completo</button>{error&&<p role="alert">{error}</p>}
+    <p className="studio-muted">A aprovação é imutável. Retificações devem ser registradas em novo RDO; as fotos permanecem no SQLite local. O PDF atual inclui índice de evidências, não imagens embutidas.</p><button onClick={()=>choose(null)}>+ Novo RDO completo</button>{error&&<p role="alert">{error}</p>}
     {editing&&<form className="cbim-react-panel" onSubmit={e=>{void submit(e);}}>
       <h2>{editing==='new'?'Novo RDO':'Corrigir RDO'}</h2>
       <div className="cbim-react-form-grid">
@@ -96,7 +100,8 @@ export function RdoPage({db,obraId,onChange}:{db:any;obraId:string|null;onChange
     </form>}
     <div className="cbim-react-panel"><h2>Registros ({rdos.length})</h2>
       {rdos.map((r:any)=><article key={r.id}><b>{r.data} · {r.responsavel}</b><p>{r.status_aprovacao||'rascunho'} · {r.servicosExecutados?.length||0} serviços · {r.fotos?.length||0} fotos</p>
-        <div className="cbim-react-toolbar"><button onClick={()=>choose(r)}>Editar</button><button onClick={()=>pdf(r)}>PDF</button><button onClick={()=>remove(r)}>Excluir</button>
+       {(r.fotos||[]).length>0&&<details><summary>Ver evidências fotográficas ({r.fotos.length})</summary><div className="cbim-react-card-grid">{r.fotos.map((p:any,i:number)=><figure key={i}>{String(p.uri||'').startsWith('data:image/')?<img alt={p.legenda||'Foto de campo '+(i+1)} src={p.uri} loading="lazy" style={{width:'100%',maxHeight:220,objectFit:'contain'}}/>:<p>Foto externa antiga: {p.uri}</p>}<figcaption>{p.legenda||'Sem legenda'} · {p.local||'Sem local'}</figcaption></figure>)}</div></details>}
+        <div className="cbim-react-toolbar">{r.status_aprovacao!=='aprovado'&&<button onClick={()=>choose(r)}>Editar</button>}<button onClick={()=>pdf(r)}>PDF (índice fotográfico)</button>{r.status_aprovacao!=='aprovado'&&<button onClick={()=>remove(r)}>Excluir</button>}
           {r.status_aprovacao!=='aprovado'&&<><label>Nome do aprovador<input value={approver} onChange={e=>setApprover(e.target.value)}/></label><button disabled={!approver.trim()} onClick={()=>approval(r)}>Aprovar</button></>}</div>
       </article>)}
       {!rdos.length&&<p>Nenhum RDO cadastrado.</p>}
