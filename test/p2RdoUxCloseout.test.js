@@ -4,7 +4,7 @@ import {createRdoDraft,readRdoDraft,prepareRdoPayload,duplicateRdoContext} from 
 import {buildWorkCloseout} from '../src/domain/workCloseout.js';
 
 const sample={
- id:'r-1',data:'2026-10-12',turno:'Noturno',responsavel:'Engenheiro',clima:{condicao:'Seco',temperatura:24,impactoNaObra:'Nenhum'},
+ id:'r-1',frenteId:'F1',data:'2026-10-12',turno:'Noturno',responsavel:'Engenheiro',clima:{condicao:'Seco',temperatura:24,impactoNaObra:'Nenhum'},
  equipes:[{funcao:'Encanador',quantidade:2,observacao:'Turno A'}],
  servicosExecutados:[{descricao:'Instalação; suporte',etapaId:'e-1',percentualAvanco:30,local:'Térreo'}],
  materiaisRecebidos:[{material:'Tubo PVC',quantidade:12.5,unidade:'m',fornecedor:'X'}],
@@ -19,6 +19,7 @@ test('P2 form edit reconstructs structured RDO items without delimiter parsing o
  assert.equal(draft.impedimentos[0].resolvido,true);
  const payload=prepareRdoPayload(draft,sample);
  assert.equal(payload.clima.temperatura,24);
+ assert.equal(payload.frenteId,'F1','existing front metadata must survive RDO editing');
  assert.equal(payload.servicosExecutados[0].etapaId,'e-1');
  assert.equal(payload.materiaisRecebidos[0].fornecedor,'X');
  assert.equal(payload.impedimentos[0].resolvido,true);
