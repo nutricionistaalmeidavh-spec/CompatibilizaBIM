@@ -82,3 +82,37 @@
 .cbim-p1-review{padding:14px 0;border-bottom:1px solid #e2e8f0}
 .cbim-p1-review:last-of-type{border-bottom:0}
 @media(max-width:700px){.cbim-p1-steps{display:grid;grid-template-columns:repeat(2,minmax(0,1fr))}.cbim-p1-steps button{text-align:center}}
+
+/* P2 unified visual primitives: structured RDO inputs and work-completion review */
+:root{--cbim-accent:#24558b;--cbim-line:#d7e1eb;--cbim-panel:#fff;--cbim-text:#17283b;--cbim-muted:#4b6176;--cbim-radius:10px}
+.ui-status--warning{background:#fff1cf;color:#765000}
+.ui-status--danger{background:#fde8e6;color:#942827}
+.ui-status--neutral{background:#eaf1f7;color:#314b64}
+.ui-section-heading{display:flex;align-items:start;flex-direction:column;gap:2px;margin:8px 0 16px}
+.ui-section-heading h2{margin:0}.ui-section-heading p{margin:0}
+.cbim-closeout{margin:22px 0;padding:18px;border:1px solid var(--cbim-line);background:#fff;border-radius:var(--cbim-radius)}
+.cbim-closeout-heading{display:flex;justify-content:space-between;align-items:start;gap:12px;flex-wrap:wrap}
+.cbim-closeout-heading h2{margin:0}
+.cbim-closeout-metrics{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:10px;margin:18px 0}
+.ui-metric{padding:16px;border:1px solid var(--cbim-line);border-radius:9px;background:#f8fafc;display:flex;flex-direction:column;gap:8px;min-width:0}
+.ui-metric-label{font-size:12px;font-weight:750;color:#3e566e}
+.ui-metric strong{font-size:22px;letter-spacing:-.025em;font-variant-numeric:tabular-nums;color:var(--cbim-text)}
+.ui-metric small{font-size:11px;color:var(--cbim-muted);line-height:1.4}
+.cbim-closeout-checks{padding:0;list-style:none;display:grid;gap:8px}
+.cbim-closeout-checks li{display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid #e9eef4}
+.cbim-form-repeat{border:1px solid var(--cbim-line);border-radius:10px;padding:16px;min-width:0;margin:14px 0;background:#fcfdff}
+.cbim-form-repeat legend{font-size:15px;font-weight:800;color:var(--cbim-text);padding:0 8px}
+.cbim-form-repeat p{margin:0 0 10px;font-size:13px}
+.cbim-form-repeat-row{padding:14px;margin:10px 0;border:1px solid #e3eaf2;border-radius:8px;background:white}
+.cbim-form-repeat-head{display:flex;align-items:center;justify-content:space-between;gap:14px;margin-bottom:10px}
+.cbim-form-repeat-head strong{font-size:12px;color:var(--cbim-muted)}
+.cbim-form-repeat .ui-empty{padding:16px;border:1px dashed #becbd9;border-radius:8px}
+.cbim-form-repeat .ui-empty p{margin:5px 0 0}
+.cbim-react-section textarea{width:100%;min-width:0;padding:10px 11px;border:1px solid #adbccc;border-radius:8px;resize:vertical;font:inherit;line-height:1.45}
+.cbim-react-section input:focus-visible,.cbim-react-section textarea:focus-visible,.cbim-react-section select:focus-visible,.cbim-react-section button:focus-visible{outline:3px solid #6fa8e3;outline-offset:2px}
+.cbim-react-section .cbim-form-repeat label:has(input[type=checkbox]){display:flex;flex-direction:row;align-items:center;gap:10px}
+.cbim-rdo-editor-meta{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px}
+.cbim-rdo-editor-meta label{min-width:0}
+.cbim-rdo-actions{position:sticky;bottom:0;background:#ffffffee;padding:12px 0;border-top:1px solid #e1e8f0}
+@media(max-width:740px){.cbim-closeout{padding:13px}.cbim-closeout-metrics{grid-template-columns:1fr 1fr}.ui-metric strong{font-size:18px}}
+@media(max-width:480px){.cbim-closeout-metrics{grid-template-columns:1fr}.cbim-rdo-editor-meta{grid-template-columns:1fr}}
