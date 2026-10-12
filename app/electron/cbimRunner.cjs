@@ -3,7 +3,7 @@ const fs = require('node:fs');
 const path = require('node:path');
 const { spawn } = require('node:child_process');
 const { randomBytes } = require('node:crypto');
-const { pythonStudioCommand } = require('./studioWindow.cjs');
+const { pythonStudioCommand, studioLicenseArguments } = require('./studioWindow.cjs');
 const activeConversions = new Set();
 
 const DISCIPLINES = new Set(['architecture', 'structure', 'hydraulic', 'fire']);
@@ -68,7 +68,7 @@ function cancelConversion() {
   return stopped > 0;
 }
 
-async function convertDwg({ input, documentsDir, appSourceDir, resourcesDir, pythonExecutable, isPackaged = false, onProgress = () => {} }) {
+async function convertDwg({ input, documentsDir, appSourceDir, resourcesDir, pythonExecutable, isPackaged = false, licenseMode = process.env.CBIM_STUDIO_LICENSE_MODE, runProcess = runCbimProcess, onProgress = () => {} }) {
   const request = parseDwgRequest(input);
   const command = pythonStudioCommand({ appSourceDir, resourcesDir });
   const embedded = path.join(resourcesDir || '', 'runtime', 'cbim-runtime.exe');
@@ -83,20 +83,19 @@ async function convertDwg({ input, documentsDir, appSourceDir, resourcesDir, pyt
 
   const python = pythonExecutable || command.program;
   const env = command.env;
-  if (isPackaged) {
-    const publicKey = path.join(resourcesDir, 'license', 'public.pem');
-    const customer = path.join(documentsDir, 'Engenharia360', 'CBIM', 'license', 'customer.json');
-    const signed = path.join(documentsDir, 'Engenharia360', 'CBIM', 'license', 'license.json');
-    if (![publicKey, customer, signed].every(file => fs.existsSync(file))) {
-      throw new Error('Conversão CBIM requer ativação offline. Confira licença do cliente e chave pública do emissor.');
-    }
+  // O modo gratuito é o padrão inclusive no instalador Windows.
+  // Reutilize a política já aplicada ao Studio: só o modo commercial, escolhido
+  // explicitamente, exige arquivos assinados e validação offline do recurso.
+  const commercialArgs = studioLicenseArguments({ isPackaged, resourcesDir, documentsDir, mode: licenseMode });
+  if (commercialArgs.length) {
     const verifyArgs = [
       ...(packedRuntime ? ['studio'] : ['-m', 'compatibilizabim_core.desktop.p1_launcher']),
-      'verify', '--public-key', publicKey, '--customer', customer, '--license', signed,
-      '--feature', 'cad_to_cbim'
+      'verify', ...commercialArgs.slice(1), '--feature', 'cad_to_cbim'
     ];
-    const check = await runCbimProcess(python, verifyArgs, { cwd: core, env });
-    if (check.code !== 0) throw new Error('Licença offline não autorizou conversão CAD: ' + (check.stderr || check.stdout || 'verificação recusada'));
+    const check = await runProcess(python, verifyArgs, { cwd: core, env });
+    if (check.code !== 0) {
+      throw new Error('Licença offline não autorizou conversão CAD: ' + (check.stderr || check.stdout || 'verificação recusada'));
+    }
   }
 
   const outputDir = path.join(documentsDir, 'Engenharia360', 'CBIM', 'jobs', 'job-' + Date.now() + '-' + randomBytes(4).toString('hex'));
@@ -117,7 +116,7 @@ async function convertDwg({ input, documentsDir, appSourceDir, resourcesDir, pyt
   else if (!isPackaged && fs.existsSync(bridgeProject)) args.push('--bridge-project', bridgeProject);
   else throw new Error('Ponte ACadSharp não empacotada ou indisponível para importar DWG.');
   onProgress({ stage: 'Importação DWG e reconhecimento CBIM', status: 'running' });
-  const result = await runCbimProcess(python, args, { cwd: core, env, logPath, onProgress });
+  const result = await runProcess(python, args, { cwd: core, env, logPath, onProgress });
 
   const batchPath = path.join(outputDir, 'validation-batch.json');
   if (!fs.existsSync(batchPath)) {
@@ -142,7 +141,7 @@ async function convertDwg({ input, documentsDir, appSourceDir, resourcesDir, pyt
       'prepare', '--project', cbimPath, '--source', inputPath, '--discipline', request.discipline,
       '--workspace', workspace, '--validation-report', validationPath
     ];
-    const prepared = await runCbimProcess(python, prepareArgs, { cwd: core, env, logPath, onProgress });
+    const prepared = await runProcess(python, prepareArgs, { cwd: core, env, logPath, onProgress });
     if (prepared.code === 0 && fs.existsSync(path.join(workspace, 'workspace.json'))) workspaceDir = workspace;
     else studioError = 'O IFC foi exportado, mas não foi possível criar o Studio: ' + (prepared.stderr || 'erro de preparação');
   } else {
