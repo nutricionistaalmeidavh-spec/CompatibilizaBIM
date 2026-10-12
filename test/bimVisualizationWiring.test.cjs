@@ -21,3 +21,8 @@ test('Gantt and QTO UI cannot mutate canonical Python data via new endpoints', (
   assert.match(file('app/src/react/shell/Bim4D5DPanel.tsx'), /bridge\(\)/);
   assert.match(file('app/src/react/studio/StudioApp.tsx'), /api\('\/api\/workspace'/);
 });
+
+test('Frappe Gantt styles are resolved locally despite package exports map', () => {
+  assert.match(file('app/vite.config.js'), /frappe-gantt-style/);
+  assert.match(file('app/src/react/shell/CanonicalGantt.tsx'), /import 'frappe-gantt-style'/);
+});

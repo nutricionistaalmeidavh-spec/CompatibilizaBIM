@@ -1,6 +1,6 @@
 import React from 'react';
 import Gantt from 'frappe-gantt';
-import 'frappe-gantt/dist/frappe-gantt.css';
+import 'frappe-gantt-style';
 import { scheduleToGanttTasks } from '../../../../src/bim/visualizationAdapters.js';
 
 type Props = { activities: any[] };

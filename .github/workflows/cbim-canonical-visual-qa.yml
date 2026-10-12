@@ -28,7 +28,7 @@ jobs:
         run: ln -s app/node_modules node_modules
       - name: Regression tests (including data-boundary adapters)
         run: npm test
-      - name: Build canonical React renderer
+      - name: Build canonical React renderer (including Frappe package style alias)
         run: npm run build --prefix app
       - name: Save lockfile for branch synchronization
         if: always()
