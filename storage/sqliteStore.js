@@ -1,3 +1,4 @@
+import {garantirRdoMutavel,garantirMedicaoTransicao} from '../src/domain/approvalGuards.js';
 import initSqlJs from 'sql.js';
 import schemaSql from './schema.sql?raw';
 import { migrarBancoCompatibilidade } from './schemaMigrations.js';
@@ -160,7 +161,7 @@ export function salvarRdo(db, obraId, dados) {
 export function atualizarRdo(db, rdoId, dados) {
   const atual = linhas(db, 'SELECT * FROM rdos WHERE id = ?', [rdoId])[0];
   if (!atual) throw new Error('RDO não encontrado.');
-  if (atual.status_aprovacao === 'aprovado') throw new Error('RDO aprovado é imutável. Registre uma retificação em novo RDO, preservando o original.');
+  garantirRdoMutavel(atual.status_aprovacao);
   db.run('UPDATE rdos SET data = ?, turno = ?, responsavel = ?, dados_json = ?, status_aprovacao = \'rascunho\', aprovado_por = NULL, aprovado_em = NULL WHERE id = ?', [dados.data, dados.turno ?? null, dados.responsavel, JSON.stringify(dados), rdoId]);
   salvarBanco(db); return rdoId;
 }
@@ -169,7 +170,7 @@ export function excluirRdo(db, rdoId, confirmacao) {
   if (confirmacao !== 'EXCLUIR') throw new Error('Digite EXCLUIR para confirmar a exclusão.');
   const row=linhas(db,'SELECT obra_id,status_aprovacao FROM rdos WHERE id = ?',[rdoId])[0];
   if(!row)throw new Error('RDO não encontrado.');
-  if(row.status_aprovacao==='aprovado')throw new Error('RDO aprovado não pode ser excluído, para preservar a evidência.');
+  garantirRdoMutavel(row.status_aprovacao);
   db.run('DELETE FROM rdos WHERE id = ?', [rdoId]);
   registrarHistorico(db,row.obra_id,'rdo',rdoId,'excluido');salvarBanco(db);
 }
@@ -243,11 +244,9 @@ export function salvarMedicao(db, obraId, dados) {
 }
 export function listarMedicoes(db, obraId) { return linhas(db, 'SELECT m.*, f.nome AS frente_nome FROM medicoes_servico m LEFT JOIN frentes_servico f ON f.id = m.frente_id WHERE m.obra_id = ? ORDER BY m.atualizado_em DESC', [obraId]); }
 export function atualizarStatusMedicao(db, id, status) {
- if(!['rascunho','conferida','aprovada','rejeitada'].includes(status))throw new Error('Situação de medição inválida.');
  const row=linhas(db,'SELECT obra_id,status FROM medicoes_servico WHERE id = ?',[id])[0];
  if(!row)throw new Error('Medição não encontrada.');
- if(row.status==='aprovada'&&status!=='aprovada')throw new Error('Medição aprovada é imutável. Registre uma retificação independente.');
- if(row.status==='rejeitada'&&status==='aprovada')throw new Error('Medição rejeitada exige nova conferência.');
+ garantirMedicaoTransicao(row.status,status);
  db.run('UPDATE medicoes_servico SET status = ?, atualizado_em = ? WHERE id = ?',[status,new Date().toISOString(),id]);
  registrarHistorico(db,row.obra_id,'medicao',id,'status',{anterior:row.status,novo:status});salvarBanco(db);
 }
