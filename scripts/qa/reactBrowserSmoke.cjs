@@ -50,7 +50,7 @@ const {chromium}=require('../../app/node_modules/playwright');
     await section('Cálculos','Biblioteca de cálculos');
     await page.getByRole('button',{name:'Viga biapoiada completa'}).first().click();
     await page.getByRole('button',{name:'Calcular e validar'}).click();
-    await page.getByRole('heading',{name:/Resultado/}).waitFor();
+    await page.getByRole('heading',{name:/Verificação matemática parcial aprovada/}).waitFor();
     assert.ok(await page.getByRole('button',{name:'Memória PDF'}).isVisible());
     await section('Estruturas','Estruturas · modelos globais');
     await section('Operação','Operação de obra');
@@ -61,6 +61,25 @@ const {chromium}=require('../../app/node_modules/playwright');
     await page.getByRole('button',{name:'+ Novo RDO completo'}).click();
     await page.locator('form textarea').first().waitFor();
     await screenshots('rdo-form');
+    const rdoForm=page.locator('form.cbim-react-panel').first();
+    await rdoForm.getByLabel('Responsável').fill('Responsável QA');
+    await rdoForm.locator('textarea').nth(1).fill('Inspeção em tubulação hidráulica');
+    await rdoForm.locator('input[type=file]').setInputFiles({
+      name:'evidencia.png',mimeType:'image/png',
+      buffer:Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+/dFoAAAAASUVORK5CYII=','base64')
+    });
+    await rdoForm.getByRole('button',{name:'Salvar RDO'}).click();
+    await page.getByRole('button',{name:'PDF com fotos'}).waitFor();
+    const documentPromise=page.waitForEvent('download',{timeout:15000});
+    await page.getByRole('button',{name:'PDF com fotos'}).click();
+    const exported=await documentPromise;
+    assert.match(exported.suggestedFilename(),/RDO-.*\.pdf/);
+    assert.match(fs.readFileSync(await exported.path()).toString('latin1'),/\/Subtype \/Image/,'RDO must contain an actual photographic PDF page');
+    await screenshots('f7-rdo-with-photo');
+    await page.getByRole('textbox',{name:'Nome do aprovador'}).fill('Coordenador QA');
+    await page.getByRole('button',{name:'Aprovar',exact:true}).click();
+    await page.locator('article').filter({hasText:'Responsável QA'}).getByText(/aprovado/).waitFor();
+    assert.equal(await page.getByRole('button',{name:'Editar',exact:true}).count(),0,'Approved RDO must be immutable from UI');
     await section('Financeiro','Financeiro local');
     await section('BIM','Compatibilização BIM');
     await section('Obras','Carteira de obras');
