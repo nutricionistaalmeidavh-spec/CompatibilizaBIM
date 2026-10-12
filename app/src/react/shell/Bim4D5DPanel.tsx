@@ -71,7 +71,7 @@ export function Bim4D5DPanel({project}:Props){
     <label>Data de referência<input type="date" value={date} onChange={e=>setDate(e.target.value)}/></label>
     <label>Progresso real acumulado (%)<input type="number" min="0" max="100" value={percent} onChange={e=>setPercent(e.target.value)}/></label>
     <button disabled={busy||!activity} onClick={()=>void run('progress',{activity_id:activity,progress:Number(percent),recorded_on:date},'Progresso registrado com data.')}>Registrar avanço</button>
-    <button disabled={busy||!activities.length} onClick={async()=>{setBusy(true);try{setSimulation(await api('simulate',{date}));}catch(e:any){setError(e.message);}finally{setBusy(false);}}>Simular 4D na data</button>
+    <button disabled={busy||!activities.length} onClick={async()=>{setBusy(true);try{setSimulation(await api('simulate',{date}));}catch(e:any){setError(e.message);}finally{setBusy(false);}}}>Simular 4D na data</button>
    </div>
    {simulation&&<><div className="p2-kpis"><strong>{simulation.overall.planned_progress}%<small>Previsto</small></strong><strong>{simulation.overall.actual_progress}%<small>Real</small></strong><strong>{simulation.overall.variance_percent}%<small>Desvio</small></strong></div>
     {simulation.activities.map((a:any)=><p key={a.activity_id}>{a.name} · {a.status} · {a.planned_progress}% previsto / {a.actual_progress}% real</p>)}</>}
@@ -93,7 +93,7 @@ export function Bim4D5DPanel({project}:Props){
     {b.status==='draft'&&<div className="cbim-react-toolbar"><button disabled={busy||!approver.trim()} onClick={()=>void run('approve',{batch_id:b.batch_id,approved_by:approver},'Medição aprovada com autor e data.')}>Aprovar</button><button disabled={busy} onClick={()=>{const reason=window.prompt('Justificativa para rejeição');if(reason?.trim())void run('reject',{batch_id:b.batch_id,reason},'Medição rejeitada.');}}>Rejeitar</button></div>}
    </article>)}
    <h3>Conciliação orçamento × medido aprovado</h3>
-   <button disabled={busy||!overview?.budget} onClick={async()=>{setBusy(true);setError('');try{setFinancial(await api('finance'));}catch(e:any){setError(e.message);}finally{setBusy(false);}}>Calcular confronto 5D/4D</button>
+   <button disabled={busy||!overview?.budget} onClick={async()=>{setBusy(true);setError('');try{setFinancial(await api('finance'));}catch(e:any){setError(e.message);}finally{setBusy(false);}}}>Calcular confronto 5D/4D</button>
    {financial&&<><div className="p2-kpis"><strong>{money(financial.budget_total)}<small>Orçado</small></strong><strong>{money(financial.total_measured)}<small>Medido aprovado</small></strong><strong>{money(financial.remaining_budget)}<small>Saldo orçamentário</small></strong></div>
     {!!financial.unmatched_line_count&&<p>{financial.unmatched_line_count} linha(s) sem composição inequívoca; não receberam preço.</p>}
     <p className="studio-muted">Valores pagos ou recebidos não são lançados por este módulo e não podem ser inferidos das medições.</p></>}
