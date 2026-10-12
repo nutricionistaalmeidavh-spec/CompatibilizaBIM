@@ -4,7 +4,9 @@ import {checkImportFile,readCbimElements,contentFingerprint} from './importContr
 import { LinkedBimPanel } from './LinkedBimPanel';
 import { BimCoordinationPanel } from './BimCoordinationPanel';
 import { Bim4D5DPanel } from './Bim4D5DPanel';
-import {listarProjetosBim,buscarProjetoBim,criarProjetoBimPersistido,salvarModeloBimProjeto,salvarAnaliseBimProjeto,atualizarConflitoBimProjeto} from '../../../../storage/sqliteStore.js';
+import { ReviewTraceabilityPanel } from './ReviewTraceabilityPanel';
+import { BimMeasurementReconciliationPanel } from './BimMeasurementReconciliationPanel';
+import {listarProjetosBim,buscarProjetoBim,vincularProjetoBimObra,criarProjetoBimPersistido,salvarModeloBimProjeto,salvarAnaliseBimProjeto,atualizarConflitoBimProjeto} from '../../../../storage/sqliteStore.js';
 import {criarModeloBim,detectarConflitosBim,validarCabecalhoIfc} from '../../../../src/bim/compatibility.js';
 import {executarAnaliseBim,formatoModeloBim} from '../../../../src/bim/p0Workflow.js';
 import {criarManifestoViewer,gerarViewerFederadoHtml} from '../../../../src/bim/viewer.js';
@@ -17,6 +19,7 @@ type Props={db:any;obraId:string|null;version:number;onChange:()=>void;studyId?:
 export function BimPage({db,obraId,version,onChange,studyId='',onSelectStudy}:Props) {
   const [id,setId]=React.useState(()=>{try{return sessionStorage.getItem('cbim-selected-study')||'';}catch{return '';}});
   const [creating,setCreating]=React.useState(false);
+  const [step,setStep]=React.useState<'Estudo'|'Coordenação'|'4D/5D'|'Revisão CBIM'|'Legado da obra'>('Estudo');
   const [left,setLeft]=React.useState('');
   const [right,setRight]=React.useState('');
   const [filter,setFilter]=React.useState('todos');
@@ -103,21 +106,21 @@ export function BimPage({db,obraId,version,onChange,studyId='',onSelectStudy}:Pr
   return <section className="cbim-react-section"><h1>Compatibilização BIM</h1><p>Importação, conversão e análise usam os contratos canônicos; resultado pendente não é apresentado como análise concluída.</p>
     <div className="cbim-react-toolbar"><label>Estudo BIM<select value={selected} onChange={e=>{setId(e.target.value);onSelectStudy?.(e.target.value);}}><option value="">Selecione estudo</option>{projects.map((p:any)=><option key={p.id} value={p.id}>{p.nome}</option>)}</select></label><button onClick={()=>setCreating(v=>!v)}>+ Estudo</button></div>
     {creating&&<form className="cbim-react-panel cbim-react-form-grid" onSubmit={create}><label>Nome<input name="name" required/></label><label>Descrição<input name="description"/></label>{obraId&&<label><input type="checkbox" name="linked"/> Vincular à obra atual</label>}<button type="submit">Criar estudo</button></form>}
-    {project&&<><p className="studio-muted">Contexto: {project.obra_id?'Estudo vinculado à obra '+(project.obra_id===obraId?'atual.':'de origem '+project.obra_id+'.'):'Estudo BIM independente.'} {project.obra_id&&obraId&&project.obra_id!==obraId?'A obra selecionada no cabeçalho não altera o conteúdo deste estudo.':''}</p><div className="cbim-react-panel"><h2>{project.nome} · {models.length} modelos</h2>
+    {project&&<p className="studio-muted">Contexto: {project.obra_id?'Estudo vinculado à obra '+(project.obra_id===obraId?'atual.':'de origem '+project.obra_id+'.'):'Estudo BIM independente.'} {project.obra_id&&obraId&&project.obra_id!==obraId?'A obra selecionada no cabeçalho não altera o conteúdo deste estudo.':''}</p>}
+    {project&&!project.obra_id&&obraId&&<div className="cbim-react-panel"><p>Este estudo é independente. Para conferir medições de serviço da obra, vincule-o explicitamente ao cadastro operacional. Modelos e revisões existentes não serão alterados.</p><button type="button" onClick={()=>{try{vincularProjetoBimObra(db,project.id,obraId);setMessage('Estudo vinculado à obra. Medições operacionais disponíveis para conferência.');setError('');onChange();}catch(e:any){setError(e.message||String(e));}}}>Vincular estudo à obra atual</button></div>}
+    <nav className="cbim-p1-steps" aria-label="Etapas do estudo BIM">{(['Estudo','Coordenação','4D/5D','Revisão CBIM','Legado da obra'] as const).map(item=><button key={item} type="button" className={step===item?'selected':''} aria-pressed={step===item} onClick={()=>setStep(item)}>{item}</button>)}</nav>
+    {project&&step==='Estudo'&&<div className="cbim-react-panel"><h2>{project.nome} · {models.length} modelos</h2>
       <div className="cbim-react-form-grid"><label>Disciplina<select value={discipline} onChange={e=>setDiscipline(e.target.value)}><option value="hydraulic">Hidráulica</option><option value="structure">Estrutura</option><option value="architecture">Arquitetura</option><option value="fire">Incêndio</option></select></label>
         <label>Importar IFC / CBIM JSON<input disabled={busy} type="file" accept=".ifc,.json,.cbim.json" onChange={e=>{void importFile(e.target.files?.[0]||null);e.target.value='';}}/></label>
         <label>Converter CAD (DWG / DXF)<input disabled={busy} type="file" accept=".dwg,.dxf" onChange={e=>{void convert(e.target.files?.[0]||null);e.target.value='';}}/></label><label>DXF sem unidade<select value={unitlessScale} disabled={busy} onChange={e=>setUnitlessScale(e.target.value)}><option value="1">Metros (m)</option><option value="0.01">Centímetros (cm)</option><option value="0.001">Milímetros (mm)</option></select></label></div><p className="studio-muted">Selecione a disciplina antes da importação. DWG usa ACadSharp; DXF usa ezdxf e respeita unidades INSUNITS. A escala acima só se aplica quando não há unidade declarada. XREFs ausentes são diagnosticados; o original e o relatório ficam no job local.</p>
       {models.map((m:any)=><p key={m.id}>{m.nome} · {m.disciplina} · {m.elementos?.length||0} elementos</p>)}
       <div className="cbim-react-toolbar"><button disabled={busy||!models.length} onClick={view}>Gerar visualizador geométrico</button></div>
-    </div>
-    <BimCoordinationPanel db={db} project={project} onChange={onChange}/>
-    <Bim4D5DPanel project={project}/>
-    </>}
-    <div className="cbim-react-panel"><h2>Revisão e histórico CBIM</h2><p>WorkspaceStore e histórico permanecem no local canônico, sem migração de arquivos.</p>
-      {workspaces.map((w:any)=><article key={w.path}><b>{w.project_name}</b><small>{w.job} · revisão {w.revision} · {w.updated_at}</small><button disabled={busy} onClick={()=>review(w.path)}>Abrir revisão React</button></article>)}
-      {!workspaces.length&&<p>Nenhum workspace convertido encontrado.</p>}
-    </div>
-    <LinkedBimPanel db={db} obraId={obraId} onChange={onChange}/>
+    </div>}
+    {project&&step==='Coordenação'&&<BimCoordinationPanel db={db} project={project} onChange={onChange}/>}
+    {project&&step==='4D/5D'&&<><Bim4D5DPanel project={project}/><BimMeasurementReconciliationPanel db={db} project={project} onChange={onChange}/></>}
+    {!project&&['Coordenação','4D/5D'].includes(step)&&<div className="cbim-react-panel">Selecione um estudo para acessar suas análises e quantitativos.</div>}
+    {step==='Revisão CBIM'&&<ReviewTraceabilityPanel db={db} project={project} workspaces={workspaces} busy={busy} onReview={review} onRefresh={()=>{void runtime()?.listWorkspaces?.().then(setWorkspaces).catch(()=>setWorkspaces([]));}} onChange={onChange}/>}
+    {step==='Legado da obra'&&<><p className="studio-muted">Modelos e conflitos gravados diretamente na obra, mantidos no SQLite original. Não são somados às análises dos estudos BIM e não serão migrados automaticamente.</p><LinkedBimPanel db={db} obraId={obraId} onChange={onChange}/></>}
     {(message||progress)&&<p role="status">{progress||message}</p>}
     {error&&<p role="alert" className="cbim-react-error">{error} Os arquivos existentes foram preservados; corrija a fonte ou consulte o log local antes de tentar novamente.</p>}
     {busy&&<div aria-busy="true" className="cbim-react-toolbar"><p>Processamento em andamento…</p><button type="button" onClick={()=>{void runtime()?.cancel?.();setProgress('Cancelamento solicitado; conferindo encerramento do job…');}}>Cancelar job</button></div>}
