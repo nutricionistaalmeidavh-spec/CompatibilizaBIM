@@ -186,6 +186,10 @@ export function salvarDocumento(db, obraId, dados) {
   registrarHistorico(db, obraId, 'documento', id, 'criado', { nome: dados.nome }); salvarBanco(db); return id;
 }
 
+// Read the original attachment only on explicit user request. Lists remain metadata-only.
+export function obterDocumento(db, obraId, documentoId) {
+  return linhas(db, 'SELECT id,nome,tipo,dados_base64,criado_em FROM documentos_obra WHERE id=? AND obra_id=?', [documentoId, obraId])[0] ?? null;
+}
 export function listarDocumentos(db, obraId) { return linhas(db, 'SELECT id,nome,tipo,criado_em FROM documentos_obra WHERE obra_id = ? ORDER BY criado_em DESC', [obraId]); }
 
 export function registrarHistorico(db, obraId, entidade, entidadeId, acao, detalhes = {}) {

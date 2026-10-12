@@ -4,6 +4,15 @@ const path = require('node:path');
 const { spawn } = require('node:child_process');
 
 const activeStudioSessions = new Set();
+const hostedStudioSessions = new WeakMap();
+
+function returnToMainWindow(window) {
+  const session = window && hostedStudioSessions.get(window);
+  if (!session) throw new Error('Não há revisão aberta nesta janela.');
+  if (!window.webContents.getURL().startsWith(session.origin + '/')) throw new Error('Origem de revisão inválida.');
+  return session.restore();
+}
+
 
 function workspaceRoot(documentsDir) {
   return path.join(documentsDir, 'Engenharia360', 'CBIM', 'jobs');
@@ -79,26 +88,35 @@ function pythonStudioCommand({ appSourceDir, resourcesDir }) {
   };
 }
 
-async function openStudioWindow({ workspacePath, documentsDir, appSourceDir, resourcesDir, BrowserWindow, isPackaged }) {
+function studioLicenseArguments({ isPackaged, resourcesDir, documentsDir, mode = process.env.CBIM_STUDIO_LICENSE_MODE }) {
+  if (!mode || mode === 'free') return [];
+  if (mode !== 'commercial') throw new Error('Modo de licença CBIM inválido: escolha free ou commercial.');
+  if (!isPackaged) return [];
+  const publicKey = path.join(resourcesDir, 'license', 'public.pem');
+  const customer = path.join(documentsDir, 'Engenharia360', 'CBIM', 'license', 'customer.json');
+  const license = path.join(documentsDir, 'Engenharia360', 'CBIM', 'license', 'license.json');
+  if (![publicKey, customer, license].every(p => fs.existsSync(p))) {
+    throw new Error('Modo comercial: importe a licença offline e configure a chave pública do emissor.');
+  }
+  return ['--require-license', '--public-key', publicKey, '--customer', customer, '--license', license];
+}
+
+async function openStudioWindow({ workspacePath, documentsDir, appSourceDir, resourcesDir, BrowserWindow, isPackaged, hostWindow = null, startProcess = spawn }) {
+  if (hostWindow && hostedStudioSessions.has(hostWindow)) throw new Error('Uma revisão já está aberta nesta janela.');
   const workspace = resolveCbimWorkspace(documentsDir, workspacePath);
   const command = pythonStudioCommand({ appSourceDir, resourcesDir });
+  const packagedUi = path.join(resourcesDir || '', 'studio-ui');
+  const developmentUi = path.join(appSourceDir, 'dist');
+  command.env.CBIM_STUDIO_UI_DIR = isPackaged ? packagedUi : developmentUi;
   const args = [...command.prefix, 'serve', '--workspace', workspace];
-  if (isPackaged) {
-    const publicKey = path.join(resourcesDir, 'license', 'public.pem');
-    const customer = path.join(documentsDir, 'Engenharia360', 'CBIM', 'license', 'customer.json');
-    const license = path.join(documentsDir, 'Engenharia360', 'CBIM', 'license', 'license.json');
-    if (![publicKey, customer, license].every(p => fs.existsSync(p))) {
-      throw new Error('Studio não ativado. Importe a licença offline e configure a chave pública do emissor.');
-    }
-    args.push('--require-license', '--public-key', publicKey, '--customer', customer, '--license', license);
-  }
+  args.push(...studioLicenseArguments({ isPackaged, resourcesDir, documentsDir }));
   return new Promise((resolve, reject) => {
     let settled = false;
     let opened = false;
     let pending = '';
     let stderr = '';
     let win = null;
-    const child = spawn(command.program, args, {
+    const child = startProcess(command.program, args, {
       cwd: workspace, env: command.env, windowsHide: true, stdio: ['pipe', 'pipe', 'pipe']
     });
     activeStudioSessions.add(child);
@@ -131,19 +149,40 @@ async function openStudioWindow({ workspacePath, documentsDir, appSourceDir, res
         settled = true;
         clearTimeout(timeout);
         opened = true;
-        win = new BrowserWindow({
+        const origin = 'http://127.0.0.1:' + ready.port;
+        win = hostWindow || new BrowserWindow({
           width: 1420, height: 920, autoHideMenuBar: true,
           title: 'CompatibilizaBIM Studio',
           webPreferences: { nodeIntegration: false, contextIsolation: true, sandbox: true }
         });
-        const origin = 'http://127.0.0.1:' + ready.port;
-        win.webContents.on('will-navigate', (event, url) => {
+        const homeUrl = hostWindow ? win.webContents.getURL() : '';
+        const guard = (event, url) => {
           if (!url.startsWith(origin + '/')) event.preventDefault();
-        });
+        };
+        win.webContents.on('will-navigate', guard);
         win.webContents.setWindowOpenHandler(() => ({ action: 'deny' }));
         win.on('closed', stop);
-        win.loadURL(origin + '/?token=' + encodeURIComponent(ready.token))
-          .catch(e => { if (win && !win.isDestroyed()) win.close(); });
+        if (hostWindow) {
+          const restore = () => {
+            const session = hostedStudioSessions.get(win);
+            if (session) {
+              hostedStudioSessions.delete(win);
+              win.webContents.removeListener('will-navigate', guard);
+            }
+            stop();
+            if (!win.isDestroyed()) return win.loadURL(homeUrl);
+            return Promise.resolve();
+          };
+          hostedStudioSessions.set(win, { origin, restore });
+        }
+        win.loadURL(origin + '/?token=' + encodeURIComponent(ready.token) + '&surface=review')
+          .catch(() => {
+            if (hostWindow && hostedStudioSessions.has(win)) {
+              hostedStudioSessions.get(win).restore().catch(() => {});
+            } else if (!hostWindow && win && !win.isDestroyed()) {
+              win.close();
+            }
+          });
         resolve({ workspace, port: ready.port });
       }
     });
@@ -151,7 +190,11 @@ async function openStudioWindow({ workspacePath, documentsDir, appSourceDir, res
       activeStudioSessions.delete(child);
       clearTimeout(timeout);
       if (!opened) fail(new Error('Studio não iniciou: ' + (stderr.trim() || 'código ' + code)));
-      else if (win && !win.isDestroyed()) win.close();
+      else if (win && !win.isDestroyed()) {
+        if (hostWindow) {
+          if (hostedStudioSessions.has(win)) hostedStudioSessions.get(win).restore().catch(() => {});
+        } else win.close();
+      }
     });
   });
 }
@@ -164,4 +207,4 @@ function stopAllStudios() {
   activeStudioSessions.clear();
 }
 
-module.exports = { resolveCbimWorkspace, listCbimWorkspaces, parseStudioReady, pythonStudioCommand, openStudioWindow, stopAllStudios };
+module.exports = { resolveCbimWorkspace, listCbimWorkspaces, parseStudioReady, pythonStudioCommand, openStudioWindow, returnToMainWindow, studioLicenseArguments, stopAllStudios };
