@@ -5,6 +5,7 @@ import { abrirBanco, listarObras, lerWorkspaceContext, salvarWorkspaceContext, e
 import { WorksPage } from './WorksPage';
 import { BimPage } from './BimPage';
 import { CalculatorsPage } from './CalculatorsPage';
+import { QualityPage } from './QualityPage';
 import { OperationsPage } from './OperationsPage';
 import { FinancePage } from './FinancePage';
 import { RdoPage } from './RdoPage';
@@ -116,6 +117,7 @@ export function AppShell(){
       {active==='Obras'&&<WorksPage db={db} obraId={workId} scope={scope} selectWork={selectWork} onChange={refresh} onNavigate={setActive}/>}
       {active==='BIM'&&<BimPage db={db} obraId={workId} version={version} onChange={refresh} studyId={context.projetoBimId||''} onSelectStudy={id=>updateContext({projetoBimId:id||null})}/>}
       {active==='Cálculos'&&<CalculatorsPage db={db} obraId={workId} onSaved={refresh}/>}
+      {active==='Qualidade'&&<QualityPage db={db} version={version} onNavigate={setActive}/>}
       {active==='Estruturas'&&<StructuralPage db={db} obraId={workId} onChange={refresh}/>}
       {active==='RDO'&&<RdoPage db={db} obraId={workId} scope={scope} onChange={refresh}/>}
       {active==='Operação'&&<OperationsPage db={db} obraId={workId} scope={scope} onChange={refresh}/>}
