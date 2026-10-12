@@ -1,0 +1,43 @@
+import assert from 'node:assert/strict';
+import fs from 'node:fs';
+import path from 'node:path';
+import { createRequire } from 'node:module';
+import test from 'node:test';
+import { migrarBancoCompatibilidade,CURRENT_SCHEMA_VERSION } from '../storage/schemaMigrations.js';
+import { calcularChecksumCrc32, validarContratoBackup } from '../src/storage/backupContract.js';
+const require=createRequire(import.meta.url);
+const initSqlJs=require('sql.js');
+const SQL=await initSqlJs({locateFile:f=>require.resolve('sql.js/dist/'+f)});
+const schema=fs.readFileSync(path.resolve('storage/schema.sql'),'utf8');
+test('F0-02: a legacy database upgrades transactionally and retains historical rows',()=>{
+ const db=new SQL.Database();
+ db.run("CREATE TABLE obras (id TEXT PRIMARY KEY, codigo TEXT NOT NULL UNIQUE, nome TEXT NOT NULL, status TEXT, criado_em TEXT, atualizado_em TEXT)");
+ db.run("INSERT INTO obras VALUES ('legacy','L-001','Obra antiga','execucao','2020','2020')");
+ const version=migrarBancoCompatibilidade(db,schema);
+ assert.equal(version,CURRENT_SCHEMA_VERSION);
+ assert.equal(db.exec("SELECT nome FROM obras WHERE id='legacy'")[0].values[0][0],'Obra antiga');
+ assert.equal(db.exec('PRAGMA integrity_check')[0].values[0][0],'ok');
+ assert.equal(db.exec('PRAGMA user_version')[0].values[0][0],CURRENT_SCHEMA_VERSION);
+ const after=Buffer.from(db.export());
+ const restored=new SQL.Database(after);
+ assert.equal(restored.exec("SELECT nome FROM obras WHERE id='legacy'")[0].values[0][0],'Obra antiga');
+ migrarBancoCompatibilidade(restored,schema);
+ assert.equal(restored.exec("SELECT COUNT(*) FROM obras")[0].values[0][0],1);
+ db.close();restored.close();
+});
+test('F0-02: migration never writes over future-schema files',()=>{
+ const db=new SQL.Database();db.run('PRAGMA user_version=999');
+ assert.throws(()=>migrarBancoCompatibilidade(db,schema),/versão mais recente/);
+ assert.equal(db.exec('PRAGMA user_version')[0].values[0][0],999);db.close();
+});
+test('F0-02: backup v1 remains compatible and checksum detects tampering',()=>{
+ const db=new SQL.Database();db.run(schema);const bytes=db.export();
+ const base={versao:1,exportadoEm:'2026-10-12',bancoBase64:Buffer.from(bytes).toString('base64')};
+ assert.equal(validarContratoBackup(base).valido,true);
+ const guarded={...base,tamanhoBytes:bytes.length,checksumCrc32:calcularChecksumCrc32(bytes)};
+ assert.equal(validarContratoBackup(guarded).valido,true);
+ assert.equal(validarContratoBackup({...guarded,checksumCrc32:'00000000'}).valido,false);
+ assert.equal(validarContratoBackup({...guarded,tamanhoBytes:1}).valido,false);
+ assert.equal(validarContratoBackup({...guarded,bancoBase64:Buffer.from('not sqlite').toString('base64')}).valido,false);
+ db.close();
+});
