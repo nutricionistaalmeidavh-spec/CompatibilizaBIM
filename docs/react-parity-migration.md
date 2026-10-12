@@ -34,4 +34,4 @@
 - **Não mergir se qualquer check falhar.** O instalador não apaga dados de documentos na desinstalação.
 
 ## Infra e licenças
-O núcleo é **R$ 0, self-hosted e open source**, sem API externa de execução. A verificação de licença comercial offline é opcional e explícita (`CBIM_STUDIO_LICENSE_MODE=commercial`); padrão `free`.
+O núcleo é **R$ 0, self-hosted e open source**, sem API externa de execução. A verificação de licença comercial offline é opcional e explícita (`CBIM_STUDIO_LICENSE_MODE=commercial`); padrão `free`. A conversão DWG empacotada e a revisão Studio usam a mesma política: sem licença no núcleo gratuito; assinatura e recursos verificados apenas no modo comercial. Ver `docs/F0_FREE_CORE_POLICY.md`.
