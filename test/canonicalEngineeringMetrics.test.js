@@ -6,6 +6,7 @@ import {calculateWorkProgress,projectWorkProgress} from '../src/domain/workProgr
 import {clashDistance,engineeringNumber,budgetBreakdown} from '../src/domain/engineeringPresentation.js';
 import {buildWorkCloseout} from '../src/domain/workCloseout.js';
 import {insertStudyAnalysis} from '../src/domain/bimAnalysisPersistence.js';
+import {migrarBancoCompatibilidade} from '../storage/schemaMigrations.js';
 import {resumoObra} from '../src/domain/obras.js';
 const require=createRequire(import.meta.url);
 test('same weighted progress is used by the portfolio, domain and closeout',()=>{
@@ -41,8 +42,11 @@ test('SQLite persists federation model manifest and provenance through database 
  const initSqlJs=require('sql.js');
  const SQL=await initSqlJs({locateFile:file=>require.resolve('sql.js/dist/'+file)});
  const db=new SQL.Database();
- db.run(readFileSync(new URL('../storage/schema.sql',import.meta.url),'utf8'));
+ migrarBancoCompatibilidade(db,readFileSync(new URL('../storage/schema.sql',import.meta.url),'utf8'));
  db.run("INSERT INTO bim_projetos (id,nome,criado_em,atualizado_em) VALUES ('project','Coordenação','2026','2026')");
+ for(const id of ['m1','m2','m3']){
+  db.run('INSERT INTO bim_modelos_avulsos (id,projeto_id,nome,arquivo_nome,criado_em,atualizado_em) VALUES (?,?,?,?,?,?)',[id,'project',id,id+'.ifc','2026','2026']);
+ }
  insertStudyAnalysis(db,'project',{modeloAId:'m1',modeloBId:'m2',modelos:[{id:'m1'},{id:'m2'},{id:'m3'}],proveniencia:'ifcopenshell_real',status:'concluida_ifc',conflitos:[]},'analysis','2026-10-12');
  const restored=new SQL.Database(db.export());
  const row=restored.exec("SELECT modelos_json,proveniencia,status FROM bim_analises_avulsas WHERE id='analysis'")[0].values[0];
