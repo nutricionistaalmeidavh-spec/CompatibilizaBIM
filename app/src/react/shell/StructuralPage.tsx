@@ -74,7 +74,7 @@ export function StructuralPage({db,obraId,onChange}:{db:any;obraId:string|null;o
       {action==='no'&&<>{(['x','y','z','fx','fy','fz'] as const).map(key=><label key={key}>{key.toUpperCase()}<input type="number" name={key} step="any" defaultValue={0}/></label>)}{(['ux','uy','uz','rx','ry','rz'] as const).map(key=><label key={key}><input type="checkbox" name={key}/> Restrição {key.toUpperCase()}</label>)}</>}
       {action==='elemento'&&<><label>Tipo<select name="tipo"><option value="viga">Viga</option><option value="pilar">Pilar</option><option value="barra">Barra</option></select></label>
         <label>Nó inicial<select name="nodeI" required>{model?.nos?.map((n:any)=><option key={n.id} value={n.nome}>{n.nome}</option>)}</select></label><label>Nó final<select name="nodeJ" required>{model?.nos?.map((n:any)=><option key={n.id} value={n.nome}>{n.nome}</option>)}</select></label>
-        {(['e','a','i'] as const).map(key=><label key={key}>{({e:'E (módulo)',a:'Área',i:'Inércia'} as const)[key]}<input type="number" name={key} step="any" defaultValue={key==='e'?200000000:key==='a'?.02:.00008}/></label>)}</>}
+        {(['e','a','i'] as const).map(key=><label key={key}>{({e:'E (módulo)',a:'Área',i:'Inércia'} as const)[key]}<input type="number" name={key} step="any" defaultValue={key === 'e' ? 200000000 : (key === 'a' ? 0.02 : 0.00008)}/></label>)}</>}
       </div><div className="cbim-react-toolbar"><button type="submit">Salvar</button><button type="button" onClick={()=>setAction('')}>Cancelar</button></div>
     </form>}
     {model&&<><div className="cbim-react-panel"><h2>{model.nome} · {model.norma}</h2><Projection model={model}/></div>
