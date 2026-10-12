@@ -1,2 +1,29 @@
 :root{font-family:Inter,"Segoe UI",Aptos,Arial,sans-serif;color:#0f172a;background:#f5f7fb}*{box-sizing:border-box}body{margin:0}.studio-shell{min-height:100vh;display:grid;grid-template:64px 1fr/232px 1fr}.studio-topbar{grid-column:1/-1;background:#111827;color:#fff;display:flex;align-items:center;justify-content:space-between;padding:0 22px;border-bottom:1px solid #263244}.studio-topbar>div:first-child{display:flex;gap:8px;align-items:baseline}.studio-product{font-weight:800}.studio-status{font-size:13px;color:#dbe4ee}.studio-sidebar{background:#fff;border-right:1px solid #e2e8f0;padding:16px 10px}.studio-sidebar button{width:100%;min-height:40px;border:0;background:transparent;text-align:left;padding:0 12px;border-radius:8px;color:#475569;font-weight:650;cursor:pointer}.studio-sidebar button:hover{background:#f8fafc}.studio-sidebar button.active{background:#eaf1fb;color:#1d4ed8}.studio-sidebar button:focus-visible{outline:3px solid rgba(37,99,235,.28);outline-offset:2px}.studio-content{padding:28px;overflow:auto}.studio-page{max-width:1100px}.studio-page h1{font-size:30px;margin:4px 0 8px}.eyebrow{font-size:12px;letter-spacing:.08em;font-weight:800;color:#64748b}.studio-muted{color:#64748b;max-width:720px;line-height:1.55}.studio-card{margin-top:22px;background:#fff;border:1px solid #e2e8f0;border-radius:10px;padding:18px;box-shadow:0 1px 2px rgba(15,23,42,.05)}.studio-card p{color:#475569;margin-bottom:0}@media(max-width:800px){.studio-shell{grid-template:64px auto 1fr/1fr}.studio-sidebar{display:flex;overflow:auto;border-right:0;border-bottom:1px solid #e2e8f0}.studio-sidebar button{width:auto;white-space:nowrap}.studio-content{padding:20px}}@media(prefers-reduced-motion:reduce){*{scroll-behavior:auto!important}}
 .ui-button{font:inherit}.ui-card{margin-top:22px;background:#fff;border:1px solid #e2e8f0;border-radius:10px;padding:18px;box-shadow:0 1px 2px rgba(15,23,42,.05)}.ui-card h2{font-size:16px;margin:0 0 8px}.ui-card p{color:#475569;margin-bottom:0}.ui-status{display:inline-flex;align-items:center;border-radius:999px;padding:4px 8px;font-size:12px;font-weight:700}.ui-status--success{background:#dcfce7;color:#166534}.ui-empty{padding:28px;text-align:center;color:#64748b}\n
+/* React parity workbench: isolated from the retained legacy entry. */
+.cbim-react-app { min-height:100vh; }
+.cbim-react-app .studio-sidebar { overflow-y:auto; }
+.cbim-react-app .studio-sidebar button,.cbim-react-app .studio-sidebar label { width:100%; background:transparent; border:0; padding:11px 14px; text-align:left; color:inherit; cursor:pointer; border-radius:8px; }
+.cbim-react-app .studio-sidebar button:hover,.cbim-react-app .studio-sidebar button.active { background:#e9eef7; color:#142742; }
+.cbim-react-app .studio-sidebar input[type=file] { display:block; width:100%; font-size:11px; }
+.cbim-react-section { max-width:1300px; margin:0 auto; }
+.cbim-react-section h1 { margin:0 0 8px; }
+.cbim-react-section h2 { font-size:1.15rem; }
+.cbim-react-section p { line-height:1.5; }
+.cbim-react-toolbar { display:flex; flex-wrap:wrap; align-items:end; gap:12px; margin:14px 0; }
+.cbim-react-card-grid,.cbim-react-form-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(210px,1fr)); gap:12px; }
+.cbim-react-card-grid button { text-align:left; display:flex; flex-direction:column; align-items:start; gap:8px; }
+.cbim-react-panel,.cbim-react-calc-groups details { padding:18px; border-radius:12px; border:1px solid #d6dfe8; margin:16px 0; background:#fff; }
+.cbim-react-panel article { padding:12px 0; border-bottom:1px solid #edf0f3; }
+.cbim-react-panel article small,.cbim-react-card-grid small { display:block; color:#627083; }
+.cbim-react-metrics { display:flex; flex-wrap:wrap; gap:12px; margin-top:14px; }
+.cbim-react-metrics article { padding:14px; background:#e8edf4; border-radius:10px; }
+.cbim-react-section label { display:flex; flex-direction:column; gap:5px; font-weight:500; }
+.cbim-react-section label:has(input[type=checkbox]) { flex-direction:row; align-items:center; }
+.cbim-react-section input:not([type=checkbox]),.cbim-react-section select { min-width:0; width:100%; padding:9px; border:1px solid #adbccc; border-radius:7px; }
+.cbim-react-section button { cursor:pointer; padding:9px 13px; border:1px solid #b3c2d3; background:#eef4fa; color:#102f4e; border-radius:7px; }
+.cbim-react-section button.selected { border-color:#154c88; background:#d6e8ff; }
+.cbim-react-section button:disabled { cursor:not-allowed; opacity:.55; }
+.cbim-react-section pre { padding:12px; max-height:400px; overflow:auto; background:#edf3fa; white-space:pre-wrap; word-break:break-word; }
+.cbim-react-calc-groups summary { cursor:pointer; display:flex; justify-content:space-between; padding:8px; }
+@media(max-width:760px){.cbim-react-app .studio-content{padding:14px}.cbim-react-card-grid,.cbim-react-form-grid{grid-template-columns:1fr}}
