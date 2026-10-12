@@ -6,6 +6,7 @@ This adapter never invents prices, geometric quantities or payment status.
 from __future__ import annotations
 import argparse
 import base64
+import csv
 import hashlib
 import json
 import math
@@ -199,7 +200,17 @@ class P2Service:
             if fmt=='json':
                 target.write_text(json.dumps(report, ensure_ascii=False, indent=2), encoding='utf-8')
             elif fmt=='csv':
-                csv_writer(target,report)
+                if prefix=='quantities':
+                    # Per-GUID QTO is the audit export. Existing grouped QTO CSV
+                    # intentionally omits GUID, so expose canonical records here.
+                    fields=['source_file','discipline','global_id','ifc_class','element_name','storey',
+                            'quantity_name','kind','value','unit','source']
+                    with target.open('w',encoding='utf-8-sig',newline='') as handle:
+                        writer=csv.DictWriter(handle,fieldnames=fields)
+                        writer.writeheader()
+                        for row in report.get('records',[]):
+                            writer.writerow({k:row.get(k) for k in fields})
+                else: csv_writer(target,report)
             else:
                 pdf_writer(target,report)
             raw=target.read_bytes()
