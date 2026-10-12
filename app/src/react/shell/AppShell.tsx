@@ -48,7 +48,7 @@ export function AppShell(){
       <label>Importar backup<input aria-label="Selecionar arquivo de backup" type="file" accept=".json" onChange={e=>{void readBackup(e.target.files?.[0]||null);e.target.value='';}}/></label>
     </aside>
     <main className="studio-content">
-      {active==='Obras'&&<WorksPage db={db} obraId={workId} selectWork={selectWork} onChange={refresh}/>}
+      {active==='Obras'&&<WorksPage db={db} obraId={workId} selectWork={selectWork} onChange={refresh} onNavigate={setActive}/>}
       {active==='BIM'&&<BimPage db={db} obraId={workId} version={version} onChange={refresh}/>}
       {active==='Cálculos'&&<CalculatorsPage db={db} obraId={workId} onSaved={refresh}/>}
       {active==='Estruturas'&&<StructuralPage db={db} obraId={workId} onChange={refresh}/>}
