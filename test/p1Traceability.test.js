@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import {
   REVIEW_LINK, MEASUREMENT_LINK, MATERIAL_LINK, FINANCE_LINK,
   prepareReviewLink,prepareMeasurementLink,prepareMaterialLink,parseTraceLink,
-  summarizeMeasurementReconciliation,summarizePurchaseMaterialTrace,preparePurchaseFinanceLink,summarizePurchaseFinanceTrace,
+  summarizeMeasurementReconciliation,summarizePurchaseMaterialTrace,preparePurchaseFinanceLink,summarizePurchaseFinanceTrace,assertStudyWorkAssociation,
 } from '../src/domain/p1Traceability.js';
 
 const project={id:'S1',nome:'Projeto BIM',obra_id:'OBRA-1'};
@@ -103,4 +103,12 @@ test('P1 purchasing reference cannot reuse the same expense on another purchase'
  const e={id:'E1',obra_id:'OBRA-1',tipo:'despesa',valor:10,status:'pago'};
  const l=preparePurchaseFinanceLink('OBRA-1',p,e,[],'Técnico');
  assert.throws(()=>preparePurchaseFinanceLink('OBRA-1',{...p,id:'P2'},e,[{module_id:FINANCE_LINK,entity_id:l.entityId,source:l.source}],'Técnico'),/já vincula/i);
+});
+
+test('P1 supports deliberate association of an independent study with an existing work, never silently reassigns',()=>{
+ assert.equal(assertStudyWorkAssociation({id:'S1',obra_id:null},'OBRA-1'),true);
+ assert.equal(assertStudyWorkAssociation({id:'S1',obra_id:'OBRA-1'},'OBRA-1'),false);
+ assert.throws(()=>assertStudyWorkAssociation({id:'S1',obra_id:'OBRA-2'},'OBRA-1'),/outra obra/i);
+ assert.throws(()=>assertStudyWorkAssociation(null,'OBRA-1'),/estudo/i);
+ assert.throws(()=>assertStudyWorkAssociation({id:'S1',obra_id:null},''),/obra/i);
 });
