@@ -1,5 +1,7 @@
 
 import React from 'react';
+import { CalculationStudy } from './CalculationStudy';
+import { MathWorkbench } from './MathWorkbench';
 import { CALCULADORAS, CALCULATOR_GROUPS } from '../../calculatorCatalog.js';
 import { validarCalculoIndependente } from '../../../../src/validation/independentOracle.js';
 import { salvarCalculo } from '../../../../storage/sqliteStore.js';
@@ -49,7 +51,7 @@ export function CalculatorsPage({db, obraId, onSaved}:{db:any;obraId:string|null
     try{
       if(format==='pdf'){
         saveFile('calculo-'+calculator+'.pdf',gerarPdfRelatorio('Cálculo - '+entry.label,{
-          Entradas:textLines(result.inputs),Resultados:textLines(result.output),
+          Entradas:textLines(result.inputs),Resultados:textLines(result.output?.resultados||result.output),
           Validação:[result.validation.ok?'Verificação matemática parcial aprovada':'Divergência matemática; não usar',...(result.validation.errors||[]),...(result.validation.avisos||[])],
           Norma:[result.output?.metadados?.normaDeclarada||'Não declarada']
         }),'application/pdf');
@@ -81,12 +83,13 @@ export function CalculatorsPage({db, obraId, onSaved}:{db:any;obraId:string|null
       {!result.validation.ok&&<p role="alert">{(result.validation.errors||[]).join('; ')}</p>}
       <p role="status">Oráculo: {result.validation.metodo}. {result.validation.verificacoes.length} teste(s) independente(s) · Estado normativo: {result.validation.normaPendente?'Revisão obrigatória':'Perfil declarado; revisão técnica obrigatória'}.</p>
       <p className="studio-muted">{(result.validation.avisos||[]).join(' ')}</p>
-      <pre>{JSON.stringify(result.output,null,2)}</pre>
+      <CalculationStudy key={calculator} calculator={calculator} entry={entry} result={result}/>
       <p>Norma declarada: {result.output?.metadados?.normaDeclarada||'não informada'}</p>
       <div className="cbim-react-toolbar"><button type="button" onClick={save} disabled={!obraId||!result.validation.ok}>Salvar memória preliminar</button>
         <button type="button" onClick={()=>exportResult('pdf')}>Memória PDF</button>
         <button type="button" onClick={()=>exportResult('json')}>Exportar JSON</button>
         {detailExportIds.has(calculator)&&<><button type="button" onClick={()=>exportResult('csv')}>Detalhamento CSV</button><button type="button" onClick={()=>exportResult('dxf')}>Detalhamento DXF</button></>}</div>
     </section>}
+    <MathWorkbench/>
   </section>;
 }

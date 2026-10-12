@@ -130,3 +130,21 @@
 .cbim-quality-warning{border-left:4px solid #bd811e;padding:14px 18px;background:#fff8e6;border-radius:6px;line-height:1.5}
 .cbim-quality .ui-status{flex-shrink:0;white-space:nowrap}
 @media(max-width:620px){.cbim-quality-findings article{flex-wrap:wrap}.cbim-quality-findings article>div{min-width:100%;order:2}.cbim-quality-findings article>.ui-status{margin-left:auto}.cbim-quality-gates article{flex-wrap:wrap}.cbim-quality-gates article>div{min-width:100%}}
+
+/* Engineering P0/P1: readable technical records and responsive SVG charts */
+.cbim-math-results{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:9px;margin:14px 0 20px}
+.cbim-math-result{display:flex;flex-direction:column;gap:5px;min-width:0;padding:12px;background:#f6f9fc;border:1px solid #d8e2ed;border-radius:9px}
+.cbim-math-result span{font-size:12px;color:#4a6080;overflow-wrap:anywhere}
+.cbim-math-result strong{font-size:17px;font-variant-numeric:tabular-nums;color:#132b45;overflow-wrap:anywhere}
+.cbim-math-output h3,.cbim-math-sensitivity h3{font-size:16px;margin:22px 0 5px}
+.cbim-math-chart{border:1px solid #d7e1eb;border-radius:10px;padding:12px;background:#fff;margin:12px 0}
+.cbim-math-chart figcaption{display:flex;align-items:baseline;justify-content:space-between;flex-wrap:wrap;gap:8px;color:#193954}
+.cbim-math-chart figcaption small,.cbim-math-chart>small{color:#567084;font-size:11px}
+.cbim-math-chart svg{width:100%;display:block;height:auto}
+.cbim-math-table{max-height:220px;overflow:auto}
+.cbim-math-table table{border-collapse:collapse;width:100%;font-size:13px}
+.cbim-math-table th,.cbim-math-table td{padding:8px 12px;border-bottom:1px solid #e2e8f0;text-align:left}
+.cbim-math-workbench code{white-space:pre-wrap;overflow-wrap:anywhere;background:#f0f5fa;padding:5px 7px}
+.cbim-math-workbench form button{align-self:end}
+@media(max-width:650px){.cbim-math-results{grid-template-columns:1fr 1fr}.cbim-math-chart{padding:6px}}
+@media(max-width:460px){.cbim-math-results{grid-template-columns:1fr}}
