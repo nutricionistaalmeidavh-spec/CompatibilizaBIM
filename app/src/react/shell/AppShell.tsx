@@ -17,6 +17,7 @@ const sections=['Obras','BIM','Cálculos','Estruturas','Operação','RDO','Finan
 export function AppShell(){
   const [db,setDb]=React.useState<any>(null);
   const [error,setError]=React.useState('');
+  const [backupError,setBackupError]=React.useState('');
   const [active,setActive]=React.useState(()=>{try{return sessionStorage.getItem('cbim-studio-section')||'Obras';}catch{return 'Obras';}});
   const [workId,setWorkId]=React.useState<string|null>(null);
   const [version,refresh]=React.useReducer(n=>n+1,0);
@@ -59,7 +60,7 @@ export function AppShell(){
   const readBackup=async(file:File|null)=>{
     if(!file||!db)return;
     if(!window.confirm('Importar backup substitui o banco atual. Você confirmou ter um backup do banco atual?'))return;
-    try{importarBackup(db,await file.text());}catch(e:any){setError(e.message);}
+    try{setBackupError('');importarBackup(db,await file.text());}catch(e:any){setBackupError(e.message);}
   };
   if(error)return <main role="alert"><h1>Falha ao abrir CompatibilizaBIM</h1><p>{error}</p></main>;
   if(!db)return <main aria-busy="true">Abrindo banco local…</main>;
@@ -83,6 +84,7 @@ export function AppShell(){
       <button onClick={downloadBackup}>Exportar backup</button>
       <label>Importar backup<input aria-label="Selecionar arquivo de backup" type="file" accept=".json" onChange={e=>{void readBackup(e.target.files?.[0]||null);e.target.value='';}}/></label>
     </aside>
+    {backupError&&<p role="alert" className="cbim-react-panel">Importação não realizada: {backupError} O banco e a sessão atual foram preservados. Confira o arquivo e tente novamente.</p>}
     <main className="studio-content">
       {active==='Obras'&&<WorksPage db={db} obraId={workId} selectWork={selectWork} onChange={refresh} onNavigate={setActive}/>}
       {active==='BIM'&&<BimPage db={db} obraId={workId} version={version} onChange={refresh}/>}
