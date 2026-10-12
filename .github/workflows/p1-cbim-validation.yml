@@ -111,8 +111,9 @@ jobs:
           ./app/node_modules/.bin/playwright install --with-deps chromium
       - name: Run local-first React browser smoke QA
         run: |
-          npm run dev --prefix app -- --host 127.0.0.1 > /tmp/cbim-vite.log 2>&1 &
-          node scripts/qa/reactBrowserSmoke.cjs
+          npm run build --prefix app
+          npm run preview --prefix app -- --host 127.0.0.1 --port 5173 > /tmp/cbim-vite.log 2>&1 &
+          node scripts/qa/reactBrowserSmoke.cjs || { cat /tmp/cbim-vite.log; exit 1; }
       - name: Save React regression screenshots
         uses: actions/upload-artifact@v4
         if: always()
