@@ -88,6 +88,19 @@ function pythonStudioCommand({ appSourceDir, resourcesDir }) {
   };
 }
 
+function studioLicenseArguments({ isPackaged, resourcesDir, documentsDir, mode = process.env.CBIM_STUDIO_LICENSE_MODE }) {
+  if (!mode || mode === 'free') return [];
+  if (mode !== 'commercial') throw new Error('Modo de licença CBIM inválido: escolha free ou commercial.');
+  if (!isPackaged) return [];
+  const publicKey = path.join(resourcesDir, 'license', 'public.pem');
+  const customer = path.join(documentsDir, 'Engenharia360', 'CBIM', 'license', 'customer.json');
+  const license = path.join(documentsDir, 'Engenharia360', 'CBIM', 'license', 'license.json');
+  if (![publicKey, customer, license].every(p => fs.existsSync(p))) {
+    throw new Error('Modo comercial: importe a licença offline e configure a chave pública do emissor.');
+  }
+  return ['--require-license', '--public-key', publicKey, '--customer', customer, '--license', license];
+}
+
 async function openStudioWindow({ workspacePath, documentsDir, appSourceDir, resourcesDir, BrowserWindow, isPackaged, hostWindow = null, startProcess = spawn }) {
   if (hostWindow && hostedStudioSessions.has(hostWindow)) throw new Error('Uma revisão já está aberta nesta janela.');
   const workspace = resolveCbimWorkspace(documentsDir, workspacePath);
@@ -96,15 +109,7 @@ async function openStudioWindow({ workspacePath, documentsDir, appSourceDir, res
   const developmentUi = path.join(appSourceDir, 'dist');
   command.env.CBIM_STUDIO_UI_DIR = isPackaged ? packagedUi : developmentUi;
   const args = [...command.prefix, 'serve', '--workspace', workspace];
-  if (isPackaged) {
-    const publicKey = path.join(resourcesDir, 'license', 'public.pem');
-    const customer = path.join(documentsDir, 'Engenharia360', 'CBIM', 'license', 'customer.json');
-    const license = path.join(documentsDir, 'Engenharia360', 'CBIM', 'license', 'license.json');
-    if (![publicKey, customer, license].every(p => fs.existsSync(p))) {
-      throw new Error('Studio não ativado. Importe a licença offline e configure a chave pública do emissor.');
-    }
-    args.push('--require-license', '--public-key', publicKey, '--customer', customer, '--license', license);
-  }
+  args.push(...studioLicenseArguments({ isPackaged, resourcesDir, documentsDir }));
   return new Promise((resolve, reject) => {
     let settled = false;
     let opened = false;
@@ -202,4 +207,4 @@ function stopAllStudios() {
   activeStudioSessions.clear();
 }
 
-module.exports = { resolveCbimWorkspace, listCbimWorkspaces, parseStudioReady, pythonStudioCommand, openStudioWindow, returnToMainWindow, stopAllStudios };
+module.exports = { resolveCbimWorkspace, listCbimWorkspaces, parseStudioReady, pythonStudioCommand, openStudioWindow, returnToMainWindow, studioLicenseArguments, stopAllStudios };

@@ -23,3 +23,7 @@
 7. Remover Vanilla **somente** após paridade comprovada, e então atualizar default e empacotamento. Não mesclar PR #4 com qualquer etapa pendente.
 
 Dependências de runtime: open source / local / self-hosted, sem API paga silenciosa. CI é disparado manualmente/por label \`run-cbim-qa\`, não por cada commit.
+
+## Dependências obrigatórias e licença
+
+O núcleo é local e não requer API, conta, nuvem nem serviço pago. Instalação empacotada usa `CBIM_STUDIO_LICENSE_MODE=free` por padrão. A verificação Ed25519 existente é **opcional**, ativada somente com `CBIM_STUDIO_LICENSE_MODE=commercial`, e usa arquivos offline do cliente; sem esses arquivos, o modo comercial falha explicitamente. Os contratos de assinatura e validação permanecem intactos. Em ambos os modos o servidor de revisão permanece restrito ao loopback com token de sessão.
