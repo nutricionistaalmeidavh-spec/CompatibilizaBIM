@@ -1,3 +1,5 @@
+import {prepararVinculoBim} from '../src/engineering/contextualStudies.js';
+import {validarCalculoIndependente} from '../src/validation/independentOracle.js';
 import {garantirRdoMutavel,garantirMedicaoTransicao,validarQuantidadeRecebida} from '../src/domain/approvalGuards.js';
 import {assertStudyWorkAssociation} from '../src/domain/p1Traceability.js';
 import initSqlJs from 'sql.js';
@@ -193,6 +195,66 @@ export function salvarCalculo(db, obraId, dados) {
 
 export function listarCalculos(db, obraId) {
   return linhas(db, 'SELECT * FROM calculos WHERE obra_id = ? ORDER BY criado_em DESC', [obraId]).map((item) => ({ ...item, entradas: JSON.parse(item.entradas_json), resultados: JSON.parse(item.resultados_json) }));
+}
+
+
+/**
+ * Persist a new immutable preliminary mathematical study with a proven BIM context.
+ * Independent BIM studies are supported; no legacy calculos row is fabricated.
+ * The snapshot does not modify source IFC, clashes or approval records.
+ */
+export function salvarEstudoEngenhariaBim(db, dados = {}) {
+  const projeto=buscarProjetoBim(db,dados.projetoId);
+  const contexto=prepararVinculoBim({
+    project:projeto,modeloId:dados.modeloId,analiseId:dados.analiseId||'',
+    conflitoChave:dados.conflitoChave||'',elementoRef:dados.elementoRef||'',
+    obraId:dados.obraId||null
+  });
+  const tipo=String(dados.calculadoraTipo||'').trim(),titulo=String(dados.titulo||'').trim();
+  if(!tipo||!titulo)throw Error('Estudo exige cálculo e título canônicos.');
+  if(!dados.entradas||!dados.resultados)throw Error('Estudo exige entradas e resultados existentes.');
+  const validacao=validarCalculoIndependente(tipo,dados.entradas,dados.resultados);
+  if(!validacao.ok)throw Error('A verificação matemática parcial rejeitou o estudo: '+validacao.errors.join('; '));
+  const alternativas=dados.alternativas||[];
+  if(!Array.isArray(alternativas)||alternativas.length>6)throw Error('Máximo de seis alternativas por estudo.');
+  for(const scenario of alternativas){
+    if(!scenario||typeof scenario.nome!=='string'||typeof scenario.verificacao?.ok!=='boolean'||
+       typeof scenario.avaliacao?.viavel!=='boolean')
+      throw Error('Alternativa inválida: use o comparador canônico.');
+  }
+  const nota=String(dados.nota||'').trim().slice(0,2000);
+  const payload=JSON.stringify([contexto,dados.entradas,dados.resultados,validacao,alternativas]);
+  if(payload.length>500_000)throw Error('Estudo excede 500 KB; reduza os dados das alternativas.');
+  const id='estudobim_'+Date.now().toString(36)+'_'+Math.random().toString(36).slice(2,10);
+  const now=new Date().toISOString();
+  db.run('BEGIN TRANSACTION');
+  try {
+    db.run(`INSERT INTO estudos_engenharia_bim
+      (id,projeto_id,obra_id,modelo_id,analise_id,conflito_chave,elemento_ref,calculadora_tipo,titulo,
+       contexto_json,entradas_json,resultados_json,validacao_json,alternativas_json,nota,status,criado_em)
+       VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`,[
+      id,contexto.projetoId,contexto.obraId,contexto.modeloId,contexto.analiseId,contexto.conflitoChave,
+      contexto.elementoRef,tipo,titulo,JSON.stringify(contexto),JSON.stringify(dados.entradas),
+      JSON.stringify(dados.resultados),JSON.stringify(validacao),JSON.stringify(alternativas),
+      nota,'preliminar',now
+    ]);
+    if(contexto.obraId) registrarHistorico(db,contexto.obraId,'estudo_engenharia_bim',id,'criado',{
+      projetoId:contexto.projetoId,modeloId:contexto.modeloId,analiseId:contexto.analiseId,
+      conflitoChave:contexto.conflitoChave,elementoRef:contexto.elementoRef
+    });
+    db.run('COMMIT');
+  }catch(error){db.run('ROLLBACK');throw error;}
+  salvarBanco(db);
+  return id;
+}
+export function listarEstudosEngenhariaBim(db,projetoId) {
+  if(!projetoId)return [];
+  return linhas(db,'SELECT * FROM estudos_engenharia_bim WHERE projeto_id = ? ORDER BY criado_em DESC,id DESC',[projetoId])
+    .map(row=>({
+      ...row,contexto:JSON.parse(row.contexto_json),
+      entradas:JSON.parse(row.entradas_json),resultados:JSON.parse(row.resultados_json),
+      validacao:JSON.parse(row.validacao_json),alternativas:JSON.parse(row.alternativas_json)
+    }));
 }
 
 export function salvarMaterial(db, obraId, dados) {

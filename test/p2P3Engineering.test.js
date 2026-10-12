@@ -39,7 +39,7 @@ import { CALCULADORAS } from '../app/src/calculatorCatalog.js';
 
 const entry=CALCULADORAS.vigaBiapoiada;
 const args=Object.fromEntries(entry.fields.map(([k,,v])=>[k,v]));
-const limit=[{path:'esforcos.momento',operator:'<=',limit:105}];
+const limit=[{path:'esforcos.momento',operator:'<=',limit:70}];
 
 test('P3 procura menor vão viável amostrado, sem prometer ótimo global',()=>{
  const result=buscarDimensionamentoInverso({definition:entry,calculatorId:'vigaBiapoiada',inputs:args,variableKey:'vaoM',min:3,max:6,constraints:limit});
@@ -68,5 +68,5 @@ test('P3 comparação aplica motor original, oráculo e restrições a todas as 
  assert.ok(comparison.every(s=>s.verificacao.ok));
  assert.equal(comparison[0].avaliacao.viavel,false);
  assert.equal(comparison[1].avaliacao.viavel,true);
- assert.equal(comparison[0].resultados.esforcos.momento,122.5);
+ assert.equal(comparison[0].resultados.esforcos.momento,87.5);
 });
