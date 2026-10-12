@@ -1,5 +1,6 @@
 import initSqlJs from 'sql.js';
 import schemaSql from './schema.sql?raw';
+import { validarContratoBackup, calcularChecksumCrc32 } from '../src/storage/backupContract.js';
 
 const STORAGE_KEY = 'engenharia360-db-v1';
 const WASM_PATH = '/sql-wasm.wasm';
@@ -19,14 +20,18 @@ function base64ParaBytes(base64) {
 export function salvarBanco(db = dbAtual) {
   if (!db) throw new Error('Banco ainda não foi aberto');
   const base64 = bytesParaBase64(db.export());
-  if (globalThis.engineeringStorage?.saveSync) globalThis.engineeringStorage.saveSync(base64);
-  else localStorage.setItem(STORAGE_KEY, base64);
+  if (globalThis.engineeringStorage?.saveSync) {
+    const result = globalThis.engineeringStorage.saveSync(base64);
+    if (result !== true) throw new Error(result?.error || 'Não foi possível salvar o banco local. O último estado em disco foi preservado.');
+  } else localStorage.setItem(STORAGE_KEY, base64);
 }
 
 export async function abrirBanco() {
   if (dbAtual) return dbAtual;
   const SQL = await initSqlJs({ locateFile: () => WASM_PATH });
-  const salvo = globalThis.engineeringStorage?.loadSync?.() || localStorage.getItem(STORAGE_KEY);
+  const fonte = globalThis.engineeringStorage?.loadSync?.();
+  if (fonte && typeof fonte === 'object' && fonte.ok === false) throw new Error('Falha ao ler o banco local: ' + fonte.error);
+  const salvo = fonte || localStorage.getItem(STORAGE_KEY);
   dbAtual = salvo ? new SQL.Database(base64ParaBytes(salvo)) : new SQL.Database();
   dbAtual.run(schemaSql);
   // Migração compatível para bancos locais criados antes do fluxo de aprovação.
@@ -350,16 +355,40 @@ export function atualizarConflitoBim(db, analiseId, indice, status) {
 }
 
 export function exportarBackup(db) {
-  return JSON.stringify({ versao: 1, exportadoEm: new Date().toISOString(), bancoBase64: bytesParaBase64(db.export()) }, null, 2);
+  const bytes = db.export();
+  return JSON.stringify({
+    versao: 1, exportadoEm: new Date().toISOString(),
+    tamanhoBytes: bytes.length, checksumCrc32: calcularChecksumCrc32(bytes),
+    bancoBase64: bytesParaBase64(bytes)
+  }, null, 2);
 }
 
 export function importarBackup(dbAtualImportado, texto) {
-  const dados = JSON.parse(texto);
-  if (dados?.versao !== 1 || typeof dados.bancoBase64 !== 'string') throw new Error('Backup inválido ou incompatível.');
-  const bytes = base64ParaBytes(dados.bancoBase64);
-  dbAtualImportado.close();
-  const base64 = bytesParaBase64(bytes);
-  if (globalThis.engineeringStorage?.saveSync) globalThis.engineeringStorage.saveSync(base64);
-  else localStorage.setItem(STORAGE_KEY, base64);
+  const contrato = validarContratoBackup(texto);
+  if (!contrato.valido) throw new Error('Backup rejeitado: ' + contrato.erros.join(' '));
+  // Before touching the current DB, ask the actual SQLite engine to validate
+  // pages/indexes and at least the core work table of legacy databases.
+  let candidate;
+  try {
+    candidate = new dbAtualImportado.constructor(contrato.bytes);
+    const result = candidate.exec('PRAGMA integrity_check');
+    if (result?.[0]?.values?.[0]?.[0] !== 'ok') throw new Error('O arquivo SQLite apresenta falhas de integridade.');
+    const schema = candidate.exec("SELECT name FROM sqlite_master WHERE type='table' AND name='obras'");
+    if (!schema?.[0]?.values?.length) throw new Error('Backup não contém a tabela canônica de obras.');
+  } finally {
+    candidate?.close();
+  }
+  const base64 = bytesParaBase64(contrato.bytes);
+  // Desktop: native IPC snapshots and atomically swaps the file.
+  // Web: localStorage.setItem is atomic for one key; preserve prior backup.
+  if (globalThis.engineeringStorage?.saveSync) {
+    const saved = globalThis.engineeringStorage.saveSync(base64);
+    if (saved !== true) throw new Error(saved?.error || 'Falha ao restaurar backup; banco atual preservado.');
+  } else {
+    const existing = localStorage.getItem(STORAGE_KEY);
+    if (existing) localStorage.setItem(STORAGE_KEY + ':previous', existing);
+    localStorage.setItem(STORAGE_KEY, base64);
+  }
+  // Keep the original in-memory DB alive until the new file is durably stored.
   window.location.reload();
 }
