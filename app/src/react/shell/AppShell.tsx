@@ -102,7 +102,7 @@ export function AppShell(){
       <label>Início<input type="date" value={context.periodo?.inicio||''} onChange={e=>updateContext({periodo:{inicio:e.target.value||null}})}/></label>
       <label>Fim<input type="date" value={context.periodo?.fim||''} onChange={e=>updateContext({periodo:{fim:e.target.value||null}})}/></label>
       <label>Estudo BIM<select value={selectedStudy?.id||''} onChange={e=>updateContext({projetoBimId:e.target.value||null})}><option value="">Escolher no módulo BIM</option>{studies.map((p:any)=><option key={p.id} value={p.id}>{p.nome}{p.obra_id?' · Vinculado':' · Independente'}</option>)}</select></label>
-      <label>Vínculo BIM<select value={context.bimMode||'independente'} onChange={e=>updateContext({bimMode:e.target.value})}><option value="independente">Independente</option><option value="vinculado">Vinculado</option></select></label>
+      <span className="cbim-context-link-state" role="status">{!selectedStudy?'Nenhum estudo selecionado':!selectedStudy.obra_id?'Estudo independente':selectedStudy.obra_id===workId?'Estudo vinculado à obra atual':'Estudo vinculado a outra obra'}</span>
       <button onClick={()=>{selectWork(null);updateContext({obraId:null,frenteId:null,periodo:{inicio:null,fim:null},bimMode:'independente',projetoBimId:null});}}>Limpar contexto</button>
     </section>
     <aside className="studio-sidebar" aria-label="Navegação única">
