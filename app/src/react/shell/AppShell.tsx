@@ -9,6 +9,7 @@ import { FinancePage } from './FinancePage';
 import { RdoPage } from './RdoPage';
 import { StructuralPage } from './StructuralPage';
 import { Status } from '../components/ui';
+import { validarContratoBackup } from '../../../../src/storage/backupContract.js';
 import { listarProjetosBim, listarFrentes } from '../../../../storage/sqliteStore.js';
 import { carregarDemo, carregarDemoOperacional, carregarDemoBimIndependente } from '../../demoData.js';
 import { enriquecerDemoBim3D, garantirModeloEstruturalDemo } from '../../demoBim3d.js';
@@ -59,8 +60,21 @@ export function AppShell(){
   };
   const readBackup=async(file:File|null)=>{
     if(!file||!db)return;
-    if(!window.confirm('Importar backup substitui o banco atual. Você confirmou ter um backup do banco atual?'))return;
-    try{setBackupError('');importarBackup(db,await file.text());}catch(e:any){setBackupError(e.message);}
+    try{
+      setBackupError('');
+      const content=await file.text();
+      const preview=validarContratoBackup(content);
+      if(!preview.valido)throw new Error(preview.erros.join(' '));
+      const date=preview.exportadoEm||'não informada';
+      const size=preview.bytes?.length??0;
+      const accepted=window.confirm(
+        'Restaurar banco SQLite do CompatibilizaBIM?\\n\\nArquivo: '+file.name+
+        '\\nExportado em: '+date+'\\nTamanho: '+(size/1024).toFixed(1)+' KiB'+
+        '\\n\\nEste JSON contém o banco de dados, mas NÃO inclui arquivos externos e workspaces DWG/CBIM.'+
+        '\\nO banco atual será preservado em um snapshot .previous no desktop. Deseja continuar?'
+      );
+      if(accepted)importarBackup(db,content);
+    }catch(e:any){setBackupError(e.message);}
   };
   if(error)return <main role="alert"><h1>Falha ao abrir CompatibilizaBIM</h1><p>{error}</p></main>;
   if(!db)return <main aria-busy="true">Abrindo banco local…</main>;
