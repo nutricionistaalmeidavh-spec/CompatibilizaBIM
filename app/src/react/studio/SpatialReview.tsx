@@ -28,7 +28,7 @@ export function SpatialReview({elements,selected,onSelect}:Props){
       </div>
     </div>
     <div className="review-geometry-surface">
-      {drawn.length? <svg role="img" aria-label={mode==='plan'?'Planta geométrica CBIM 2D':'Projeção axonométrica da geometria CBIM'} viewBox={viewBox} width="100%" height="100%">
+      {drawn.length? <svg role="group" aria-label={mode==='plan'?'Planta geométrica CBIM 2D':'Projeção axonométrica da geometria CBIM'} viewBox={viewBox} width="100%" height="100%">
         <defs><pattern id="cbim-cad-grid" width="38" height="38" patternUnits="userSpaceOnUse"><path d="M 38 0 L 0 0 0 38" fill="none" stroke="#2b3848" strokeWidth=".8"/></pattern></defs>
         <rect x="-99999" y="-99999" width="199998" height="199998" fill="#101820"/>
         <rect width={layout.width} height={layout.height} fill="url(#cbim-cad-grid)"/>
