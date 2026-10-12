@@ -70,6 +70,13 @@ class P2Service:
                     'pricebook':self._summary(self.pricepath),
                     'activities':self.schedule.list_activities(),
                     'measurements':self.measure.list_batches()}
+        if action=='quantity_records':
+            q=self._quantities()
+            return {'records':q.get('records',[])[:800],'groups':q.get('groups',[])[:800],
+                    'total':len(q.get('records',[])),'truncated':len(q.get('records',[]))>800,
+                    'revision_sha256':q.get('revision_sha256',{})}
+        if action=='budget_report':
+            return _read(self.bpath)
         if action=='quantities':
             paths=[]
             for name in params.get('files',[]):
