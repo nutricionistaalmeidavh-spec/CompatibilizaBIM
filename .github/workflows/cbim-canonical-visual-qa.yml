@@ -9,7 +9,7 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: read
+  contents: write
 
 jobs:
   canonical-visual:
@@ -38,3 +38,15 @@ jobs:
           path: app/package-lock.json
           retention-days: 7
           if-no-files-found: warn
+      - name: Commit synchronized lockfile to isolated feature branch
+        if: success() && github.event_name == 'push' && github.ref == 'refs/heads/feat/studio-canonical-resizable-gantt-qto-grid'
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add app/package-lock.json
+          if git diff --cached --quiet; then
+            echo "Lockfile already synchronized"
+          else
+            git commit -m "chore(studio): synchronize pinned offline UI dependency lockfile"
+            git push origin HEAD:feat/studio-canonical-resizable-gantt-qto-grid
+          fi
