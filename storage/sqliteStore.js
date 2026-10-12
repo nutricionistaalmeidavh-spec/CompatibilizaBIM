@@ -1,6 +1,7 @@
 import initSqlJs from 'sql.js';
 import schemaSql from './schema.sql?raw';
 import { migrarBancoCompatibilidade } from './schemaMigrations.js';
+import { validarCargaEstrutural } from '../src/domain/structuralModel.js';
 import { validarContratoBackup, calcularChecksumCrc32 } from '../src/storage/backupContract.js';
 
 const STORAGE_KEY = 'engenharia360-db-v1';
@@ -106,7 +107,19 @@ export function salvarPavimentoEstrutural(db, modeloId, dados = {}) { const id =
 export function salvarNoEstrutural(db, modeloId, dados = {}) { const id = dados.id ?? `no_estrutural_${Date.now().toString(36)}`; const agora = new Date().toISOString(); db.run('INSERT INTO nos_estruturais (id,modelo_id,pavimento_id,nome,x,y,z,apoio_ux,apoio_uy,apoio_uz,apoio_rx,apoio_ry,apoio_rz,carga_fx,carga_fy,carga_fz,carga_mx,carga_my,carga_mz,criado_em,atualizado_em) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)', [id, modeloId, dados.pavimentoId ?? null, dados.nome, Number(dados.x ?? 0), Number(dados.y ?? 0), Number(dados.z ?? 0), dados.supports?.ux ? 1 : 0, dados.supports?.uy ? 1 : 0, dados.supports?.uz ? 1 : 0, dados.supports?.rx ? 1 : 0, dados.supports?.ry ? 1 : 0, dados.supports?.rz ? 1 : 0, Number(dados.loads?.fx ?? 0), Number(dados.loads?.fy ?? 0), Number(dados.loads?.fz ?? 0), Number(dados.loads?.mx ?? 0), Number(dados.loads?.my ?? 0), Number(dados.loads?.mz ?? 0), agora, agora]); salvarBanco(db); return id; }
 export function listarNosEstruturais(db, modeloId) { return linhas(db, 'SELECT * FROM nos_estruturais WHERE modelo_id = ? ORDER BY nome', [modeloId]); }
 export function salvarElementoEstrutural(db, modeloId, dados = {}) { const id = dados.id ?? `elemento_estrutural_${Date.now().toString(36)}`; const agora = new Date().toISOString(); db.run('INSERT INTO elementos_estruturais (id,modelo_id,pavimento_id,tipo,nome,material,secao_json,geometria_json,status,criado_em,atualizado_em) VALUES (?,?,?,?,?,?,?,?,?,?,?)', [id, modeloId, dados.pavimentoId ?? null, dados.tipo, dados.nome, typeof dados.material === 'object' && dados.material !== null ? JSON.stringify(dados.material) : dados.material ?? null, JSON.stringify(dados.secao ?? {}), JSON.stringify(dados.geometria ?? {}), dados.status ?? 'rascunho', agora, agora]); salvarBanco(db); return id; }
-export function salvarCargaEstrutural(db, modeloId, dados = {}) { const id = dados.id ?? `carga_estrutural_${Date.now().toString(36)}`; const agora = new Date().toISOString(); db.run('INSERT INTO cargas_estruturais (id,modelo_id,elemento_id,tipo,descricao,valor,unidade,combinacao,criado_em,atualizado_em) VALUES (?,?,?,?,?,?,?,?,?,?)', [id, modeloId, dados.elementoId ?? null, dados.tipo, dados.descricao ?? null, Number(dados.valor), dados.unidade, dados.combinacao ?? 'permanente', agora, agora]); salvarBanco(db); return id; }
+export function salvarCargaEstrutural(db, modeloId, dados = {}) {
+  const validated = validarCargaEstrutural(dados);
+  const elementId = dados.elementoId ?? dados.elemento_id;
+  if (!elementId) throw new Error('Selecione uma barra para a carga estrutural.');
+  const exists = linhas(db, 'SELECT id FROM elementos_estruturais WHERE id = ? AND modelo_id = ?', [elementId, modeloId])[0];
+  if (!exists) throw new Error('A barra selecionada não pertence ao modelo estrutural.');
+  const id = dados.id ?? `carga_estrutural_${Date.now().toString(36)}`;
+  const agora = new Date().toISOString();
+  db.run('INSERT INTO cargas_estruturais (id,modelo_id,elemento_id,tipo,descricao,valor,unidade,combinacao,criado_em,atualizado_em) VALUES (?,?,?,?,?,?,?,?,?,?)',
+    [id, modeloId, elementId, validated.tipo, validated.descricao, validated.valor, validated.unidade, validated.combinacao, agora, agora]);
+  salvarBanco(db);
+  return id;
+}
 
 export function buscarObra(db, obraId) {
   const obra = linhas(db, 'SELECT * FROM obras WHERE id = ?', [obraId])[0];
