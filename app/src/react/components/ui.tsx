@@ -13,3 +13,10 @@ export function Status({children,tone='neutral'}:React.PropsWithChildren<{tone?:
 export function EmptyState({title,description}: {title:string;description:string}){
   return <div className="ui-empty"><strong>{title}</strong><p>{description}</p></div>;
 }
+
+export function Metric({label,value,source}: {label:string;value:string;source:string}){
+ return <article className="ui-metric"><span className="ui-metric-label">{label}</span><strong>{value}</strong><small>{source}</small></article>;
+}
+export function SectionHeading({title,description}: {title:string;description?:string}){
+ return <div className="ui-section-heading"><h2>{title}</h2>{description&&<p className="studio-muted">{description}</p>}</div>;
+}
