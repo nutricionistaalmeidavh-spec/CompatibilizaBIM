@@ -1,4 +1,4 @@
-import {garantirRdoMutavel,garantirMedicaoTransicao} from '../src/domain/approvalGuards.js';
+import {garantirRdoMutavel,garantirMedicaoTransicao,validarQuantidadeRecebida} from '../src/domain/approvalGuards.js';
 import initSqlJs from 'sql.js';
 import schemaSql from './schema.sql?raw';
 import { migrarBancoCompatibilidade } from './schemaMigrations.js';
@@ -243,12 +243,13 @@ export function salvarMedicao(db, obraId, dados) {
   db.run('INSERT INTO medicoes_servico (id,obra_id,frente_id,descricao,unidade,quantidade,preco_unitario,periodo,status,criado_em,atualizado_em) VALUES (?,?,?,?,?,?,?,?,?,?,?)', [id, obraId, dados.frenteId ?? null, dados.descricao, dados.unidade, Number(dados.quantidade ?? 0), Number(dados.precoUnitario ?? 0), dados.periodo ?? null, dados.status ?? 'rascunho', agora, agora]); salvarBanco(db); return id;
 }
 export function listarMedicoes(db, obraId) { return linhas(db, 'SELECT m.*, f.nome AS frente_nome FROM medicoes_servico m LEFT JOIN frentes_servico f ON f.id = m.frente_id WHERE m.obra_id = ? ORDER BY m.atualizado_em DESC', [obraId]); }
-export function atualizarStatusMedicao(db, id, status) {
+export function atualizarStatusMedicao(db, id, status, aprovadoPor = '') {
  const row=linhas(db,'SELECT obra_id,status FROM medicoes_servico WHERE id = ?',[id])[0];
  if(!row)throw new Error('Medição não encontrada.');
  garantirMedicaoTransicao(row.status,status);
+ if(status==='aprovada'&&row.status!=='aprovada'&&!String(aprovadoPor).trim())throw new Error('Informe responsável pela aprovação da medição.');
  db.run('UPDATE medicoes_servico SET status = ?, atualizado_em = ? WHERE id = ?',[status,new Date().toISOString(),id]);
- registrarHistorico(db,row.obra_id,'medicao',id,'status',{anterior:row.status,novo:status});salvarBanco(db);
+ registrarHistorico(db,row.obra_id,'medicao',id,'status',{anterior:row.status,novo:status,aprovadoPor:String(aprovadoPor||'').trim()||null});salvarBanco(db);
 }
 
 export function salvarContrato(db, obraId, dados) {
@@ -264,7 +265,7 @@ export function salvarCompra(db, obraId, dados) {
   registrarHistorico(db, obraId, 'compra', id, 'criada', { fornecedor: dados.fornecedor, descricao: dados.descricao }); salvarBanco(db); return id;
 }
 export function listarCompras(db, obraId) { return linhas(db, 'SELECT c.*, f.nome AS frente_nome FROM compras_pedidos c LEFT JOIN frentes_servico f ON f.id = c.frente_id WHERE c.obra_id = ? ORDER BY c.atualizado_em DESC', [obraId]); }
-export function atualizarRecebimentoCompra(db, id, recebido) { const row = linhas(db, 'SELECT quantidade FROM compras_pedidos WHERE id = ?', [id])[0]; if (!row) throw new Error('Pedido de compra não encontrado.'); const qty = Math.max(0, Math.min(Number(row.quantidade), Number(recebido))); const status = qty >= Number(row.quantidade) ? 'recebido' : qty > 0 ? 'recebido_parcial' : 'solicitado'; db.run('UPDATE compras_pedidos SET recebido = ?, status = ?, recebido_em = ?, atualizado_em = ? WHERE id = ?', [qty, status, qty > 0 ? new Date().toISOString() : null, new Date().toISOString(), id]); salvarBanco(db); }
+export function atualizarRecebimentoCompra(db, id, recebido) { const row = linhas(db, 'SELECT quantidade FROM compras_pedidos WHERE id = ?', [id])[0]; if (!row) throw new Error('Pedido de compra não encontrado.'); const qty = validarQuantidadeRecebida(row.quantidade,recebido); const status = qty >= Number(row.quantidade) ? 'recebido' : qty > 0 ? 'recebido_parcial' : 'solicitado'; db.run('UPDATE compras_pedidos SET recebido = ?, status = ?, recebido_em = ?, atualizado_em = ? WHERE id = ?', [qty, status, qty > 0 ? new Date().toISOString() : null, new Date().toISOString(), id]); salvarBanco(db); }
 export function atualizarPagamentoCompra(db, id, pagamentoStatus) { if (!['pendente', 'programado', 'pago'].includes(pagamentoStatus)) throw new Error('Status de pagamento inválido.'); db.run('UPDATE compras_pedidos SET pagamento_status = ?, pago_em = ?, atualizado_em = ? WHERE id = ?', [pagamentoStatus, pagamentoStatus === 'pago' ? new Date().toISOString() : null, new Date().toISOString(), id]); salvarBanco(db); }
 
 export function salvarOrcamentoItem(db, obraId, dados) {
