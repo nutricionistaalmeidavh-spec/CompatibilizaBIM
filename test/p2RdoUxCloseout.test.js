@@ -89,3 +89,13 @@ test('P2 weighted progress falls back to stated simple mean if all stage weights
  assert.equal(r.progress,50);
  assert.equal(r.progressBasis,'média simples (pesos não definidos)');
 });
+
+test('P2 removing prior item preserves surviving item metadata and does not inject former source into a newly added row',()=>{
+ const old={...sample,servicosExecutados:[{descricao:'Primeiro',etapaId:'E1'},{descricao:'Segundo',etapaId:'E2'}]};
+ const d=readRdoDraft(old);
+ d.servicos.splice(0,1);
+ d.servicos.push({descricao:'Terceiro'});
+ const saved=prepareRdoPayload(d,old);
+ assert.equal(saved.servicosExecutados[0].etapaId,'E2');
+ assert.equal(saved.servicosExecutados[1].etapaId,undefined);
+});
