@@ -1,5 +1,6 @@
 import initSqlJs from 'sql.js';
 import schemaSql from './schema.sql?raw';
+import { migrarBancoCompatibilidade } from './schemaMigrations.js';
 import { validarContratoBackup, calcularChecksumCrc32 } from '../src/storage/backupContract.js';
 
 const STORAGE_KEY = 'engenharia360-db-v1';
@@ -33,22 +34,14 @@ export async function abrirBanco() {
   if (fonte && typeof fonte === 'object' && fonte.ok === false) throw new Error('Falha ao ler o banco local: ' + fonte.error);
   const salvo = fonte || localStorage.getItem(STORAGE_KEY);
   dbAtual = salvo ? new SQL.Database(base64ParaBytes(salvo)) : new SQL.Database();
-  dbAtual.run(schemaSql);
-  // Migração compatível para bancos locais criados antes do fluxo de aprovação.
-  for (const statement of [
-    "ALTER TABLE rdos ADD COLUMN status_aprovacao TEXT NOT NULL DEFAULT 'rascunho'",
-    "ALTER TABLE rdos ADD COLUMN aprovado_por TEXT",
-    "ALTER TABLE rdos ADD COLUMN aprovado_em TEXT",
-    "ALTER TABLE bim_modelos ADD COLUMN arquivo_base64 TEXT",
-    "ALTER TABLE nos_estruturais ADD COLUMN z REAL NOT NULL DEFAULT 0",
-    "ALTER TABLE nos_estruturais ADD COLUMN apoio_uz INTEGER NOT NULL DEFAULT 0",
-    "ALTER TABLE nos_estruturais ADD COLUMN apoio_rx INTEGER NOT NULL DEFAULT 0",
-    "ALTER TABLE nos_estruturais ADD COLUMN apoio_ry INTEGER NOT NULL DEFAULT 0",
-    "ALTER TABLE nos_estruturais ADD COLUMN carga_fz REAL NOT NULL DEFAULT 0",
-    "ALTER TABLE nos_estruturais ADD COLUMN carga_mx REAL NOT NULL DEFAULT 0",
-    "ALTER TABLE nos_estruturais ADD COLUMN carga_my REAL NOT NULL DEFAULT 0",
-  ]) { try { dbAtual.run(statement); } catch { /* coluna já existe */ } }
-  salvarBanco();
+  try {
+    migrarBancoCompatibilidade(dbAtual, schemaSql);
+    salvarBanco();
+  } catch (error) {
+    dbAtual.close();
+    dbAtual = null;
+    throw error;
+  }
   return dbAtual;
 }
 
