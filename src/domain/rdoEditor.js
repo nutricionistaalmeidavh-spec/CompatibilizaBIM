@@ -46,7 +46,7 @@ export function prepareRdoPayload(draft,original=null){
  const impedimentos=rows(draft.impedimentos,'impedimentos').map((r,i)=>({...(r.__sourceIndex===undefined?{}:(original?.impedimentos?.[r.__sourceIndex]||{})),descricao:text(r.descricao),resolvido:!!r.resolvido}));
  if(ocorrencias.some(x=>!x.descricao)||impedimentos.some(x=>!x.descricao))throw Error('Descreva ocorrência ou impedimento.');
  return {
-  data:draft.data,turno:text(draft.turno),responsavel:text(draft.responsavel),
+  data:draft.data,turno:text(draft.turno),responsavel:text(draft.responsavel),frenteId:original?.frenteId??null,
   clima:{...original?.clima,condicao:text(draft.clima)},
   equipes,servicosExecutados:servicos,materiaisRecebidos:materiais,ocorrencias,impedimentos,
   observacoes:text(draft.observacoes),fotos:[...(original?.fotos||[])]
