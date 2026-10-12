@@ -62,8 +62,44 @@ jobs:
         working-directory: app
         run: npm run build
 
+  dwg-fixtures:
+    if: github.event_name == 'workflow_dispatch' || github.event.label.name == 'run-cbim-qa'
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: 6feeb60e8b376def69d9e8ddb6b3788c56418397
+          path: real-dwg-inputs
+          lfs: false
+          sparse-checkout-cone-mode: false
+          sparse-checkout: |
+            .gitattributes
+            materiais-local-2026-09-30/DWG/BARRILETE.dwg
+            materiais-local-2026-09-30/DWG/QUA-HID-LO-0100-TERR-R02.dwg
+      - name: Download and verify DWGs with Linux Git LFS
+        working-directory: real-dwg-inputs
+        shell: bash
+        run: |
+          set -euo pipefail
+          git lfs install --local
+          git lfs pull --include="materiais-local-2026-09-30/DWG/BARRILETE.dwg,materiais-local-2026-09-30/DWG/QUA-HID-LO-0100-TERR-R02.dwg" --exclude=""
+          printf '%s  %s\n' \
+            'b2f02c77c3028f3be107b2f06f78508321732015143a87443f884362002f9be5' \
+            'materiais-local-2026-09-30/DWG/BARRILETE.dwg' \
+            'f48290b8b8d9fb626ece26d325f1f2570e134c61c17ebc12f812f6f49190ea17' \
+            'materiais-local-2026-09-30/DWG/QUA-HID-LO-0100-TERR-R02.dwg' | sha256sum -c -
+      - name: Upload one-day verified DWG input artifact for Windows regression
+        uses: actions/upload-artifact@v4
+        with:
+          name: CompatibilizaBIM-F0-Verified-DWGs
+          path: real-dwg-inputs/materiais-local-2026-09-30/DWG/
+          if-no-files-found: error
+          retention-days: 1
+
   windows-installer-preview:
     if: github.event_name == 'workflow_dispatch' || github.event.label.name == 'run-cbim-qa'
+    needs: [dwg-fixtures]
     runs-on: windows-latest
     timeout-minutes: 100
     steps:
@@ -84,6 +120,36 @@ jobs:
         shell: pwsh
         run: |
           .\scripts\build-p1-windows.ps1
+      - name: Download Linux-verified samples into Windows
+        uses: actions/download-artifact@v4
+        with:
+          name: CompatibilizaBIM-F0-Verified-DWGs
+          path: .f0-real-samples
+      - name: Verify local SHA256 of the staged DWGs
+        shell: pwsh
+        run: |
+          $a=(Get-FileHash -Algorithm SHA256 '.f0-real-samples/BARRILETE.dwg').Hash.ToLower()
+          $b=(Get-FileHash -Algorithm SHA256 '.f0-real-samples/QUA-HID-LO-0100-TERR-R02.dwg').Hash.ToLower()
+          if ($a -ne 'b2f02c77c3028f3be107b2f06f78508321732015143a87443f884362002f9be5') { throw 'BARRILETE hash mismatch' }
+          if ($b -ne 'f48290b8b8d9fb626ece26d325f1f2570e134c61c17ebc12f812f6f49190ea17') { throw 'QUA-HID hash mismatch' }
+      - name: Validate bundled ACadSharp, real DWGs and IFC sanity (no installation)
+        shell: pwsh
+        run: |
+          .\scripts\f0-smoke-real-dwg.ps1 -SamplesDir (Join-Path (Get-Location) '.f0-real-samples')
+      - name: Create F0 artifact provenance and SHA256 manifest
+        shell: pwsh
+        run: |
+          node scripts/f0-release-manifest.cjs
+      - name: Save F0 sanitized Windows smoke summary
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: CompatibilizaBIM-F0-RealDWG-Windows-QA
+          path: |
+            .p1-build/f0-smoke/f0-windows-smoke-summary.json
+            .p1-build/f0-smoke/release-manifest.json
+          if-no-files-found: warn
+          retention-days: 7
       - name: Disponibilizar instalador apenas como artefato QA
         if: success()
         uses: actions/upload-artifact@v4

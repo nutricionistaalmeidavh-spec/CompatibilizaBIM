@@ -1,3 +1,4 @@
+import { localLoad2D } from './beamLoadVector.js';
 // Solver linear-elástico de pórtico plano 2D.
 // Unidades coerentes: força, comprimento e momento devem usar o mesmo sistema.
 
@@ -23,16 +24,29 @@ function elementMatrices(element, nodes) {
   const axial = e * area / length; const b = e * inertia; const l2 = length ** 2; const l3 = length ** 3;
   const local = [[axial,0,0,-axial,0,0],[0,12*b/l3,6*b/l2,0,-12*b/l3,6*b/l2],[0,6*b/l2,4*b/length,0,-6*b/l2,2*b/length],[-axial,0,0,axial,0,0],[0,-12*b/l3,-6*b/l2,0,12*b/l3,-6*b/l2],[0,6*b/l2,2*b/length,0,-6*b/l2,4*b/length]];
   const t = [[c,s,0,0,0,0],[-s,c,0,0,0,0],[0,0,1,0,0,0],[0,0,0,c,s,0],[0,0,0,-s,c,0],[0,0,0,0,0,1]];
-  return { length, local, transform: t, global: multiply(transpose(t), multiply(local, t)) };
+  return { length, c, s, local, transform: t, global: multiply(transpose(t), multiply(local, t)) };
 }
 
 export function analisarPorticoPlano2D(modelo = {}) {
   const nodes = new Map((modelo.nos ?? []).map((node) => [node.id, node])); const elements = modelo.elementos ?? []; if (!nodes.size || !elements.length) throw new Error('O pórtico precisa de pelo menos dois nós e um elemento.');
   const ids = [...nodes.keys()]; const index = new Map(ids.flatMap((id, position) => [[`${id}:ux`, position * 3], [`${id}:uy`, position * 3 + 1], [`${id}:rz`, position * 3 + 2]])); const size = ids.length * 3; const stiffness = zeros(size); const load = Array(size).fill(0); const supports = new Set();
   for (const node of nodes.values()) { const loads = node.loads ?? {}; load[index.get(`${node.id}:ux`)] = Number(loads.fx ?? 0); load[index.get(`${node.id}:uy`)] = Number(loads.fy ?? 0); load[index.get(`${node.id}:rz`)] = Number(loads.mz ?? 0); for (const dof of ['ux','uy','rz']) if (node.supports?.[dof]) supports.add(index.get(`${node.id}:${dof}`)); }
-  const details = elements.map((element) => { const matrices = elementMatrices(element, nodes); const dofs = [`${element.nodeI}:ux`,`${element.nodeI}:uy`,`${element.nodeI}:rz`,`${element.nodeJ}:ux`,`${element.nodeJ}:uy`,`${element.nodeJ}:rz`].map((key) => index.get(key)); addMatrix(stiffness, matrices.global, dofs); return { element, matrices, dofs }; });
+  const details = elements.map((element) => {
+    const matrices = elementMatrices(element, nodes);
+    const dofs = [`${element.nodeI}:ux`,`${element.nodeI}:uy`,`${element.nodeI}:rz`,`${element.nodeJ}:ux`,`${element.nodeJ}:uy`,`${element.nodeJ}:rz`].map((key) => index.get(key));
+    addMatrix(stiffness, matrices.global, dofs);
+    const localEquivalent = Array(6).fill(0);
+    for (const memberLoad of element.memberLoads ?? []) {
+      const local = localLoad2D(memberLoad.kind, memberLoad.value, matrices.length, matrices.c, matrices.s);
+      for (let i = 0; i < 6; i += 1) localEquivalent[i] += local[i];
+    }
+    const equivalent = multiply(transpose(matrices.transform), localEquivalent.map(value => [value])).map(row => row[0]);
+    dofs.forEach((dof, index) => { load[dof] += equivalent[index]; });
+    return { element, matrices, dofs, localEquivalent };
+  });
   if (!supports.size) throw new Error('Defina pelo menos um apoio no modelo.');
+  const fullStiffness = stiffness.map(row => [...row]); const fullLoad = [...load];
   for (const dof of supports) { for (let i = 0; i < size; i += 1) { stiffness[dof][i] = 0; stiffness[i][dof] = 0; } stiffness[dof][dof] = 1; load[dof] = 0; }
-  const displacement = solveLinearSystem(stiffness, load); const elementResults = details.map(({ element, matrices, dofs }) => { const globalDisplacement = dofs.map((dof) => displacement[dof]); const localDisplacement = multiply(matrices.transform, globalDisplacement.map((value) => [value])).map((row) => row[0]); const forces = multiply(matrices.local, localDisplacement.map((value) => [value])).map((row) => row[0]); return { id: element.id, length: matrices.length, localDisplacement, endForces: forces }; });
-  return { displacement: Object.fromEntries(ids.map((id) => [id, { ux: displacement[index.get(`${id}:ux`)], uy: displacement[index.get(`${id}:uy`)], rz: displacement[index.get(`${id}:rz`)] }])), elements: elementResults, dofCount: size };
+  const displacement = solveLinearSystem(stiffness, load); const elementResults = details.map(({ element, matrices, dofs, localEquivalent }) => { const globalDisplacement = dofs.map((dof) => displacement[dof]); const localDisplacement = multiply(matrices.transform, globalDisplacement.map((value) => [value])).map((row) => row[0]); const forces = multiply(matrices.local, localDisplacement.map((value) => [value])).map((row, i) => row[0] - localEquivalent[i]); return { id: element.id, length: matrices.length, localDisplacement, endForces: forces }; });
+  return { displacement: Object.fromEntries(ids.map((id) => [id, { ux: displacement[index.get(`${id}:ux`)], uy: displacement[index.get(`${id}:uy`)], rz: displacement[index.get(`${id}:rz`)] }])), elements: elementResults, dofCount: size, reactions: Object.fromEntries(ids.map(id => [id, Object.fromEntries(['ux','uy','rz'].map(d => { const dof = index.get(`${id}:${d}`); return [d, fullStiffness[dof].reduce((a,b,i)=>a+b*displacement[i],0)-fullLoad[dof]]; }))])) };
 }

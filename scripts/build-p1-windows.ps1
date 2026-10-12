@@ -1,6 +1,6 @@
 # Build CompatibilizaBIM Studio P1 without modifying main, secrets or existing installations.
 # Requires Windows x64, Python 3.12 x64, Node 22 and .NET SDK 8.
-# The preview package cannot activate without an owner-provided Ed25519 PUBLIC key.
+# Core is free by default; an Ed25519 PUBLIC key is only required by opt-in commercial mode.
 [CmdletBinding()]
 param(
   [switch]$SkipInstaller,

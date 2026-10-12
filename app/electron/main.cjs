@@ -14,9 +14,16 @@ const cbimApplication = createCbimApplication({
 // Alguns computadores sem driver gráfico compatível encerram o renderer ao iniciar.
 // O Engenharia 360 continua funcional offline sem aceleração de hardware.
 let activeBimProcess = null;
+const { atomicSaveSqlite, readSqliteFile } = require('./databaseStore.cjs');
 const databasePath = () => { const root = path.join(app.getPath('documents'), 'Engenharia360'); fs.mkdirSync(root, { recursive: true }); return path.join(root, 'engenharia360.sqlite'); };
-ipcMain.on('engineering-db:load-sync', (event) => { const file = databasePath(); event.returnValue = fs.existsSync(file) ? fs.readFileSync(file).toString('base64') : null; });
-ipcMain.on('engineering-db:save-sync', (event, base64) => { fs.writeFileSync(databasePath(), Buffer.from(String(base64), 'base64')); event.returnValue = true; });
+ipcMain.on('engineering-db:load-sync', (event) => {
+  try { const file = databasePath(); event.returnValue = fs.existsSync(file) ? readSqliteFile(file).toString('base64') : null; }
+  catch (error) { event.returnValue = { ok: false, error: String(error.message || error) }; }
+});
+ipcMain.on('engineering-db:save-sync', (event, base64) => {
+  try { atomicSaveSqlite(databasePath(), String(base64)); event.returnValue = true; }
+  catch (error) { event.returnValue = { ok: false, error: String(error.message || error) }; }
+});
 ipcMain.handle('engineering-db:path', () => databasePath());
 function runBimPython(args) {
   return new Promise((resolve, reject) => {

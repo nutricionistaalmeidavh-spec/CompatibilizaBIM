@@ -9,6 +9,7 @@ import { FinancePage } from './FinancePage';
 import { RdoPage } from './RdoPage';
 import { StructuralPage } from './StructuralPage';
 import { Status } from '../components/ui';
+import { validarContratoBackup } from '../../../../src/storage/backupContract.js';
 import { listarProjetosBim, listarFrentes } from '../../../../storage/sqliteStore.js';
 import { carregarDemo, carregarDemoOperacional, carregarDemoBimIndependente } from '../../demoData.js';
 import { enriquecerDemoBim3D, garantirModeloEstruturalDemo } from '../../demoBim3d.js';
@@ -17,6 +18,7 @@ const sections=['Obras','BIM','Cálculos','Estruturas','Operação','RDO','Finan
 export function AppShell(){
   const [db,setDb]=React.useState<any>(null);
   const [error,setError]=React.useState('');
+  const [backupError,setBackupError]=React.useState('');
   const [active,setActive]=React.useState(()=>{try{return sessionStorage.getItem('cbim-studio-section')||'Obras';}catch{return 'Obras';}});
   const [workId,setWorkId]=React.useState<string|null>(null);
   const [version,refresh]=React.useReducer(n=>n+1,0);
@@ -58,8 +60,21 @@ export function AppShell(){
   };
   const readBackup=async(file:File|null)=>{
     if(!file||!db)return;
-    if(!window.confirm('Importar backup substitui o banco atual. Você confirmou ter um backup do banco atual?'))return;
-    try{importarBackup(db,await file.text());}catch(e:any){setError(e.message);}
+    try{
+      setBackupError('');
+      const content=await file.text();
+      const preview=validarContratoBackup(content);
+      if(!preview.valido)throw new Error(preview.erros.join(' '));
+      const date=preview.exportadoEm||'não informada';
+      const size=preview.bytes?.length??0;
+      const accepted=window.confirm(
+        'Restaurar banco SQLite do CompatibilizaBIM?\\n\\nArquivo: '+file.name+
+        '\\nExportado em: '+date+'\\nTamanho: '+(size/1024).toFixed(1)+' KiB'+
+        '\\n\\nEste JSON contém o banco de dados, mas NÃO inclui arquivos externos e workspaces DWG/CBIM.'+
+        '\\nO banco atual será preservado em um snapshot .previous no desktop. Deseja continuar?'
+      );
+      if(accepted)importarBackup(db,content);
+    }catch(e:any){setBackupError(e.message);}
   };
   if(error)return <main role="alert"><h1>Falha ao abrir CompatibilizaBIM</h1><p>{error}</p></main>;
   if(!db)return <main aria-busy="true">Abrindo banco local…</main>;
@@ -83,6 +98,7 @@ export function AppShell(){
       <button onClick={downloadBackup}>Exportar backup</button>
       <label>Importar backup<input aria-label="Selecionar arquivo de backup" type="file" accept=".json" onChange={e=>{void readBackup(e.target.files?.[0]||null);e.target.value='';}}/></label>
     </aside>
+    {backupError&&<p role="alert" className="cbim-react-panel">Importação não realizada: {backupError} O banco e a sessão atual foram preservados. Confira o arquivo e tente novamente.</p>}
     <main className="studio-content">
       {active==='Obras'&&<WorksPage db={db} obraId={workId} selectWork={selectWork} onChange={refresh} onNavigate={setActive}/>}
       {active==='BIM'&&<BimPage db={db} obraId={workId} version={version} onChange={refresh}/>}

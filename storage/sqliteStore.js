@@ -1,5 +1,8 @@
 import initSqlJs from 'sql.js';
 import schemaSql from './schema.sql?raw';
+import { migrarBancoCompatibilidade } from './schemaMigrations.js';
+import { validarCargaEstrutural } from '../src/domain/structuralModel.js';
+import { validarContratoBackup, calcularChecksumCrc32 } from '../src/storage/backupContract.js';
 
 const STORAGE_KEY = 'engenharia360-db-v1';
 const WASM_PATH = '/sql-wasm.wasm';
@@ -19,31 +22,27 @@ function base64ParaBytes(base64) {
 export function salvarBanco(db = dbAtual) {
   if (!db) throw new Error('Banco ainda não foi aberto');
   const base64 = bytesParaBase64(db.export());
-  if (globalThis.engineeringStorage?.saveSync) globalThis.engineeringStorage.saveSync(base64);
-  else localStorage.setItem(STORAGE_KEY, base64);
+  if (globalThis.engineeringStorage?.saveSync) {
+    const result = globalThis.engineeringStorage.saveSync(base64);
+    if (result !== true) throw new Error(result?.error || 'Não foi possível salvar o banco local. O último estado em disco foi preservado.');
+  } else localStorage.setItem(STORAGE_KEY, base64);
 }
 
 export async function abrirBanco() {
   if (dbAtual) return dbAtual;
   const SQL = await initSqlJs({ locateFile: () => WASM_PATH });
-  const salvo = globalThis.engineeringStorage?.loadSync?.() || localStorage.getItem(STORAGE_KEY);
+  const fonte = globalThis.engineeringStorage?.loadSync?.();
+  if (fonte && typeof fonte === 'object' && fonte.ok === false) throw new Error('Falha ao ler o banco local: ' + fonte.error);
+  const salvo = fonte || localStorage.getItem(STORAGE_KEY);
   dbAtual = salvo ? new SQL.Database(base64ParaBytes(salvo)) : new SQL.Database();
-  dbAtual.run(schemaSql);
-  // Migração compatível para bancos locais criados antes do fluxo de aprovação.
-  for (const statement of [
-    "ALTER TABLE rdos ADD COLUMN status_aprovacao TEXT NOT NULL DEFAULT 'rascunho'",
-    "ALTER TABLE rdos ADD COLUMN aprovado_por TEXT",
-    "ALTER TABLE rdos ADD COLUMN aprovado_em TEXT",
-    "ALTER TABLE bim_modelos ADD COLUMN arquivo_base64 TEXT",
-    "ALTER TABLE nos_estruturais ADD COLUMN z REAL NOT NULL DEFAULT 0",
-    "ALTER TABLE nos_estruturais ADD COLUMN apoio_uz INTEGER NOT NULL DEFAULT 0",
-    "ALTER TABLE nos_estruturais ADD COLUMN apoio_rx INTEGER NOT NULL DEFAULT 0",
-    "ALTER TABLE nos_estruturais ADD COLUMN apoio_ry INTEGER NOT NULL DEFAULT 0",
-    "ALTER TABLE nos_estruturais ADD COLUMN carga_fz REAL NOT NULL DEFAULT 0",
-    "ALTER TABLE nos_estruturais ADD COLUMN carga_mx REAL NOT NULL DEFAULT 0",
-    "ALTER TABLE nos_estruturais ADD COLUMN carga_my REAL NOT NULL DEFAULT 0",
-  ]) { try { dbAtual.run(statement); } catch { /* coluna já existe */ } }
-  salvarBanco();
+  try {
+    migrarBancoCompatibilidade(dbAtual, schemaSql);
+    salvarBanco();
+  } catch (error) {
+    dbAtual.close();
+    dbAtual = null;
+    throw error;
+  }
   return dbAtual;
 }
 
@@ -107,8 +106,20 @@ export function buscarModeloEstrutural(db, modeloId) {
 export function salvarPavimentoEstrutural(db, modeloId, dados = {}) { const id = dados.id ?? `pavimento_estrutural_${Date.now().toString(36)}`; const agora = new Date().toISOString(); db.run('INSERT INTO pavimentos_estruturais (id,modelo_id,nome,nivel,altura,criado_em,atualizado_em) VALUES (?,?,?,?,?,?,?)', [id, modeloId, dados.nome, Number(dados.nivel ?? 0), Number(dados.altura ?? 3), agora, agora]); salvarBanco(db); return id; }
 export function salvarNoEstrutural(db, modeloId, dados = {}) { const id = dados.id ?? `no_estrutural_${Date.now().toString(36)}`; const agora = new Date().toISOString(); db.run('INSERT INTO nos_estruturais (id,modelo_id,pavimento_id,nome,x,y,z,apoio_ux,apoio_uy,apoio_uz,apoio_rx,apoio_ry,apoio_rz,carga_fx,carga_fy,carga_fz,carga_mx,carga_my,carga_mz,criado_em,atualizado_em) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)', [id, modeloId, dados.pavimentoId ?? null, dados.nome, Number(dados.x ?? 0), Number(dados.y ?? 0), Number(dados.z ?? 0), dados.supports?.ux ? 1 : 0, dados.supports?.uy ? 1 : 0, dados.supports?.uz ? 1 : 0, dados.supports?.rx ? 1 : 0, dados.supports?.ry ? 1 : 0, dados.supports?.rz ? 1 : 0, Number(dados.loads?.fx ?? 0), Number(dados.loads?.fy ?? 0), Number(dados.loads?.fz ?? 0), Number(dados.loads?.mx ?? 0), Number(dados.loads?.my ?? 0), Number(dados.loads?.mz ?? 0), agora, agora]); salvarBanco(db); return id; }
 export function listarNosEstruturais(db, modeloId) { return linhas(db, 'SELECT * FROM nos_estruturais WHERE modelo_id = ? ORDER BY nome', [modeloId]); }
-export function salvarElementoEstrutural(db, modeloId, dados = {}) { const id = dados.id ?? `elemento_estrutural_${Date.now().toString(36)}`; const agora = new Date().toISOString(); db.run('INSERT INTO elementos_estruturais (id,modelo_id,pavimento_id,tipo,nome,material,secao_json,geometria_json,status,criado_em,atualizado_em) VALUES (?,?,?,?,?,?,?,?,?,?,?)', [id, modeloId, dados.pavimentoId ?? null, dados.tipo, dados.nome, dados.material ?? null, JSON.stringify(dados.secao ?? {}), JSON.stringify(dados.geometria ?? {}), dados.status ?? 'rascunho', agora, agora]); salvarBanco(db); return id; }
-export function salvarCargaEstrutural(db, modeloId, dados = {}) { const id = dados.id ?? `carga_estrutural_${Date.now().toString(36)}`; const agora = new Date().toISOString(); db.run('INSERT INTO cargas_estruturais (id,modelo_id,elemento_id,tipo,descricao,valor,unidade,combinacao,criado_em,atualizado_em) VALUES (?,?,?,?,?,?,?,?,?,?)', [id, modeloId, dados.elementoId ?? null, dados.tipo, dados.descricao ?? null, Number(dados.valor), dados.unidade, dados.combinacao ?? 'permanente', agora, agora]); salvarBanco(db); return id; }
+export function salvarElementoEstrutural(db, modeloId, dados = {}) { const id = dados.id ?? `elemento_estrutural_${Date.now().toString(36)}`; const agora = new Date().toISOString(); db.run('INSERT INTO elementos_estruturais (id,modelo_id,pavimento_id,tipo,nome,material,secao_json,geometria_json,status,criado_em,atualizado_em) VALUES (?,?,?,?,?,?,?,?,?,?,?)', [id, modeloId, dados.pavimentoId ?? null, dados.tipo, dados.nome, typeof dados.material === 'object' && dados.material !== null ? JSON.stringify(dados.material) : dados.material ?? null, JSON.stringify(dados.secao ?? {}), JSON.stringify(dados.geometria ?? {}), dados.status ?? 'rascunho', agora, agora]); salvarBanco(db); return id; }
+export function salvarCargaEstrutural(db, modeloId, dados = {}) {
+  const validated = validarCargaEstrutural(dados);
+  const elementId = dados.elementoId ?? dados.elemento_id;
+  if (!elementId) throw new Error('Selecione uma barra para a carga estrutural.');
+  const exists = linhas(db, 'SELECT id FROM elementos_estruturais WHERE id = ? AND modelo_id = ?', [elementId, modeloId])[0];
+  if (!exists) throw new Error('A barra selecionada não pertence ao modelo estrutural.');
+  const id = dados.id ?? `carga_estrutural_${Date.now().toString(36)}`;
+  const agora = new Date().toISOString();
+  db.run('INSERT INTO cargas_estruturais (id,modelo_id,elemento_id,tipo,descricao,valor,unidade,combinacao,criado_em,atualizado_em) VALUES (?,?,?,?,?,?,?,?,?,?)',
+    [id, modeloId, elementId, validated.tipo, validated.descricao, validated.valor, validated.unidade, validated.combinacao, agora, agora]);
+  salvarBanco(db);
+  return id;
+}
 
 export function buscarObra(db, obraId) {
   const obra = linhas(db, 'SELECT * FROM obras WHERE id = ?', [obraId])[0];
@@ -350,16 +361,40 @@ export function atualizarConflitoBim(db, analiseId, indice, status) {
 }
 
 export function exportarBackup(db) {
-  return JSON.stringify({ versao: 1, exportadoEm: new Date().toISOString(), bancoBase64: bytesParaBase64(db.export()) }, null, 2);
+  const bytes = db.export();
+  return JSON.stringify({
+    versao: 1, exportadoEm: new Date().toISOString(),
+    tamanhoBytes: bytes.length, checksumCrc32: calcularChecksumCrc32(bytes),
+    bancoBase64: bytesParaBase64(bytes)
+  }, null, 2);
 }
 
 export function importarBackup(dbAtualImportado, texto) {
-  const dados = JSON.parse(texto);
-  if (dados?.versao !== 1 || typeof dados.bancoBase64 !== 'string') throw new Error('Backup inválido ou incompatível.');
-  const bytes = base64ParaBytes(dados.bancoBase64);
-  dbAtualImportado.close();
-  const base64 = bytesParaBase64(bytes);
-  if (globalThis.engineeringStorage?.saveSync) globalThis.engineeringStorage.saveSync(base64);
-  else localStorage.setItem(STORAGE_KEY, base64);
+  const contrato = validarContratoBackup(texto);
+  if (!contrato.valido) throw new Error('Backup rejeitado: ' + contrato.erros.join(' '));
+  // Before touching the current DB, ask the actual SQLite engine to validate
+  // pages/indexes and at least the core work table of legacy databases.
+  let candidate;
+  try {
+    candidate = new dbAtualImportado.constructor(contrato.bytes);
+    const result = candidate.exec('PRAGMA integrity_check');
+    if (result?.[0]?.values?.[0]?.[0] !== 'ok') throw new Error('O arquivo SQLite apresenta falhas de integridade.');
+    const schema = candidate.exec("SELECT name FROM sqlite_master WHERE type='table' AND name='obras'");
+    if (!schema?.[0]?.values?.length) throw new Error('Backup não contém a tabela canônica de obras.');
+  } finally {
+    candidate?.close();
+  }
+  const base64 = bytesParaBase64(contrato.bytes);
+  // Desktop: native IPC snapshots and atomically swaps the file.
+  // Web: localStorage.setItem is atomic for one key; preserve prior backup.
+  if (globalThis.engineeringStorage?.saveSync) {
+    const saved = globalThis.engineeringStorage.saveSync(base64);
+    if (saved !== true) throw new Error(saved?.error || 'Falha ao restaurar backup; banco atual preservado.');
+  } else {
+    const existing = localStorage.getItem(STORAGE_KEY);
+    if (existing) localStorage.setItem(STORAGE_KEY + ':previous', existing);
+    localStorage.setItem(STORAGE_KEY, base64);
+  }
+  // Keep the original in-memory DB alive until the new file is durably stored.
   window.location.reload();
 }

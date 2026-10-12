@@ -55,7 +55,7 @@ test('full RDO and structural paths reuse existing validators, PDFs and analysis
   const rdo=fs.readFileSync(new URL('../app/src/react/shell/RdoPage.tsx',import.meta.url),'utf8');
   const structure=fs.readFileSync(new URL('../app/src/react/shell/StructuralPage.tsx',import.meta.url),'utf8');
   for(const key of ['gerarPdfRelatorio','aprovarRdo','atualizarRdo','excluirRdo'])assert.match(rdo,new RegExp(key));
-  for(const key of ['analisarModeloEstruturalPlano','analisarPorticoEspacial3D','criarManifestoEstruturalViewer','validarModeloEstrutural'])assert.match(structure,new RegExp(key));
+  for(const key of ['analisarModeloEstruturalPlano','analisarModeloEstruturalEspacial','criarManifestoEstruturalViewer','validarModeloEstrutural'])assert.match(structure,new RegExp(key));
   const shell=fs.readFileSync(new URL('../app/src/react/shell/AppShell.tsx',import.meta.url),'utf8');
   assert.match(shell,/<RdoPage /);assert.match(shell,/<StructuralPage /);
 });

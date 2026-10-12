@@ -1,5 +1,5 @@
 const TIPOS_ELEMENTO = Object.freeze(['pilar', 'viga', 'laje', 'fundacao', 'parede', 'escada']);
-const COMBINACOES = Object.freeze(['permanente', 'acidental', 'vento', 'elu', 'els']);
+const COMBINACOES = Object.freeze(['permanente', 'variavel', 'acidental', 'vento', 'elu', 'els']);
 
 function numeroPositivo(valor, campo, permitirZero = false) {
   const numero = Number(valor);
@@ -25,7 +25,8 @@ export function validarElementoEstrutural(elemento = {}) {
 
 export function validarCargaEstrutural(carga = {}) {
   if (!String(carga.tipo ?? '').trim()) throw new Error('A carga precisa de um tipo.');
-  const valor = numeroPositivo(carga.valor, 'Valor da carga', true);
+  const valor = Number(carga.valor);
+  if (!Number.isFinite(valor)) throw new Error('Valor da carga deve ser finito (positivo ou negativo conforme o sentido).');
   if (!String(carga.unidade ?? '').trim()) throw new Error('A carga precisa de uma unidade.');
   if (carga.combinacao && !COMBINACOES.includes(carga.combinacao)) throw new Error(`Combinação inválida: ${carga.combinacao}.`);
   return { tipo: String(carga.tipo).trim(), descricao: carga.descricao ? String(carga.descricao).trim() : null, valor, unidade: String(carga.unidade).trim(), combinacao: carga.combinacao || 'permanente' };
