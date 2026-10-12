@@ -1,11 +1,12 @@
 import React from 'react';
+import {filterScopedRecords} from '../../../../src/domain/workspaceScope.js';
 import {
   buscarObra, criarObraPersistida, listarObras, salvarEtapa, salvarPendencia,
   salvarMaterial, salvarDocumento, obterDocumento, listarHistorico, listarFrentes, salvarFrente
 } from '../../../../storage/sqliteStore.js';
 import { gerarPdfRelatorio } from '../../pdfTemplates.js';
 
-type Props={db:any;obraId:string|null;selectWork:(id:string|null)=>void;onChange:()=>void;onNavigate?:(section:string)=>void};
+type Props={db:any;obraId:string|null;scope?:any;selectWork:(id:string|null)=>void;onChange:()=>void;onNavigate?:(section:string)=>void};
 const money=(n:any)=>new Intl.NumberFormat('pt-BR',{style:'currency',currency:'BRL'}).format(Number(n)||0);
 const escapeName=(s:string)=>s.replace(/[^a-z0-9-_]+/gi,'-').slice(0,90);
 const lines=(obj:any, prefix=''):string[]=>Object.entries(obj||{}).flatMap(([k,v])=>
@@ -19,7 +20,7 @@ async function encodeFile(file:File):Promise<string>{
   for(let i=0;i<bytes.length;i+=32768)binary+=String.fromCharCode(...bytes.subarray(i,i+32768));
   return btoa(binary);
 }
-export function WorksPage({db,obraId,selectWork,onChange,onNavigate}:Props){
+export function WorksPage({db,obraId,scope={},selectWork,onChange,onNavigate}:Props){
   const [newWork,setNewWork]=React.useState(false);
   const [task,setTask]=React.useState('etapa');
   const [error,setError]=React.useState('');
@@ -27,6 +28,7 @@ export function WorksPage({db,obraId,selectWork,onChange,onNavigate}:Props){
   const works=listarObras(db);
   const work=obraId?buscarObra(db,obraId):null;
   const history=obraId?listarHistorico(db,obraId):[];
+  const visibleRdos=filterScopedRecords(work?.rdos||[],{periodo:scope.periodo||{}},{dateField:'data'});
   const allPending=works.reduce((s:number,w:any)=>s+Number(w.pendencias_abertas||0),0);
   const allRdos=works.reduce((s:number,w:any)=>s+Number(w.rdos_total||0),0);
   const avgProgress=works.length?works.reduce((s:number,w:any)=>s+Number(w.percentual_concluido||0),0)/works.length:0;
@@ -84,6 +86,7 @@ export function WorksPage({db,obraId,selectWork,onChange,onNavigate}:Props){
   };
   return <section className="cbim-react-section">
     <h1>Carteira de obras</h1><p>Projetos, documentos, cálculos e histórico registrados no SQLite local canônico.</p>
+    <p className="studio-muted">Indicadores da carteira mostram todas as obras, independentemente do filtro global de frente ou período. Na obra selecionada, a lista de RDO respeita o período; etapas, materiais e histórico continuam como registros completos da obra.</p>
     <div className="cbim-react-metrics"><article>Obras: {works.length}</article><article>Avanço médio: {avgProgress.toFixed(0)}%</article><article>RDOs: {allRdos}</article><article>Pendências abertas: {allPending}</article></div>
     <div className="cbim-react-toolbar">
       <label>Obra atual<select aria-label="Obra selecionada" value={obraId||''} onChange={e=>selectWork(e.target.value||null)}><option value="">Todas as obras</option>{works.map((w:any)=><option value={w.id} key={w.id}>{w.codigo} · {w.nome}</option>)}</select></label>
@@ -111,7 +114,7 @@ export function WorksPage({db,obraId,selectWork,onChange,onNavigate}:Props){
       </form>
       <div className="cbim-react-panel"><h2>Etapas e planejamento</h2>{work.etapas?.length?work.etapas.map((e:any)=><article key={e.id}><b>{e.nome}</b> · {Number(e.percentual_concluido||0).toFixed(0)}% · <small>{e.responsavel||'Sem responsável'}</small></article>):<p>Nenhuma etapa cadastrada.</p>}</div>
       <div className="cbim-react-panel"><h2>Pendências e riscos</h2>{work.pendencias?.length?work.pendencias.map((p:any)=><article key={p.id}><b>{p.descricao}</b> · {p.prioridade} · {p.status} · {p.prazo||'Sem prazo'}</article>):<p>Nenhuma pendência cadastrada.</p>}</div>
-      <div className="cbim-react-panel"><h2>Relatórios diários</h2>{work.rdos?.length?work.rdos.slice(0,8).map((r:any)=><article key={r.id}><b>{r.data}</b> · {r.responsavel} · {r.servicosExecutados?.length||0} serviços · {r.fotos?.length||0} fotos</article>):<p>Nenhum relatório diário.</p>}
+      <div className="cbim-react-panel"><h2>Relatórios diários</h2>{visibleRdos.length?visibleRdos.slice(0,8).map((r:any)=><article key={r.id}><b>{r.data}</b> · {r.responsavel} · {r.servicosExecutados?.length||0} serviços · {r.fotos?.length||0} fotos</article>):<p>Nenhum relatório diário.</p>}
         {onNavigate&&<button onClick={()=>onNavigate('RDO')}>Abrir RDO completo e PDFs</button>}</div>
       <div className="cbim-react-panel"><h2>Cálculos e memórias</h2>{work.calculos?.length?work.calculos.map((c:any)=><article key={c.id}><b>{c.titulo}</b> · {c.norma||'Norma não informada'} <button onClick={()=>exportCalc(c)}>Exportar PDF</button></article>):<p>Nenhum cálculo salvo.</p>}
         {onNavigate&&<button onClick={()=>onNavigate('Cálculos')}>Novo cálculo</button>}</div>

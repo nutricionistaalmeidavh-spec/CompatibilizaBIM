@@ -3,7 +3,7 @@
 const finite=(value,label)=>{const n=Number(value);if(!Number.isFinite(n)||n<0)throw Error('Valor financeiro inválido: '+label);return n;};
 const sum=(list,key)=>list.reduce((s,e)=>s+finite(e[key]??0,key),0);
 export function reconciliarFinanceiroObra({obraId,entries=[],measures=[],purchases=[],contracts=[]}={}){
- const local=entries.filter(e=>e.obra_id===obraId);
+ const local=obraId==null?entries:entries.filter(e=>e.obra_id===obraId);
  const incoming=local.filter(e=>e.tipo==='receita'),outgoing=local.filter(e=>e.tipo==='despesa');
  const receitasPrevistas=sum(incoming,'valor'),despesasPrevistas=sum(outgoing,'valor');
  const receitasConfirmadas=sum(incoming.filter(e=>['confirmado','recebido','pago'].includes(e.status)),'valor');

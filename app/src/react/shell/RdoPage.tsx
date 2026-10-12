@@ -1,5 +1,6 @@
 
 import React from 'react';
+import {filterScopedRecords} from '../../../../src/domain/workspaceScope.js';
 import {buscarObra,salvarRdo,atualizarRdo,aprovarRdo,excluirRdo} from '../../../../storage/sqliteStore.js';
 import {gerarPdfRelatorioComFotos} from '../../pdfTemplates.js';
 import {validarFotosRdo,resumoEvidenciasRdo} from '../../../../src/domain/rdoEvidence.js';
@@ -7,7 +8,8 @@ import {validarFotosRdo,resumoEvidenciasRdo} from '../../../../src/domain/rdoEvi
 const rows=(v:string)=>v.split(/\r?\n/).map(x=>x.trim()).filter(Boolean);
 const printable=(v:any)=>String(v||'');
 function download(blob:Blob,name:string){const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(url),1500);}
-const initial={data:new Date().toISOString().slice(0,10),turno:'Diurno',responsavel:'',clima:'',equipes:'',servicos:'',materiais:'',ocorrencias:'',impedimentos:'',observacoes:''};
+const localToday=()=>new Date(Date.now()-new Date().getTimezoneOffset()*60000).toISOString().slice(0,10);
+const initial={data:localToday(),turno:'Diurno',responsavel:'',clima:'',equipes:'',servicos:'',materiais:'',ocorrencias:'',impedimentos:'',observacoes:''};
 type Values=typeof initial;
 function readValues(r:any):Values{
   return {
@@ -32,15 +34,15 @@ async function makePhotos(files:FileList|null) {
   }
   return validarFotosRdo(photos);
 }
-export function RdoPage({db,obraId,onChange}:{db:any;obraId:string|null;onChange:()=>void}){
+export function RdoPage({db,obraId,scope={},onChange}:{db:any;obraId:string|null;scope?:any;onChange:()=>void}){
   const [editing,setEditing]=React.useState<string|null>(null);
   const [form,setForm]=React.useState<Values>(initial);
   const [error,setError]=React.useState('');
   const [busy,setBusy]=React.useState(false);
   const [approver,setApprover]=React.useState('');
   const work=obraId?buscarObra(db,obraId):null;
-  const rdos=work?.rdos||[];
-  const choose=(r:any|null)=>{setEditing(r?.id||'new');setForm(r?readValues(r):{...initial});setError('');};
+  const rdos=filterScopedRecords(work?.rdos||[],{periodo:scope.periodo||{}},{dateField:'data'});
+  const choose=(r:any|null)=>{setEditing(r?.id||'new');setForm(r?readValues(r):{...initial,data:scope.periodo?.fim||scope.periodo?.inicio||localToday()});setError('');};
   const submit=async(e:React.FormEvent<HTMLFormElement>)=>{
     e.preventDefault();if(!work||busy)return;setBusy(true);
     const old=rdos.find((r:any)=>r.id===editing);
@@ -108,6 +110,8 @@ export function RdoPage({db,obraId,onChange}:{db:any;obraId:string|null;onChange
   };
   if(!work)return <section className="cbim-react-section"><h1>Diário de obra</h1><p>Selecione uma obra para consultar e registrar RDOs.</p></section>;
   return <section className="cbim-react-section"><h1>RDO · {work.nome}</h1><p>Diário completo, fotos, aprovação e PDF usando os mesmos dados persistidos na aplicação anterior.</p>
+    {(scope.periodo?.inicio||scope.periodo?.fim)&&<p className="studio-muted">Exibindo somente RDOs dentro do período selecionado. Um novo registro fora desse período ficará salvo, mas não aparecerá nesta lista.</p>}
+    {scope.frenteId&&<p role="status" className="cbim-react-panel">RDOs existentes não possuem vínculo canônico com frente; a seleção de frente não filtra esses registros. O filtro de datas continua aplicado.</p>}
     <p className="studio-muted">A aprovação é imutável. Retificações devem ser registradas em novo RDO; as fotos permanecem no SQLite local. O PDF inclui as fotografias locais em páginas anexas, além do índice de evidências. Fotos externas antigas permanecem apenas referenciadas.</p><button onClick={()=>choose(null)}>+ Novo RDO completo</button>{error&&<p role="alert">{error}</p>}
     {editing&&<form className="cbim-react-panel" onSubmit={e=>{void submit(e);}}>
       <h2>{editing==='new'?'Novo RDO':'Corrigir RDO'}</h2>
