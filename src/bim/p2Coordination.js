@@ -1,0 +1,75 @@
+import { executarAnaliseBim, formatoModeloBim } from './p0Workflow.js';
+import { criarModeloBim, detectarConflitosBim } from './compatibility.js';
+const ALLOWED=new Set(['intersection','collision','clearance']);
+const finite=(v,label)=>{const n=Number(v);if(!Number.isFinite(n)||n<0)throw new Error(label+' deve ser um número não negativo (metros).');return n;};
+export function validarConfiguracaoFederacao(config={}){
+ const modo=config.modo||'intersection';
+ if(!ALLOWED.has(modo))throw new Error('Modo de compatibilização não suportado.');
+ const tolerancia=finite(config.tolerancia??.002,'tolerância');
+ const afastamento=finite(config.afastamento??.05,'afastamento');
+ if(tolerancia>1||afastamento>100)throw new Error('Tolerâncias fora do intervalo seguro em metros.');
+ return {modo,tolerancia,afastamento};
+}
+export function reconciliarConflitos(next,previous=[]){
+ const old=new Map(previous.map(x=>[x.chave,x]));
+ return next.map(issue=>{
+   const prior=old.get(issue.chave);
+   if(prior&&prior.fingerprint===issue.fingerprint)return {...issue,status:prior.status||'aberto',responsavel:prior.responsavel||'',prazo:prior.prazo||'',motivo:prior.motivo||'',comentarios:prior.comentarios||[]};
+   return {...issue,status:'aberto',responsavel:'',prazo:'',motivo:'',comentarios:[],revisaoAlterada:Boolean(prior)};
+ });
+}
+const revision=m=>{
+ const raw=JSON.stringify((m.elementos||[]).map(e=>[e.id,e.bbox,e.bounds]));
+ let hash=2166136261;for(let i=0;i<raw.length;i++)hash=Math.imul(hash^raw.charCodeAt(i),16777619);
+ return String(m.id)+'@'+String(m.arquivo_hash||m.arquivoHash||'sem-hash')+':r'+String(m.revisao||1)+':geo'+(hash>>>0).toString(16);
+};
+export async function federarModelos(modelos,config={},services={}){
+ if(!Array.isArray(modelos)||modelos.length<2||modelos.length>12)throw new Error('Selecione ao menos dois modelos diferentes para federar.');
+ if(new Set(modelos.map(m=>m.id)).size!==modelos.length)throw new Error('O mesmo modelo não pode participar duas vezes.');
+ const mode=validarConfiguracaoFederacao(config);
+ const ordered=[...modelos].sort((a,b)=>String(a.id).localeCompare(String(b.id)));
+ const formats=[...new Set(ordered.map(formatoModeloBim))];
+ if(formats.length!==1||formats[0]==='desconhecido')throw new Error('Federação exige modelos do mesmo formato IFC ou manifesto; não misture evidências de motores.');
+ const engine=formats[0]==='ifc'?'ifcopenshell_real':'manifesto_bbox';
+ const pairs=[],clashes=[];
+ for(let i=0;i<ordered.length;i++)for(let j=i+1;j<ordered.length;j++){
+   const [a,b]=[ordered[i],ordered[j]];
+   const result=await executarAnaliseBim([a,b],{
+     analisarIfc:services.analisarIfc,
+     analisarManifestos:services.analisarManifestos||(([x,y])=>detectarConflitosBim(criarModeloBim(x),criarModeloBim(y),{modo:mode.modo,tolerancia:mode.tolerancia,afastamento:mode.afastamento})),
+     opcoes:{mode:mode.modo,tolerance:mode.tolerancia,clearance:mode.afastamento}
+   });
+   if(!result.status.startsWith('concluida_'))throw new Error('Motor não comprovou análise da federação.');
+   const pair={modelos:[a.id,b.id],formato:result.formato,proveniencia:engine,total:result.conflitos.length};pairs.push(pair);
+   for(const raw of result.conflitos){
+     const key1=String(raw.aGlobalId||raw.a_global_id||raw.indice||'');
+     const key2=String(raw.bGlobalId||raw.b_global_id||raw.indice||'');
+     const chave=[a.id,b.id,key1,key2,mode.modo].join('|');
+     const fingerprint=revision(a)+'+'+revision(b);
+     clashes.push({...raw,chave,fingerprint,modelos:[a.id,b.id],origens:[a.arquivo_nome||a.nome,b.arquivo_nome||b.nome],modo:mode.modo,proveniencia:engine});
+   }
+ }
+ return {modelos:modelos.map(m=>({id:m.id,hash:m.arquivo_hash||null,disciplina:m.disciplina,nome:m.nome})),modo:mode.modo,tolerancia:mode.tolerancia,afastamento:mode.afastamento,formato:formats[0],motor:engine,pairs,conflitos:clashes,geradoEm:new Date().toISOString()};
+}
+
+export function validarDecisaoConflito(input={}){
+ const status=String(input.status||'aberto');
+ if(!['aberto','em_revisao','resolvido','ignorado'].includes(status))throw new Error('Estado de conflito desconhecido.');
+ const responsavel=String(input.responsavel||'').trim(),motivo=String(input.motivo||'').trim();
+ if(['resolvido','ignorado'].includes(status)&&!responsavel)throw new Error('Informe responsável pela decisão.');
+ if(status==='ignorado'&&!motivo)throw new Error('Informe motivo ao ignorar o conflito.');
+ const prazo=String(input.prazo||'').trim();
+ if(prazo&&!/^\d{4}-\d{2}-\d{2}$/.test(prazo))throw new Error('Prazo deve usar AAAA-MM-DD.');
+ return {status,responsavel,prazo,motivo,comentario:String(input.comentario||'').trim().slice(0,2000)};
+}
+
+export function compararRevisoesConflitos(anteriores=[],atuais=[]){
+ const before=new Map(anteriores.map(c=>[c.chave,c]));
+ const after=new Map(atuais.map(c=>[c.chave,c]));
+ return {
+  novos:atuais.filter(c=>!before.has(c.chave)),
+  persistentes:atuais.filter(c=>before.has(c.chave)&&before.get(c.chave).fingerprint===c.fingerprint),
+  reaparecidos:atuais.filter(c=>before.has(c.chave)&&before.get(c.chave).fingerprint!==c.fingerprint),
+  naoObservados:anteriores.filter(c=>!after.has(c.chave)).map(c=>({...c,observacao:'Não observado na nova análise; não é resolução aprovada'}))
+ };
+}

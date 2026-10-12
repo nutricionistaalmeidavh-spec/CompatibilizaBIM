@@ -2,6 +2,8 @@
 import React from 'react';
 import {checkImportFile,readCbimElements,contentFingerprint} from './importContract.js';
 import { LinkedBimPanel } from './LinkedBimPanel';
+import { BimCoordinationPanel } from './BimCoordinationPanel';
+import { Bim4D5DPanel } from './Bim4D5DPanel';
 import {listarProjetosBim,buscarProjetoBim,criarProjetoBimPersistido,salvarModeloBimProjeto,salvarAnaliseBimProjeto,atualizarConflitoBimProjeto} from '../../../../storage/sqliteStore.js';
 import {criarModeloBim,detectarConflitosBim,validarCabecalhoIfc} from '../../../../src/bim/compatibility.js';
 import {executarAnaliseBim,formatoModeloBim} from '../../../../src/bim/p0Workflow.js';
@@ -63,18 +65,6 @@ export function BimPage({db,obraId,version,onChange,studyId='',onSelectStudy}:Pr
         : 'Modelo CBIM JSON incorporado e preservado no SQLite; verifique as classificações antes de analisar.');
     });
   };
-  const analyze=()=>run(async()=>{
-    if(!project||!left||!right||left===right)throw Error('Selecione dois modelos diferentes.');
-    const a=models.find((m:any)=>m.id===left),b=models.find((m:any)=>m.id===right);
-    if(!a||!b)throw Error('Modelo não encontrado.');
-    const result=await executarAnaliseBim([a,b],{
-      analisarIfc:runtime()?.clashBase64,
-      analisarManifestos:([x,y]:any[])=>detectarConflitosBim(criarModeloBim(x),criarModeloBim(y),{modo:'intersection',afastamento:.05}),
-      opcoes:{mode:'intersection',clearance:.05,tolerance:.002}
-    });
-    salvarAnaliseBimProjeto(db,project.id,{modeloAId:a.id,modeloBId:b.id,modo:'intersection',conflitos:result.conflitos,status:result.status});
-    setMessage('Análise '+result.formato+' concluída: '+result.conflitos.length+' conflitos.');
-  });
   const view=()=>run(async()=>{
     if(!project||!models.length)throw Error('Importe pelo menos um modelo.');
     if(models.some((m:any)=>formatoModeloBim(m)==='ifc')){
@@ -110,9 +100,6 @@ export function BimPage({db,obraId,version,onChange,studyId='',onSelectStudy}:Pr
     await runtime().openStudio(path);
     setMessage('Projeto de revisão aberto.');
   });
-  const changeClash=(a:string,i:number,status:string)=>{
-    try{atualizarConflitoBimProjeto(db,a,i,status);onChange();}catch(e:any){setMessage(e.message);}
-  };
   return <section className="cbim-react-section"><h1>Compatibilização BIM</h1><p>Importação, conversão e análise usam os contratos canônicos; resultado pendente não é apresentado como análise concluída.</p>
     <div className="cbim-react-toolbar"><label>Estudo BIM<select value={selected} onChange={e=>{setId(e.target.value);onSelectStudy?.(e.target.value);}}><option value="">Selecione estudo</option>{projects.map((p:any)=><option key={p.id} value={p.id}>{p.nome}</option>)}</select></label><button onClick={()=>setCreating(v=>!v)}>+ Estudo</button></div>
     {creating&&<form className="cbim-react-panel cbim-react-form-grid" onSubmit={create}><label>Nome<input name="name" required/></label><label>Descrição<input name="description"/></label>{obraId&&<label><input type="checkbox" name="linked"/> Vincular à obra atual</label>}<button type="submit">Criar estudo</button></form>}
@@ -121,15 +108,11 @@ export function BimPage({db,obraId,version,onChange,studyId='',onSelectStudy}:Pr
         <label>Importar IFC / CBIM JSON<input disabled={busy} type="file" accept=".ifc,.json,.cbim.json" onChange={e=>{void importFile(e.target.files?.[0]||null);e.target.value='';}}/></label>
         <label>Converter CAD (DWG / DXF)<input disabled={busy} type="file" accept=".dwg,.dxf" onChange={e=>{void convert(e.target.files?.[0]||null);e.target.value='';}}/></label><label>DXF sem unidade<select value={unitlessScale} disabled={busy} onChange={e=>setUnitlessScale(e.target.value)}><option value="1">Metros (m)</option><option value="0.01">Centímetros (cm)</option><option value="0.001">Milímetros (mm)</option></select></label></div><p className="studio-muted">Selecione a disciplina antes da importação. DWG usa ACadSharp; DXF usa ezdxf e respeita unidades INSUNITS. A escala acima só se aplica quando não há unidade declarada. XREFs ausentes são diagnosticados; o original e o relatório ficam no job local.</p>
       {models.map((m:any)=><p key={m.id}>{m.nome} · {m.disciplina} · {m.elementos?.length||0} elementos</p>)}
-      <div className="cbim-react-form-grid"><label>Modelo A<select value={left} onChange={e=>setLeft(e.target.value)}>{models.map((m:any)=><option value={m.id} key={m.id}>{m.nome}</option>)}</select></label><label>Modelo B<select value={right} onChange={e=>setRight(e.target.value)}>{models.map((m:any)=><option value={m.id} key={m.id}>{m.nome}</option>)}</select></label></div>
-      <div className="cbim-react-toolbar"><button disabled={busy||models.length<2} onClick={analyze}>Analisar interferências</button><button disabled={busy||!models.length} onClick={view}>Gerar visualizador</button></div>
+      <div className="cbim-react-toolbar"><button disabled={busy||!models.length} onClick={view}>Gerar visualizador geométrico</button></div>
     </div>
-    <div className="cbim-react-panel"><h2>Conflitos e decisões</h2><label>Estado<select value={filter} onChange={e=>setFilter(e.target.value)}><option value="todos">Todos</option><option value="aberto">Abertos</option><option value="resolvido">Resolvidos</option><option value="ignorado">Ignorados</option></select></label>
-      {!analyses.length&&<p>Não analisado. Nenhuma conclusão de ausência de conflitos foi emitida.</p>}
-      {analyses.length>0&&!['concluida_ifc','concluida_manifesto'].includes(analyses[0].status)&&<p>Análise antiga sem rastreabilidade: reprocesse para confirmar.</p>}
-      {clashes.filter((c:any)=>filter==='todos'||c.status===filter).map((c:any)=><article key={c.analiseId+'-'+c.indice}><b>#{c.indice} · {c.aGlobalId||'A'} × {c.bGlobalId||'B'}</b><small>{c.status||'aberto'}</small>
-        <div className="cbim-react-toolbar"><button onClick={()=>changeClash(c.analiseId,c.indice,'resolvido')}>Resolver</button><button onClick={()=>changeClash(c.analiseId,c.indice,'ignorado')}>Ignorar</button><button onClick={()=>changeClash(c.analiseId,c.indice,'aberto')}>Reabrir</button></div></article>)}
-    </div></>}
+    <BimCoordinationPanel db={db} project={project} onChange={onChange}/>
+    <Bim4D5DPanel project={project}/>
+    </>}
     <div className="cbim-react-panel"><h2>Revisão e histórico CBIM</h2><p>WorkspaceStore e histórico permanecem no local canônico, sem migração de arquivos.</p>
       {workspaces.map((w:any)=><article key={w.path}><b>{w.project_name}</b><small>{w.job} · revisão {w.revision} · {w.updated_at}</small><button disabled={busy} onClick={()=>review(w.path)}>Abrir revisão React</button></article>)}
       {!workspaces.length&&<p>Nenhum workspace convertido encontrado.</p>}

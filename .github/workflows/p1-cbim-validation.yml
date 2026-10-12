@@ -32,6 +32,10 @@ jobs:
         run: |
           python -m pytest -q integrations/cbim-2.1.0/compatibilizabim-core/tests
           python -m pytest -q integrations/cbim-2.1.0/cbim-sdk/python/tests
+      - name: P2 operational regressions (4D, 5D and measured deltas)
+        env:
+          PYTHONPATH: modules
+        run: python -m pytest -q modules/compatibilizabim/tests/test_p2_workflow.py
       - name: Real DWG comparator unit tests
         run: python -m unittest discover -s test -p 'test_p1_regression_report.py'
 
@@ -120,6 +124,16 @@ jobs:
         shell: pwsh
         run: |
           .\scripts\build-p1-windows.ps1
+      - name: P2 packaged runtime 4D/5D smoke without local installation
+        shell: pwsh
+        run: |
+          $r=Join-Path (Get-Location) 'runtime_min/python/cbim-runtime.exe'
+          $study=Join-Path $env:RUNNER_TEMP 'cbim-p2-study'
+          New-Item -Force -ItemType Directory -Path $study | Out-Null
+          $request=Join-Path $study 'request.json'
+          '{}' | Set-Content -LiteralPath $request -Encoding ascii
+          & $r p2 $study status --request $request
+          if ($LASTEXITCODE -ne 0) {throw 'P2 Python runtime did not load in packaged Windows executable'}
       - name: Download Linux-verified samples into Windows
         uses: actions/download-artifact@v4
         with:

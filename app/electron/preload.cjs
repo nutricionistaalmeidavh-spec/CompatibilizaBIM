@@ -13,6 +13,7 @@ if (trustedApp) {
     saveSync: (base64) => ipcRenderer.sendSync('engineering-db:save-sync', base64),
     path: () => ipcRenderer.invoke('engineering-db:path'),
     bim: {
+      p2: (request) => ipcRenderer.invoke('bim:p2', request),
       generateViewer: (files, output) => ipcRenderer.invoke('bim:generate-viewer', files, output),
       generateViewerBase64: (files) => ipcRenderer.invoke('bim:generate-viewer-base64', files),
       clashBase64: (files, options) => ipcRenderer.invoke('bim:clash-base64', files, options),

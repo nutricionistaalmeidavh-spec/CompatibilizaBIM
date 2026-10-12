@@ -50,6 +50,10 @@ jobs:
         run: python -m compileall -q integrations/cbim-2.1.0/compatibilizabim-core/src integrations/cbim-2.1.0/cbim-sdk/python/src
       - name: Core regression suite
         run: python -m pytest -q integrations/cbim-2.1.0/compatibilizabim-core/tests
+      - name: P2 4D/5D/BCF regression on canonical Python modules
+        env:
+          PYTHONPATH: modules
+        run: python -m pytest -q modules/compatibilizabim/tests/test_p2_workflow.py
       - name: SDK regression suite
         run: python -m pytest -q integrations/cbim-2.1.0/cbim-sdk/python/tests
   lfs-backup-samples:

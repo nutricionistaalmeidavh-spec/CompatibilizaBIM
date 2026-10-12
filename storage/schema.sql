@@ -194,6 +194,8 @@ CREATE TABLE IF NOT EXISTS bim_analises (
   afastamento REAL NOT NULL DEFAULT 0.05,
   status TEXT NOT NULL DEFAULT 'concluida',
   conflitos_json TEXT NOT NULL DEFAULT '[]',
+  modelos_json TEXT NOT NULL DEFAULT '[]',
+  proveniencia TEXT NOT NULL DEFAULT 'desconhecida',
   criado_em TEXT NOT NULL
 );
 
@@ -240,6 +242,18 @@ CREATE TABLE IF NOT EXISTS bim_analises_avulsas (
   conflitos_json TEXT NOT NULL DEFAULT '[]',
   criado_em TEXT NOT NULL
 );
+
+CREATE TABLE IF NOT EXISTS bim_issue_events (
+  id TEXT PRIMARY KEY,
+  analise_id TEXT NOT NULL REFERENCES bim_analises_avulsas(id) ON DELETE CASCADE,
+  conflito_chave TEXT NOT NULL,
+  status TEXT NOT NULL,
+  responsavel TEXT,
+  motivo TEXT,
+  comentario TEXT,
+  timestamp TEXT NOT NULL
+);
+CREATE INDEX IF NOT EXISTS idx_bim_issue_events_analysis ON bim_issue_events(analise_id,timestamp DESC);
 
 CREATE INDEX IF NOT EXISTS idx_bim_projetos_atualizado ON bim_projetos(atualizado_em DESC);
 CREATE INDEX IF NOT EXISTS idx_bim_modelos_avulsos_projeto ON bim_modelos_avulsos(projeto_id, atualizado_em DESC);
