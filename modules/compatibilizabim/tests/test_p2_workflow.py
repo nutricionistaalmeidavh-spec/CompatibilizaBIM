@@ -61,3 +61,34 @@ def test_p2_no_untrusted_pricebook_or_out_of_model_guid(tmp_path):
 def test_p2_does_not_promote_partial_qto_as_verified(tmp_path):
     svc=P2Service(tmp_path)
     with pytest.raises(ValueError,match='quantitativos'):svc.execute('budget',{})
+
+def test_p2_bcf_export_uses_actual_guid_and_open_issue_metadata(tmp_path):
+    import base64,io,zipfile
+    svc=P2Service(tmp_path)
+    result=svc.execute('bcf',{'projectId':'study-a','author':'Equipe BIM','issues':[{
+      'aGlobalId':'0123456789012345678901','bGlobalId':'1234567890123456789012',
+      'aClasse':'IfcPipeSegment','bClasse':'IfcWall','modo':'intersection',
+      'ponto':[1,2,3],'distanciaM':0.01,'origens':['HID.ifc','ARQ.ifc'],
+      'status':'em_revisao','responsavel':'Coordenação'
+    }]})
+    assert result['format']=='BCF-3.0'
+    assert result['issue_count']==1
+    with zipfile.ZipFile(io.BytesIO(base64.b64decode(result['base64']))) as arc:
+        assert 'bcf.version' in arc.namelist()
+        assert any(x.endswith('/markup.bcf') for x in arc.namelist())
+
+def test_p2_cyclic_import_rolls_back_without_losing_existing_schedule(tmp_path):
+    svc=P2Service(tmp_path)
+    svc.execute('activity',{'activity_id':'BASE','name':'Base','start_date':'2026-10-01','end_date':'2026-10-07'})
+    csv='activity_id,name,start_date,end_date,predecessors\nA,Um,2026-10-01,2026-10-02,B\nB,Dois,2026-10-03,2026-10-04,A\n'
+    with pytest.raises(ValueError,match='cíclicas'):
+        svc.execute('import_schedule',{'csv':csv})
+    assert [a['activity_id'] for a in svc.execute('status',{})['activities']]==['BASE']
+
+def test_p2_rejects_same_guid_linked_to_multiple_tasks(tmp_path):
+    svc=P2Service(tmp_path);svc.put_fixture_quantities(quantity_fixture())
+    for id in ('A','B'):
+        svc.execute('activity',{'activity_id':id,'name':id,'start_date':'2026-10-01','end_date':'2026-10-30'})
+    svc.execute('link',{'activity_id':'A','guids':['GUID-1']})
+    with pytest.raises(ValueError,match='já vinculado'):
+        svc.execute('link',{'activity_id':'B','guids':['GUID-1']})
