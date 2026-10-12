@@ -60,7 +60,7 @@ const {chromium}=require('../../app/node_modules/playwright');
     await page.getByRole('button',{name:'Cronograma 4D'}).click();
     await page.getByRole('heading',{name:'Cronograma de atividades'}).waitFor();
     await screenshots('p2-cronograma');
-    await page.getByRole('button',{name:'Medições'}).click();
+    await page.getByRole('button',{name:'Medições',exact:true}).click();
     await page.getByRole('heading',{name:/Medição física cumulativa/}).waitFor();
     await screenshots('p2-medicoes');
 
