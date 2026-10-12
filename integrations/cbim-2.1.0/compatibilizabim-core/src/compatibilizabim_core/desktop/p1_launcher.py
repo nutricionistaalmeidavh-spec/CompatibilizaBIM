@@ -24,8 +24,8 @@ def prepare_workspace(
     if discipline not in {'architecture', 'structure', 'hydraulic', 'fire'}:
         raise ValueError('Disciplina desconhecida')
     source = Path(source_path)
-    if not source.is_file() or source.suffix.lower() != '.dwg':
-        raise ValueError('Arquivo DWG original não encontrado')
+    if not source.is_file() or source.suffix.lower() not in {'.dwg', '.dxf'}:
+        raise ValueError('Arquivo CAD DWG/DXF original não encontrado')
     project = CBIMProject.model_validate_json(Path(project_path).read_text(encoding='utf-8'))
     plan = build_import_plan(
         [str(source)],
