@@ -1,3 +1,6 @@
+import {CanonicalGantt} from './CanonicalGantt';
+import {QuantitiesGrid} from './QuantitiesGrid';
+import {measurementSelection} from '../../../../src/bim/visualizationAdapters.js';
 import React from 'react';
 type Props={project:any};
 const bridge=()=> (globalThis as any).engineeringStorage?.bim?.p2;
@@ -50,8 +53,9 @@ export function Bim4D5DPanel({project}:Props){
    <p>{models.length} IFC(s) disponíveis · {overview?.quantities?.record_count||0} registro(s) persistidos.</p>
    <button disabled={busy||!models.length||!bridge()} onClick={()=>void run('quantities',{models:models.map((m:any)=>({id:m.id,name:m.arquivo_nome,discipline:m.disciplina,base64:m.arquivo_base64})),allowGeometryFallback:false},'Quantitativos IFC/QTO verificados, sem fallback geométrico.')}>Extrair QTO do IFC</button>
    <p className="studio-muted">A ausência de QTO real não gera valores fictícios. Detalhes permanecem no arquivo quantities.json do estudo.</p>
-   {records.length>0&&<><div className="cbim-react-toolbar"><button disabled={busy} onClick={()=>void downloadReport('export_quantities','csv')}>Exportar QTO CSV</button><button disabled={busy} onClick={()=>void downloadReport('export_quantities','json')}>Exportar QTO JSON</button></div><div className="p2-scroll"><table><thead><tr><th>GUID</th><th>Classe</th><th>Pavimento</th><th>Quantidade</th><th>Fonte</th></tr></thead><tbody>{records.slice(0,120).map((r:any,i:number)=><tr key={i}><td><code>{r.global_id}</code></td><td>{r.ifc_class}</td><td>{r.storey||'—'}</td><td>{Number(r.value).toLocaleString('pt-BR')} {r.unit}</td><td>{r.source}</td></tr>)}</tbody></table></div></>}
-   {quant?.truncated&&<p>Prévia limitada; o relatório completo permanece armazenado no disco.</p>}
+   {records.length>0&&<><div className="cbim-react-toolbar"><button disabled={busy} onClick={()=>void downloadReport('export_quantities','csv')}>Exportar QTO CSV</button><button disabled={busy} onClick={()=>void downloadReport('export_quantities','json')}>Exportar QTO JSON</button></div><QuantitiesGrid mode="qto" records={records} onPick={row=>{const picked=measurementSelection(row);if(!picked){setError('Seleção sem QTO IFC válido. Corrija a origem para usar em medição.');return;}setGuid(picked.guid);setQuantity(picked.quantity);setError('');setNotice('Grandeza IFC selecionada para medição. Abra a aba Medições para continuar.');}}/></>}
+   {quant?.truncated&&<p role="status">Prévia limitada aos primeiros {records.length} de {quant.total} registros. Exporte QTO CSV/JSON para obter o conjunto completo sem perda de registros.</p>}
+   {guid&&quantity&&<p role="status">Grandeza selecionada: {guid} · {quantity}. Continue na aba Medições, após confirmar a versão IFC.</p>}
    <h3>2. Tabela de composições e custos locais</h3>
    <label>Catálogo JSON com fonte, competência, BDI, composições e mapeamentos IFC
     <input type="file" accept=".json" disabled={busy||!bridge()} onChange={e=>{const f=e.target.files?.[0];e.target.value='';if(f)void f.text().then(s=>run('pricebook',{book:JSON.parse(s)},'Tabela de preços validada com origem e competência.')).catch(err=>setError(err.message));}}/>
@@ -61,7 +65,7 @@ export function Bim4D5DPanel({project}:Props){
    <button disabled={busy||!overview?.quantities||!overview?.pricebook} onClick={()=>void run('budget',{},'Orçamento 5D calculado; examine grupos não precificados.')}>Calcular orçamento</button>
    {budget&&<><div className="cbim-react-toolbar"><button disabled={busy} onClick={()=>void downloadReport('export_budget','csv')}>Exportar orçamento CSV</button><button disabled={busy} onClick={()=>void downloadReport('export_budget','json')}>Exportar JSON</button><button disabled={busy} onClick={()=>void downloadReport('export_budget','pdf')}>Exportar PDF</button></div><div className="p2-kpis"><strong>{money(budget.total_cost)}<small>Subtotal precificado</small></strong><strong>{budget.matched_group_count}<small>Grupos precificados</small></strong><strong>{budget.unmatched_group_count}<small>Sem composição</small></strong></div><p>Base: {budget.source} · {budget.reference_date} · BDI {budget.bdi_percent}%</p>
     {budget.unmatched_group_count>0&&<p role="status">Orçamento parcial. Grupos não precificados não compõem o subtotal.</p>}
-    <div className="p2-scroll"><table><thead><tr><th>Código</th><th>Serviço</th><th>Quantidade</th><th>Unidade</th><th>Unitário</th><th>Total</th></tr></thead><tbody>{(budget.lines||[]).slice(0,120).map((r:any)=><tr key={r.line_id}><td>{r.composition_code}</td><td>{r.description}</td><td>{r.quantity}</td><td>{r.unit}</td><td>{money(r.final_unit_cost)}</td><td>{money(r.total_cost)}</td></tr>)}</tbody></table></div>
+    <QuantitiesGrid mode="budget" records={budget.lines||[]}/>
    </>}
   </>}
   {tab==='4d'&&<>
@@ -72,6 +76,7 @@ export function Bim4D5DPanel({project}:Props){
    <form className="cbim-react-form-grid" onSubmit={e=>{e.preventDefault();const f=new FormData(e.currentTarget);void run('activity',{activity_id:f.get('id'),name:f.get('name'),start_date:f.get('start'),end_date:f.get('end'),composition_code:f.get('composition')},'Atividade criada.');}}>
     <label>Código<input name="id" required/></label><label>Atividade<input name="name" required/></label><label>Início<input type="date" name="start" required/></label><label>Fim<input type="date" name="end" required/></label><label>Composição (opcional)<input name="composition"/></label><button disabled={busy||!bridge()}>Adicionar</button>
    </form>
+   <CanonicalGantt activities={activities}/>
    <div className="p2-scroll"><table><thead><tr><th>Atividade</th><th>Início</th><th>Fim</th><th>Real</th><th>GUIDs</th></tr></thead><tbody>{activities.map((a:any)=><tr key={a.activity_id}><td>{a.activity_id} · {a.name}</td><td>{a.start_date}</td><td>{a.end_date}</td><td>{a.actual_progress}%</td><td>{(a.linked_guids||[]).length}</td></tr>)}</tbody></table></div>
    <h3>Vincular GUID e registrar progresso</h3>
    <div className="cbim-react-form-grid">

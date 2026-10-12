@@ -130,3 +130,12 @@
 .cbim-quality-warning{border-left:4px solid #bd811e;padding:14px 18px;background:#fff8e6;border-radius:6px;line-height:1.5}
 .cbim-quality .ui-status{flex-shrink:0;white-space:nowrap}
 @media(max-width:620px){.cbim-quality-findings article{flex-wrap:wrap}.cbim-quality-findings article>div{min-width:100%;order:2}.cbim-quality-findings article>.ui-status{margin-left:auto}.cbim-quality-gates article{flex-wrap:wrap}.cbim-quality-gates article>div{min-width:100%}}
+
+/* Canonical 4D/5D presentations: no duplicate workspace state. */
+.cbim-canonical-gantt{margin:18px 0 20px;min-width:0}
+.cbim-canonical-gantt h4{font-size:1rem;margin:0 0 6px}
+.cbim-gantt-scroll{max-width:100%;overflow:auto;border:1px solid #cbd5e1;background:#fff;border-radius:10px;padding:12px}
+.cbim-gantt-host{min-width:740px;min-height:200px}
+.cbim-quantities-grid{margin:14px 0;min-width:0}
+.cbim-quantities-grid .gdg-wmyid2{max-width:100%}
+.cbim-quantities-grid p{margin-bottom:8px}
