@@ -92,3 +92,15 @@ def test_p2_rejects_same_guid_linked_to_multiple_tasks(tmp_path):
     svc.execute('link',{'activity_id':'A','guids':['GUID-1']})
     with pytest.raises(ValueError,match='já vinculado'):
         svc.execute('link',{'activity_id':'B','guids':['GUID-1']})
+
+def test_p2_exports_only_actual_quantity_and_budget_reports(tmp_path):
+    import base64
+    svc=P2Service(tmp_path);svc.put_fixture_quantities(quantity_fixture())
+    book=catalog();svc.execute('pricebook',{'book':book});svc.execute('budget',{})
+    data=svc.execute('export_quantities',{'format':'csv'})
+    assert data['name']=='quantities.csv'
+    assert b'GUID-1' in base64.b64decode(data['base64'])
+    report=svc.execute('export_budget',{'format':'json'})
+    parsed=json.loads(base64.b64decode(report['base64']))
+    assert parsed['total_cost']==pytest.approx(55)
+    assert parsed['source']==book['source']
