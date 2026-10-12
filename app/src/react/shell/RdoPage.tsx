@@ -101,7 +101,7 @@ export function RdoPage({db,obraId,onChange}:{db:any;obraId:string|null;onChange
       Ocorrências:(r.ocorrencias||[]).map((x:any)=>x.descricao),
       Impedimentos:(r.impedimentos||[]).map((x:any)=>x.descricao),
       Observações:[r.observacoes||'-'],
-      'Evidências fotográficas':(r.fotos||[]).map((p:any,i:number)=>'Foto '+(i+1)+' · '+(p.legenda||'Sem legenda')+' · '+(p.local||'Local não informado')+' · imagem preservada no banco local (anexo visual não embutido no PDF)'),
+      'Evidências fotográficas':(r.fotos||[]).map((p:any,i:number)=>'Foto '+(i+1)+' · '+(p.legenda||'Sem legenda')+' · '+(p.local||'Local não informado')+' · original preservado no banco local; fotos locais anexas nas páginas seguintes'),
       Aprovação:['Aprovado por: '+(r.aprovado_por||'pendente'),'Assinatura: _________________________']
     },annexes),'RDO-'+work.codigo+'-'+r.data+'.pdf');
     }catch(e:any){setError('Falha ao gerar PDF com imagens: '+(e.message||String(e)));}
