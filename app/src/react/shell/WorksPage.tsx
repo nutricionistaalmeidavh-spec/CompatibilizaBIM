@@ -1,4 +1,5 @@
 import React from 'react';
+import {WorkCloseoutPanel} from './WorkCloseoutPanel';
 import {filterScopedRecords} from '../../../../src/domain/workspaceScope.js';
 import {
   buscarObra, criarObraPersistida, listarObras, salvarEtapa, salvarPendencia,
@@ -99,6 +100,7 @@ export function WorksPage({db,obraId,scope={},selectWork,onChange,onNavigate}:Pr
     </form>}
     <div className="cbim-react-card-grid">{works.map((w:any)=><button key={w.id} className={obraId===w.id?'selected':''} onClick={()=>selectWork(w.id)}><b>{w.nome}</b><small>{w.codigo} · {w.status} · {Math.round(w.percentual_concluido||0)}% concluído</small><small>{w.rdos_total} RDO · {w.pendencias_abertas} pendências</small></button>)}</div>
     {work&&<>
+      <WorkCloseoutPanel db={db} work={work} onNavigate={onNavigate}/>
       <div className="cbim-react-metrics"><article>Etapas: {work.etapas?.length||0}</article><article>RDO: {work.rdos?.length||0}</article><article>Pendências abertas: {work.pendencias?.filter((p:any)=>p.status!=='resolvida').length||0}</article><article>Custo dos materiais: {money(materialsCost)}</article></div>
       <div className="cbim-react-panel"><h2>{work.nome} · Obra 360</h2><p>{work.codigo} · {work.responsavel_tecnico||'Sem responsável técnico'} · {work.status}</p></div>
       <form className="cbim-react-panel" onSubmit={e=>{void add(e);}}>
