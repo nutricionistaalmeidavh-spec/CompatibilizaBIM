@@ -288,7 +288,7 @@ export function listarModelosBim(db, obraId) { return linhas(db, 'SELECT * FROM 
 
 export function salvarAnaliseBim(db, obraId, dados) {
   const id = dados.id ?? `bimanalise_${Date.now().toString(36)}_${Math.random().toString(36).slice(2, 6)}`;
-  db.run('INSERT INTO bim_analises (id,obra_id,modelo_a_id,modelo_b_id,modo,tolerancia,afastamento,status,conflitos_json,criado_em) VALUES (?,?,?,?,?,?,?,?,?,?)', [id, obraId, dados.modeloAId, dados.modeloBId, dados.modo ?? 'intersection', Number(dados.tolerancia ?? 0.002), Number(dados.afastamento ?? 0.05), dados.status ?? 'concluida', JSON.stringify(dados.conflitos ?? []), new Date().toISOString()]);
+  db.run('INSERT INTO bim_analises (id,obra_id,modelo_a_id,modelo_b_id,modo,tolerancia,afastamento,status,conflitos_json,modelos_json,proveniencia,criado_em) VALUES (?,?,?,?,?,?,?,?,?,?,?,?)', [id, obraId, dados.modeloAId, dados.modeloBId, dados.modo ?? 'intersection', Number(dados.tolerancia ?? 0.002), Number(dados.afastamento ?? 0.05), dados.status ?? 'concluida', JSON.stringify(dados.conflitos ?? []),JSON.stringify(dados.modelos||[dados.modeloAId,dados.modeloBId]),dados.proveniencia||'desconhecida', new Date().toISOString()]);
   registrarHistorico(db, obraId, 'bim_analise', id, 'executada', { modo: dados.modo, conflitos: (dados.conflitos ?? []).length }); salvarBanco(db); return id;
 }
 
@@ -337,6 +337,32 @@ export function salvarAnaliseBimProjeto(db, projetoId, dados) {
   const id = dados.id ?? `bimanalisav_${Date.now().toString(36)}_${Math.random().toString(36).slice(2, 6)}`;
   db.run('INSERT INTO bim_analises_avulsas (id,projeto_id,modelo_a_id,modelo_b_id,modo,tolerancia,afastamento,status,conflitos_json,criado_em) VALUES (?,?,?,?,?,?,?,?,?,?)', [id, projetoId, dados.modeloAId, dados.modeloBId, dados.modo ?? 'intersection', Number(dados.tolerancia ?? 0.002), Number(dados.afastamento ?? 0.05), dados.status ?? 'concluida', JSON.stringify(dados.conflitos ?? []), new Date().toISOString()]);
   salvarBanco(db); return id;
+}
+
+export function registrarDecisaoConflitoBimProjeto(db, analiseId, chave, data) {
+  const row=linhas(db,'SELECT conflitos_json FROM bim_analises_avulsas WHERE id = ?',[analiseId])[0];
+  if(!row)throw new Error('Análise de coordenação não encontrada.');
+  const conflicts=JSON.parse(row.conflitos_json||'[]');
+  const conflict=conflicts.find(c=>c.chave===chave);
+  if(!conflict)throw new Error('Conflito não encontrado na análise.');
+  const status=String(data.status||''),responsavel=String(data.responsavel||'').trim(),motivo=String(data.motivo||'').trim();
+  if(!['aberto','em_revisao','resolvido','ignorado'].includes(status))throw new Error('Estado inválido');
+  if(['resolvido','ignorado'].includes(status)&&!responsavel)throw new Error('Responsável obrigatório');
+  if(status==='ignorado'&&!motivo)throw new Error('Motivo obrigatório');
+  const comentario=String(data.comentario||'').trim().slice(0,2000),timestamp=new Date().toISOString();
+  Object.assign(conflict,{status,responsavel,prazo:data.prazo||'',motivo});
+  if(comentario)conflict.comentarios=[...(conflict.comentarios||[]),{autor:responsavel||'Equipe local',texto:comentario,em:timestamp}];
+  db.run('BEGIN TRANSACTION');
+  try{
+    db.run('UPDATE bim_analises_avulsas SET conflitos_json = ? WHERE id = ?',[JSON.stringify(conflicts),analiseId]);
+    db.run('INSERT INTO bim_issue_events (id,analise_id,conflito_chave,status,responsavel,motivo,comentario,timestamp) VALUES (?,?,?,?,?,?,?,?)',
+      ['evt_'+Date.now().toString(36)+'_'+Math.random().toString(36).slice(2,8),analiseId,chave,status,responsavel,motivo,comentario,timestamp]);
+    db.run('COMMIT');
+  }catch(error){db.run('ROLLBACK');throw error;}
+  salvarBanco(db);
+}
+export function listarEventosConflitosBimProjeto(db,analiseId) {
+ return linhas(db,'SELECT * FROM bim_issue_events WHERE analise_id = ? ORDER BY timestamp DESC',[analiseId]);
 }
 
 export function atualizarConflitosBimProjeto(db, analiseId, conflitos = []) {
