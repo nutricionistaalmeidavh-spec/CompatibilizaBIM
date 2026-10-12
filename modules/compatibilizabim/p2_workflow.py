@@ -94,6 +94,9 @@ class P2Service:
                 if prior!=row.source_file:raise ValueError('GUID IFC repetido em fontes distintas: '+row.global_id+'. Corrija a federação antes de quantificar.')
             report=quantity_report(records,model_files=[p.name for p in paths])
             report['revision_sha256']={p.name:hashlib.sha256(p.read_bytes()).hexdigest() for p in paths}
+            if self.qpath.exists() and _read(self.qpath).get('revision_sha256')!=report['revision_sha256']:
+                if self.measure.store.load():
+                    raise ValueError('Versão IFC alterada com medições existentes. Preserve o estudo e crie uma revisão de medição antes de reextrair.')
             write_quantity_json(self.qpath,report)
             return {'record_count':report['record_count'],'group_count':report['group_count'],
                     'records':report.get('records',[])[:600],'groups':report.get('groups',[])[:600],
@@ -127,10 +130,15 @@ class P2Service:
         if action=='import_schedule':
             raw=str(params.get('csv') or '')
             if not raw or len(raw)>2_000_000:raise ValueError('CSV de cronograma vazio ou maior que 2 MB')
-            with tempfile.TemporaryDirectory(prefix='p2-csv-',dir=self.root) as d:
-                p=Path(d)/'schedule.csv';p.write_text(raw,encoding='utf-8')
-                result=self.schedule.import_csv(p)
-            self._check_schedule()
+            previous=self.schedule.store.load()
+            try:
+                with tempfile.TemporaryDirectory(prefix='p2-csv-',dir=self.root) as d:
+                    p=Path(d)/'schedule.csv';p.write_text(raw,encoding='utf-8')
+                    result=self.schedule.import_csv(p)
+                self._check_schedule()
+            except Exception:
+                self.schedule.store.save(previous)
+                raise
             return result
         if action=='activity':
             a=self.schedule.add_activity(str(params.get('activity_id','')),str(params.get('name','')),
@@ -142,6 +150,9 @@ class P2Service:
             guids=list(params.get('guids') or [])
             if not guids or not set(guids).issubset(self._known_guids()):
                 raise ValueError('GUID não encontrado nos quantitativos IFC deste estudo; o vínculo não foi gravado.')
+            for a in self.schedule.store.load().activities:
+                if a.activity_id != str(params.get('activity_id','')) and set(guids).intersection(a.linked_guids):
+                    raise ValueError('GUID já vinculado à atividade '+a.activity_id+'; um objeto não pode ter dois estados físicos simultâneos.')
             a=self.schedule.link_elements(str(params.get('activity_id','')),guids,
                   replace_existing=bool(params.get('replace',False)))
             return {'activity_id':a.activity_id,'linked_guids':list(a.linked_guids)}
