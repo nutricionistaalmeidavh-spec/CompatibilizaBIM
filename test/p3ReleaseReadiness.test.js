@@ -1,7 +1,12 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {createEngineeringDiagnostic,createPilotEvidenceChecklist,createSanitizedReleaseExport} from '../src/domain/p3ReleaseReadiness.js';
-import {evaluateQaManifest} from '../scripts/p3-release-check.cjs';
+import qaChecks from '../scripts/p3-release-check.cjs';
+import {mkdtempSync,mkdirSync,writeFileSync,rmSync,readFileSync} from 'node:fs';
+import {tmpdir} from 'node:os';
+import {join} from 'node:path';
+import {createHash} from 'node:crypto';
+const {evaluateQaManifest,verifyQaArtifacts}=qaChecks;
 import {CALCULADORAS} from '../app/src/calculatorCatalog.js';
 const work={
  id:'obra-secret-A',nome:'CLIENT-SECRET-DO-NOT-EXPORT',codigo:'JOB-HIDDEN',
@@ -67,4 +72,38 @@ test('P3 missing or corrupt QA manifest is rejected; a valid QA manifest never m
  assert.equal(evaluateQaManifest({...sample,scope:'COMMERCIALLY CERTIFIED'}).qaManifestValid,false);
  assert.equal(evaluateQaManifest({...sample,artifacts:{...sample.artifacts,runtime:{...sample.artifacts.runtime,sha256:'not-a-hash'}}}).qaManifestValid,false);
  assert.equal(evaluateQaManifest({...sample,checks:{...sample.checks,commercialPilot:'passed'}}).qaManifestValid,false);
+});
+
+test('P3 verifies real QA binary bytes and fails closed for a modified installer',()=>{
+ const dir=mkdtempSync(join(tmpdir(),'cbim-p3-'));
+ try{
+  const files={
+   installer:['app','dist-installers','QA-setup.exe'],
+   runtime:['runtime_min','python','cbim-runtime.exe'],
+   acadsharp:['runtime_min','acadsharp','CompatibilizaBIM.ACadSharpBridge.exe']
+  };
+  const artifacts={};
+  for(const [key,parts] of Object.entries(files)){
+   const path=join(dir,...parts);mkdirSync(join(dir,...parts.slice(0,-1)),{recursive:true});
+   const data=Buffer.alloc(14000,key.charCodeAt(0));writeFileSync(path,data);
+   artifacts[key]={filename:parts.at(-1),bytes:data.length,sha256:createHash('sha256').update(data).digest('hex')};
+  }
+  const manifest={manifestVersion:1,scope:'QA ONLY — not human homologated',artifacts,
+   checks:{windowsRuntimeHealth:'executed-by-build-script',realDwgIfcSmoke:'separate-windows-ci-step',humanCleanMachineInstall:'pending',commercialPilot:'pending'}};
+  const passed=verifyQaArtifacts(manifest,dir);
+  assert.equal(passed.automatedArtifactsVerified,true);
+  assert.equal(passed.commercialReady,false);
+  writeFileSync(join(dir,...files.installer),Buffer.alloc(14000,'x'));
+  const tampered=verifyQaArtifacts(manifest,dir);
+  assert.equal(tampered.automatedArtifactsVerified,false);
+  assert.match(tampered.errors.join(';'),/SHA-256/);
+ }finally{rmSync(dir,{recursive:true,force:true});}
+});
+test('P3 SQL quality projection never loads raw RDO JSON/photos or binary documents',()=>{
+ const source=readFileSync(new URL('../storage/sqliteStore.js',import.meta.url),'utf8');
+ const method=source.split('export function listarResumosQualidadeObras(db)')[1];
+ assert.ok(method,'Quality projection must remain in canonical SQLite storage');
+ assert.doesNotMatch(method,/SELECT[^\n]*dados_json/i);
+ assert.doesNotMatch(method,/SELECT[^\n]*dados_base64/i);
+ assert.match(method,/SELECT obra_id,status_aprovacao FROM rdos/);
 });
