@@ -1,7 +1,10 @@
 import React from 'react';
+import {Metric} from '../components/ui';
+import {budgetBreakdown,engineeringNumber} from '../../../../src/domain/engineeringPresentation.js';
+import {brlReais} from '../../../../src/factory/format.js';
 type Props={project:any};
 const bridge=()=> (globalThis as any).engineeringStorage?.bim?.p2;
-const money=(v:any)=>new Intl.NumberFormat('pt-BR',{style:'currency',currency:'BRL'}).format(Number(v)||0);
+const money=brlReais;
 export function Bim4D5DPanel({project}:Props){
  const [tab,setTab]=React.useState('qto'),[busy,setBusy]=React.useState(false),[error,setError]=React.useState(''),[notice,setNotice]=React.useState('');
  const [overview,setOverview]=React.useState<any>(null),[quant,setQuant]=React.useState<any>(null),[budget,setBudget]=React.useState<any>(null),[simulation,setSimulation]=React.useState<any>(null),[financial,setFinancial]=React.useState<any>(null);
@@ -16,7 +19,11 @@ export function Bim4D5DPanel({project}:Props){
    if(status.quantities)setQuant(await api('quantity_records'));
    if(status.budget)setBudget(await api('budget_report'));
  };
- React.useEffect(()=>{setQuant(null);setBudget(null);setOverview(null);setNotice('');setError('');void reload().catch((e:any)=>setError(e.message));},[project.id]);
+ React.useEffect(()=>{
+  setQuant(null);setBudget(null);setOverview(null);setSimulation(null);setFinancial(null);
+  setActivity('');setGuid('');setQuantity('');setPercent('0');setApprover('');
+  setNotice('');setError('');void reload().catch((e:any)=>setError(e.message));
+ },[project.id]);
  const run=async(action:string,params:any={},success='Dados atualizados e preservados localmente.')=>{
    setBusy(true);setError('');setNotice('');
    try{const result=await api(action,params);await reload();setNotice(success);return result;}
@@ -36,6 +43,7 @@ export function Bim4D5DPanel({project}:Props){
  const records=quant?.records||[],activities=overview?.activities||[],batches=overview?.measurements||[];
  const guidRecords=records.filter((r:any)=>r.global_id===guid&&r.source!=='geometry_fallback');
  const selected=guidRecords.find((r:any)=>r.kind+'|'+r.quantity_name===quantity);
+ const costDetails=budgetBreakdown(budget);
  return <section className="cbim-react-panel p2-workbench">
   <h2>Quantitativos 5D, cronograma 4D e medições</h2>
   <p>Motor Python único, offline. Quantidades são rastreáveis a GUID/IFC; preços vêm do catálogo local. Progresso não equivale a medição ou pagamento.</p>
@@ -59,9 +67,14 @@ export function Bim4D5DPanel({project}:Props){
    <p>{overview?.pricebook?'Fonte: '+overview.pricebook.source+' · '+overview.pricebook.reference_date:'Nenhuma tabela de preços fornecida. Nenhum valor será presumido.'}</p>
    <h3>3. Orçamento 5D</h3>
    <button disabled={busy||!overview?.quantities||!overview?.pricebook} onClick={()=>void run('budget',{},'Orçamento 5D calculado; examine grupos não precificados.')}>Calcular orçamento</button>
-   {budget&&<><div className="cbim-react-toolbar"><button disabled={busy} onClick={()=>void downloadReport('export_budget','csv')}>Exportar orçamento CSV</button><button disabled={busy} onClick={()=>void downloadReport('export_budget','json')}>Exportar JSON</button><button disabled={busy} onClick={()=>void downloadReport('export_budget','pdf')}>Exportar PDF</button></div><div className="p2-kpis"><strong>{money(budget.total_cost)}<small>Subtotal precificado</small></strong><strong>{budget.matched_group_count}<small>Grupos precificados</small></strong><strong>{budget.unmatched_group_count}<small>Sem composição</small></strong></div><p>Base: {budget.source} · {budget.reference_date} · BDI {budget.bdi_percent}%</p>
-    {budget.unmatched_group_count>0&&<p role="status">Orçamento parcial. Grupos não precificados não compõem o subtotal.</p>}
-    <div className="p2-scroll"><table><thead><tr><th>Código</th><th>Serviço</th><th>Quantidade</th><th>Unidade</th><th>Unitário</th><th>Total</th></tr></thead><tbody>{(budget.lines||[]).slice(0,120).map((r:any)=><tr key={r.line_id}><td>{r.composition_code}</td><td>{r.description}</td><td>{r.quantity}</td><td>{r.unit}</td><td>{money(r.final_unit_cost)}</td><td>{money(r.total_cost)}</td></tr>)}</tbody></table></div>
+   {budget&&<><div className="cbim-react-toolbar"><button disabled={busy} onClick={()=>void downloadReport('export_budget','csv')}>Exportar orçamento CSV</button><button disabled={busy} onClick={()=>void downloadReport('export_budget','json')}>Exportar JSON</button><button disabled={busy} onClick={()=>void downloadReport('export_budget','pdf')}>Exportar PDF</button></div><div className="cbim-closeout-metrics">
+    <Metric label="Total precificado (perdas e BDI)" value={money(budget.total_cost)} source="Somente grupos com composição válida"/>
+    <Metric label="Grupos precificados" value={String(budget.matched_group_count)} source="Correspondência QTO × composição"/>
+    <Metric label="Grupos sem composição" value={String(budget.unmatched_group_count)} source="Excluídos do total precificado"/>
+   </div><p>Fonte: {budget.source} · Competência: {budget.reference_date} · BDI: {engineeringNumber(budget.bdi_percent)}%</p>
+   {costDetails&&<p className="studio-muted" role="status">Memória do total precificado: custo-base {money(costDetails.baseCost)} + perdas {money(costDetails.wasteCost)} + BDI {money(costDetails.bdiCost)} = {money(costDetails.total)}. Referência: catálogo local do estudo.</p>}
+    {budget.unmatched_group_count>0&&<p role="status">Orçamento parcial. Grupos não precificados não compõem o total exibido.</p>}
+    <div className="p2-scroll"><table><thead><tr><th>Código</th><th>Serviço</th><th>Quantidade</th><th>Unidade</th><th>Unitário</th><th>Total</th></tr></thead><tbody>{(budget.lines||[]).slice(0,120).map((r:any)=><tr key={r.line_id}><td>{r.composition_code}</td><td>{r.description}</td><td>{engineeringNumber(r.quantity,4)}</td><td>{r.unit}</td><td>{money(r.final_unit_cost)}</td><td>{money(r.total_cost)}</td></tr>)}</tbody></table></div>
    </>}
   </>}
   {tab==='4d'&&<>

@@ -1,4 +1,5 @@
 import React from 'react';
+import {clashDistance} from '../../../../src/domain/engineeringPresentation.js';
 import {federarModelos,reconciliarConflitos,validarDecisaoConflito,compararRevisoesConflitos} from '../../../../src/bim/p2Coordination.js';
 import {salvarAnaliseBimProjeto,registrarDecisaoConflitoBimProjeto,listarEventosConflitosBimProjeto} from '../../../../storage/sqliteStore.js';
 type Props={db:any;project:any;onChange:()=>void};
@@ -16,6 +17,10 @@ export function BimCoordinationPanel({db,project,onChange}:Props){
  const picked=chosen.filter(id=>models.some((m:any)=>m.id===id));
  const selectedModels=models.filter((m:any)=>picked.includes(m.id));
  const latest=analyses[0];
+ const latestModels=React.useMemo(()=>{
+  try{const parsed=JSON.parse(latest?.modelos_json||'null');return Array.isArray(parsed)&&parsed.length?parsed:null;}
+  catch{return null;}
+ },[latest?.modelos_json]);
  const revisions=analyses[1]?compararRevisoesConflitos(analyses[1]?.conflitos||[],latest?.conflitos||[]):null;
  const issues=(latest?.conflitos||[]).filter((c:any)=>filter==='todos'||(c.status||'aberto')===filter);
  const events=latest?listarEventosConflitosBimProjeto(db,latest.id):[];
@@ -64,14 +69,14 @@ export function BimCoordinationPanel({db,project,onChange}:Props){
    </div>
    <div className="cbim-react-toolbar"><button disabled={busy||picked.length<2} onClick={()=>void execute()}>{busy?'Analisando…':'Executar federação ('+picked.length+' modelos)'}</button>
     <button disabled={busy||!latest?.conflitos?.length||latest.proveniencia!=='ifcopenshell_real'} onClick={()=>void exportIssues('bcf')}>Exportar BCF 3.0 (IFC)</button><button disabled={busy||!latest?.conflitos?.length} onClick={()=>void exportIssues('csv')}>Pendências CSV</button><button disabled={busy||!latest?.conflitos?.length} onClick={()=>void exportIssues('pdf')}>Relatório PDF</button></div>
-   {latest&&<p className="studio-muted">Última execução: {latest.criado_em} · {latest.proveniencia||'motor não identificado'} · {(latest.conflitos||[]).length} pendências · {JSON.parse(latest.modelos_json||'[]').length||2} modelos.</p>}
+   {latest&&<p className="studio-muted">Última execução: {latest.criado_em} · {latest.proveniencia||'motor não identificado'} · {(latest.conflitos||[]).length} pendências · {latestModels?latestModels.length+' modelos':'modelos participantes não registrados (análise legada)'}.</p>}
    {revisions&&<p role="status">Comparação com execução anterior: {revisions.novos.length} novos · {revisions.persistentes.length} persistentes · {revisions.reaparecidos.length} com evidência alterada · {revisions.naoObservados.length} não observados (sem resolução automática).</p>}
    <label>Filtrar conflitos<select value={filter} onChange={e=>setFilter(e.target.value)}><option value="todos">Todos</option><option value="aberto">Abertos</option><option value="em_revisao">Em revisão</option><option value="resolvido">Resolvidos por decisão</option><option value="ignorado">Ignorados</option></select></label>
    {!latest&&<p>Nenhuma federação executada. Selecione os modelos e execute para produzir evidência.</p>}
    {latest&&!issues.length&&<p>Nenhum conflito no filtro atual. Isso não equivale à aprovação de um projeto não revisado.</p>}
    <div className="p2-issues">{issues.slice(0,250).map((c:any,i:number)=><article key={c.chave||i} className="p2-issue">
      <strong>{c.aGlobalId||'Elemento A'} × {c.bGlobalId||'Elemento B'}</strong>
-     <small>{(c.origens||[]).join(' ↔ ')} · {c.status||'aberto'} · distância {Number(c.distanciaM||0).toFixed(3)} m</small>
+     <small>{(c.origens||[]).join(' ↔ ')} · {c.status||'aberto'} · {clashDistance(c.distanciaM)}</small>
      {c.revisaoAlterada&&<p role="status">Modelos alterados; decisão anterior não transferida.</p>}
      <button onClick={()=>{setEditing(editing===c.chave?'':c.chave);setStatus(c.status||'em_revisao');setAssignee(c.responsavel||'');setDue(c.prazo||'');setReason(c.motivo||'');}}>Registrar decisão</button>
      {editing===c.chave&&<form onSubmit={e=>{e.preventDefault();saveDecision(c);}} className="cbim-react-form-grid">
