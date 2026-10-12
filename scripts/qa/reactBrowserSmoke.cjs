@@ -2,15 +2,15 @@
 const assert=require('node:assert/strict');
 const fs=require('node:fs');
 const path=require('node:path');
-const {chromium}=require('../app/node_modules/playwright');
+const {chromium}=require('../../app/node_modules/playwright');
 (async()=>{
-  fs.mkdirSync(path.join(__dirname,'react-qa-artifacts'),{recursive:true});
+  fs.mkdirSync(path.join(__dirname,'../../test/react-qa-artifacts'),{recursive:true});
   const browser=await chromium.launch({headless:true,args:['--no-sandbox']});
   const page=await browser.newPage({viewport:{width:1440,height:1000},acceptDownloads:true});
   const errors=[];
   page.on('pageerror',e=>errors.push(e.message));
   page.on('console',m=>{if(m.type()==='error')errors.push(m.text());});
-  const screenshots=async(name)=>page.screenshot({path:path.join(__dirname,'react-qa-artifacts',name+'.png'),fullPage:true});
+  const screenshots=async(name)=>page.screenshot({path:path.join(__dirname,'../../test/react-qa-artifacts',name+'.png'),fullPage:true});
   const section=async(name,heading)=>{
     await page.locator('.studio-sidebar').getByRole('button',{name,exact:true}).click();
     await page.getByRole('heading',{name:heading}).first().waitFor();
