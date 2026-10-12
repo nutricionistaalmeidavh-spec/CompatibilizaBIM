@@ -116,3 +116,17 @@
 .cbim-rdo-actions{position:sticky;bottom:0;background:#ffffffee;padding:12px 0;border-top:1px solid #e1e8f0}
 @media(max-width:740px){.cbim-closeout{padding:13px}.cbim-closeout-metrics{grid-template-columns:1fr 1fr}.ui-metric strong{font-size:18px}}
 @media(max-width:480px){.cbim-closeout-metrics{grid-template-columns:1fr}.cbim-rdo-editor-meta{grid-template-columns:1fr}}
+
+/* P3 quality/readiness within the single React Studio */
+.cbim-quality-heading{display:flex;justify-content:space-between;align-items:start;flex-wrap:wrap;gap:12px;margin-bottom:14px}
+.cbim-quality-heading h1{margin:4px 0 8px}
+.cbim-quality-heading p{max-width:740px;color:#4b6176;line-height:1.5}
+.cbim-quality-findings article,.cbim-quality-gates article{display:flex;justify-content:space-between;align-items:start;gap:16px;padding:13px 0;border-bottom:1px solid #e4eaf0}
+.cbim-quality-findings article:last-child,.cbim-quality-gates article:last-child{border-bottom:0}
+.cbim-quality-findings article>div,.cbim-quality-gates article>div{flex:1;min-width:0}
+.cbim-quality-findings strong,.cbim-quality-gates strong{display:block;font-size:14px;color:#132b45}
+.cbim-quality-findings p,.cbim-quality-gates p{margin:4px 0 0;font-size:12px}
+.cbim-quality-code{font-size:10px;font-weight:800;letter-spacing:.04em;color:#4a6080;background:#eaf0f7;padding:5px 8px;border-radius:6px;max-width:155px;overflow-wrap:anywhere}
+.cbim-quality-warning{border-left:4px solid #bd811e;padding:14px 18px;background:#fff8e6;border-radius:6px;line-height:1.5}
+.cbim-quality .ui-status{flex-shrink:0;white-space:nowrap}
+@media(max-width:620px){.cbim-quality-findings article{flex-wrap:wrap}.cbim-quality-findings article>div{min-width:100%;order:2}.cbim-quality-findings article>.ui-status{margin-left:auto}.cbim-quality-gates article{flex-wrap:wrap}.cbim-quality-gates article>div{min-width:100%}}

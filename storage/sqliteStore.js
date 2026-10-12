@@ -457,3 +457,25 @@ export function importarBackup(dbAtualImportado, texto) {
   // Keep the original in-memory DB alive until the new file is durably stored.
   window.location.reload();
 }
+
+
+// P3 reporting projection. This deliberately does NOT load dados_json from RDO,
+// dados_base64 from documents, original DWG/IFC blobs or workspace files.
+export function listarResumosQualidadeObras(db) {
+ const obras=listarObras(db).map(w=>({id:w.id,etapas:[],pendencias:[],rdos:[],medicoes:[],compras:[],calculos:[]}));
+ const index=new Map(obras.map(w=>[w.id,w]));
+ const append=(table,sql)=>{for(const item of linhas(db,sql)){const target=index.get(item.obra_id);if(target)target[table].push(item);}};
+ append('rdos',"SELECT obra_id,status_aprovacao FROM rdos");
+ append('etapas',"SELECT obra_id,percentual_concluido,percentual_peso FROM etapas");
+ append('pendencias',"SELECT obra_id,status FROM pendencias");
+ append('medicoes',"SELECT obra_id,status FROM medicoes_servico");
+ append('compras',"SELECT obra_id,quantidade,recebido,pagamento_status FROM compras_pedidos");
+ for(const row of linhas(db,"SELECT obra_id,tipo,entradas_json,resultados_json FROM calculos")){
+  const target=index.get(row.obra_id);if(!target)continue;
+  let entradas=null,resultados=null;
+  try{entradas=JSON.parse(row.entradas_json||'null');}catch{}
+  try{resultados=JSON.parse(row.resultados_json||'null');}catch{}
+  target.calculos.push({tipo:row.tipo,entradas,resultados});
+ }
+ return obras;
+}

@@ -154,6 +154,11 @@ jobs:
         shell: pwsh
         run: |
           node scripts/f0-release-manifest.cjs
+      - name: Verify P3 QA artifact SHA256 and human gate separation
+        shell: pwsh
+        run: |
+          node scripts/p3-release-check.cjs --manifest .p1-build/f0-smoke/release-manifest.json --root . --out .p1-build/f0-smoke/p3-release-readiness.json
+          if ($LASTEXITCODE -ne 0) { throw 'P3 QA artifact verification failed' }
       - name: Save F0 sanitized Windows smoke summary
         if: always()
         uses: actions/upload-artifact@v4
@@ -162,6 +167,7 @@ jobs:
           path: |
             .p1-build/f0-smoke/f0-windows-smoke-summary.json
             .p1-build/f0-smoke/release-manifest.json
+            .p1-build/f0-smoke/p3-release-readiness.json
           if-no-files-found: warn
           retention-days: 7
       - name: Disponibilizar instalador apenas como artefato QA

@@ -3,6 +3,7 @@ export const STUDIO_ROUTES=Object.freeze([
   {key:'BIM',section:'Projetos'},
   {key:'Estruturas',section:'Projetos'},
   {key:'Cálculos',section:'Engenharia'},
+  {key:'Qualidade',section:'Engenharia'},
   {key:'Operação',section:'Execução'},
   {key:'RDO',section:'Execução'},
   {key:'Financeiro',section:'Execução'}
