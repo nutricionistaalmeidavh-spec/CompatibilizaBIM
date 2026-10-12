@@ -27,3 +27,12 @@ test('F4 require accountable decision and nonempty ignore reason',()=>{
  assert.equal(validarDecisaoConflito({status:'em_revisao',responsavel:'Equipe',prazo:'2026-11-02'}).status,'em_revisao');
  assert.throws(()=>validarDecisaoConflito({status:'resolved'}),/Estado/);
 });
+
+test('F4 revision comparison distinguishes new/persistent/unobserved without calling absent issue resolved',()=>{
+ const before=[{chave:'same',fingerprint:'v1'},{chave:'gone',fingerprint:'v1'}];
+ const now=[{chave:'same',fingerprint:'v1'},{chave:'new',fingerprint:'v1'}];
+ const diff=compararRevisoesConflitos(before,now);
+ assert.equal(diff.novos.length,1);assert.equal(diff.persistentes.length,1);
+ assert.equal(diff.naoObservados.length,1);
+ assert.match(diff.naoObservados[0].observacao,/não é resolução/i);
+});
