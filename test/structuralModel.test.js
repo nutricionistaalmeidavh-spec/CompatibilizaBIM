@@ -14,3 +14,9 @@ test('valida pavimentos, elementos e cargas do modelo', () => {
   assert.throws(() => validarElementoEstrutural({ tipo: 'parede_inexistente', nome: 'X' }), /inválido/);
   assert.throws(() => validarCargaEstrutural({ tipo: 'pontual', valor: 2 }), /unidade/);
 });
+
+test('F0-03: signed loads and variable case are valid inputs, NaN is rejected',()=>{
+  const load=validarCargaEstrutural({tipo:'distribuida',valor:-5,unidade:'kN/m',combinacao:'variavel'});
+  assert.equal(load.valor,-5);assert.equal(load.combinacao,'variavel');
+  assert.throws(()=>validarCargaEstrutural({tipo:'distribuida',valor:Infinity,unidade:'kN/m'}),/finito/);
+});
