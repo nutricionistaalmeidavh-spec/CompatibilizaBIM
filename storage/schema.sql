@@ -394,6 +394,7 @@ CREATE TABLE IF NOT EXISTS workspace_context (
   periodo_inicio TEXT,
   periodo_fim TEXT,
   bim_mode TEXT NOT NULL DEFAULT 'independente',
+  projeto_bim_id TEXT REFERENCES bim_projetos(id) ON DELETE SET NULL,
   atualizado_em TEXT NOT NULL
 );
 

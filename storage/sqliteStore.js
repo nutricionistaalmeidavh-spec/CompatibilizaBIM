@@ -61,17 +61,17 @@ export function listarObras(db) {
 
 export function lerWorkspaceContext(db) {
   const row = linhas(db, 'SELECT * FROM workspace_context WHERE id = 1', [])[0];
-  if (!row) return { obraId: null, frenteId: null, periodo: { inicio: null, fim: null }, bimMode: 'independente' };
-  return { obraId: row.obra_id, frenteId: row.frente_id, periodo: { inicio: row.periodo_inicio, fim: row.periodo_fim }, bimMode: row.bim_mode === 'vinculado' ? 'vinculado' : 'independente' };
+  if (!row) return { obraId: null, frenteId: null, periodo: { inicio: null, fim: null }, bimMode: 'independente', projetoBimId:null };
+  return { obraId: row.obra_id, frenteId: row.frente_id, periodo: { inicio: row.periodo_inicio, fim: row.periodo_fim }, bimMode: row.bim_mode === 'vinculado' ? 'vinculado' : 'independente', projetoBimId:row.projeto_bim_id??null };
 }
 
 export function salvarWorkspaceContext(db, context = {}) {
   const periodo = context.periodo ?? {};
-  db.run(`INSERT INTO workspace_context (id,obra_id,frente_id,periodo_inicio,periodo_fim,bim_mode,atualizado_em)
-    VALUES (1,?,?,?,?,?,?)
+  db.run(`INSERT INTO workspace_context (id,obra_id,frente_id,periodo_inicio,periodo_fim,bim_mode,projeto_bim_id,atualizado_em)
+    VALUES (1,?,?,?,?,?,?,?)
     ON CONFLICT(id) DO UPDATE SET obra_id=excluded.obra_id, frente_id=excluded.frente_id,
       periodo_inicio=excluded.periodo_inicio, periodo_fim=excluded.periodo_fim,
-      bim_mode=excluded.bim_mode, atualizado_em=excluded.atualizado_em`, [context.obraId ?? null, context.frenteId ?? null, periodo.inicio ?? null, periodo.fim ?? null, context.bimMode === 'vinculado' ? 'vinculado' : 'independente', new Date().toISOString()]);
+      bim_mode=excluded.bim_mode, projeto_bim_id=excluded.projeto_bim_id, atualizado_em=excluded.atualizado_em`, [context.obraId ?? null, context.frenteId ?? null, periodo.inicio ?? null, periodo.fim ?? null, context.bimMode === 'vinculado' ? 'vinculado' : 'independente', context.projetoBimId??null, new Date().toISOString()]);
   salvarBanco(db);
 }
 

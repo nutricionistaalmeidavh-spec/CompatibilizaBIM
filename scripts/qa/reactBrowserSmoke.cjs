@@ -49,8 +49,9 @@ const {chromium}=require('../../app/node_modules/playwright');
     await page.locator('form textarea').first().waitFor();
     await screenshots('rdo-form');
     await section('Financeiro','Financeiro local');
-    await section('Revisão','Compatibilização BIM');
-    await section('Histórico','Carteira de obras');
+    await section('BIM','Compatibilização BIM');
+    await section('Obras','Carteira de obras');
+    assert.equal(await page.locator('.studio-sidebar').getByRole('button',{name:'Revisão',exact:true}).count(),0,'Review must not be a duplicate root route');
     const current=await page.locator('main').first().innerText();
     assert.match(current,/Obra de regressão React/);
     // Authenticated reviewer is mounted by the same React entry; mock only the
@@ -58,7 +59,7 @@ const {chromium}=require('../../app/node_modules/playwright');
     await page.route('**/api/studio-state',route=>route.fulfill({
       status:200,contentType:'application/json',
       body:JSON.stringify({
-        project:{id:'qa-review',name:'Revisão CBIM QA',elements:[]},
+        project:{id:'qa-review',name:'Revisão CBIM QA',storeys:[{id:'floor',name:'Térreo'}],systems:[],elements:[{id:'pipe-qa',type:'pipe',name:'Linha QA',diameter:.1,path:[{x:0,y:0,z:0},{x:3,y:1,z:2}],system_id:null,storey_id:'floor',review_state:'auto',confidence:.9,source_refs:[{source_id:'cad',entity_id:'e1',layer:'HID'}],properties:{}}]},
         plan:{sources:[],config:{project_name:'Revisão CBIM QA',organization:'QA',units:'m',coordinate_reference:'local',storeys:[{name:'Térreo',elevation:0,height:3}]}},
         status:{revision:1},
         history:[],recovery:[],annotations:[],audit:[]
@@ -67,6 +68,13 @@ const {chromium}=require('../../app/node_modules/playwright');
     await page.goto('http://127.0.0.1:5173/?surface=review');
     await page.getByRole('heading',{name:'Fontes',exact:true}).waitFor({timeout:15000});
     await screenshots('review-react-same-entry');
+    await page.getByRole('button',{name:'Revisão',exact:true}).click();
+    await page.getByRole('group',{name:'Planta geométrica CBIM 2D'}).waitFor();
+    await page.getByRole('button',{name:'Axonométrica 3D'}).click();
+    await page.getByRole('group',{name:'Projeção axonométrica da geometria CBIM'}).waitFor();
+    await page.getByRole('button',{name:/Selecionar pipe pipe-qa/}).click();
+    await page.getByRole('heading',{name:'Inspector'}).waitFor();
+    await screenshots('review-cbim-native-3d');
     assert.deepEqual(errors,[],'Uncaught browser errors: '+errors.join('\n'));
     console.log('PASS: React-only main app, SQLite works, calculators, BIM, structural, operations, RDO, financial and history.');
   }finally{

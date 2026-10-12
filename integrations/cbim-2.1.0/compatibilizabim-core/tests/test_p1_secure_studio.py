@@ -171,3 +171,14 @@ def test_studio_saves_project_and_import_plan_as_one_workspace_action(secured_st
     assert result["project_name"] == "Projeto comercial"
     assert store.load_project().name == "Projeto comercial"
     assert store.load_import_plan().config.organization == "ArtiSys"
+
+def test_editable_studio_state_roundtrips_real_wall_without_readonly_computed_fields(secured_studio):
+    app, store, _ = secured_studio
+    state = app.studio_state_payload()
+    assert all('length' not in e for e in state['project']['elements'] if e['type'] == 'wall')
+    initial = store.status().revision
+    result = app.save_workspace_payload(json.dumps({
+        'project': state['project'], 'plan': state['plan']
+    }).encode('utf-8'))
+    assert result['revision'] == initial + 1
+    assert store.load_project().id == state['project']['id']

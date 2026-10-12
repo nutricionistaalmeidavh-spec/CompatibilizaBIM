@@ -1,5 +1,6 @@
 
 import React from 'react';
+import {groupedRoutes,normalizeStudioRoute} from './navigation.js';
 import { abrirBanco, listarObras, lerWorkspaceContext, salvarWorkspaceContext, exportarBackup, importarBackup } from '../../../../storage/sqliteStore.js';
 import { WorksPage } from './WorksPage';
 import { BimPage } from './BimPage';
@@ -14,12 +15,12 @@ import { listarProjetosBim, listarFrentes } from '../../../../storage/sqliteStor
 import { carregarDemo, carregarDemoOperacional, carregarDemoBimIndependente } from '../../demoData.js';
 import { enriquecerDemoBim3D, garantirModeloEstruturalDemo } from '../../demoBim3d.js';
 
-const sections=['Obras','BIM','Cálculos','Estruturas','Operação','RDO','Financeiro','Revisão','Histórico'];
+const sections=groupedRoutes();
 export function AppShell(){
   const [db,setDb]=React.useState<any>(null);
   const [error,setError]=React.useState('');
   const [backupError,setBackupError]=React.useState('');
-  const [active,setActive]=React.useState(()=>{try{return sessionStorage.getItem('cbim-studio-section')||'Obras';}catch{return 'Obras';}});
+  const [active,setActive]=React.useState(()=>{try{return normalizeStudioRoute(sessionStorage.getItem('cbim-studio-section'));}catch{return 'Obras';}});
   const [workId,setWorkId]=React.useState<string|null>(null);
   const [version,refresh]=React.useReducer(n=>n+1,0);
   React.useEffect(()=>{
@@ -81,6 +82,8 @@ export function AppShell(){
   const works=listarObras(db);
   const selectedWork=works.find((w:any)=>w.id===workId);
   const context=lerWorkspaceContext(db);
+  const studies=listarProjetosBim(db);
+  const selectedStudy=studies.find((s:any)=>s.id===context.projetoBimId);
   const fronts=workId?listarFrentes(db,workId):[];
   return <div className="studio-shell cbim-react-app">
     <header className="studio-topbar"><div><span className="studio-product">CompatibilizaBIM</span> <strong>Studio</strong></div>
@@ -90,25 +93,24 @@ export function AppShell(){
       <label>Frente<select value={fronts.some((f:any)=>f.id===context.frenteId)?context.frenteId||'':''} disabled={!workId} onChange={e=>updateContext({frenteId:e.target.value||null})}><option value="">Todas as frentes</option>{fronts.map((f:any)=><option key={f.id} value={f.id}>{f.nome}</option>)}</select></label>
       <label>Início<input type="date" value={context.periodo?.inicio||''} onChange={e=>updateContext({periodo:{inicio:e.target.value||null}})}/></label>
       <label>Fim<input type="date" value={context.periodo?.fim||''} onChange={e=>updateContext({periodo:{fim:e.target.value||null}})}/></label>
-      <label>BIM<select value={context.bimMode||'independente'} onChange={e=>updateContext({bimMode:e.target.value})}><option value="independente">Independente</option><option value="vinculado">Vinculado</option></select></label>
-      <button onClick={()=>{selectWork(null);updateContext({obraId:null,frenteId:null,periodo:{inicio:null,fim:null},bimMode:'independente'});}}>Limpar contexto</button>
+      <label>Estudo BIM<select value={selectedStudy?.id||''} onChange={e=>updateContext({projetoBimId:e.target.value||null})}><option value="">Escolher no módulo BIM</option>{studies.map((p:any)=><option key={p.id} value={p.id}>{p.nome}{p.obra_id?' · Vinculado':' · Independente'}</option>)}</select></label>
+      <label>Vínculo BIM<select value={context.bimMode||'independente'} onChange={e=>updateContext({bimMode:e.target.value})}><option value="independente">Independente</option><option value="vinculado">Vinculado</option></select></label>
+      <button onClick={()=>{selectWork(null);updateContext({obraId:null,frenteId:null,periodo:{inicio:null,fim:null},bimMode:'independente',projetoBimId:null});}}>Limpar contexto</button>
     </section>
     <aside className="studio-sidebar" aria-label="Navegação única">
-      {sections.map(s=><button key={s} className={active===s?'active':''} onClick={()=>setActive(s)}>{s}</button>)}
+      {sections.map(group=><div className="studio-nav-group" key={group.section}><p className="studio-nav-label">{group.section}</p>{group.routes.map(route=><button key={route.key} type="button" aria-current={active===route.key?'page':undefined} className={active===route.key?'active':''} onClick={()=>setActive(route.key)}>{route.key}</button>)}</div>)}
       <button onClick={downloadBackup}>Exportar backup</button>
       <label>Importar backup<input aria-label="Selecionar arquivo de backup" type="file" accept=".json" onChange={e=>{void readBackup(e.target.files?.[0]||null);e.target.value='';}}/></label>
     </aside>
     {backupError&&<p role="alert" className="cbim-react-panel">Importação não realizada: {backupError} O banco e a sessão atual foram preservados. Confira o arquivo e tente novamente.</p>}
     <main className="studio-content">
       {active==='Obras'&&<WorksPage db={db} obraId={workId} selectWork={selectWork} onChange={refresh} onNavigate={setActive}/>}
-      {active==='BIM'&&<BimPage db={db} obraId={workId} version={version} onChange={refresh}/>}
+      {active==='BIM'&&<BimPage db={db} obraId={workId} version={version} onChange={refresh} studyId={context.projetoBimId||''} onSelectStudy={id=>updateContext({projetoBimId:id||null})}/>}
       {active==='Cálculos'&&<CalculatorsPage db={db} obraId={workId} onSaved={refresh}/>}
       {active==='Estruturas'&&<StructuralPage db={db} obraId={workId} onChange={refresh}/>}
       {active==='RDO'&&<RdoPage db={db} obraId={workId} onChange={refresh}/>}
       {active==='Operação'&&<OperationsPage db={db} obraId={workId} onChange={refresh}/>}
       {active==='Financeiro'&&<FinancePage db={db} obraId={workId} onChange={refresh}/>}
-      {active==='Revisão'&&<BimPage db={db} obraId={workId} version={version} onChange={refresh}/>}
-      {active==='Histórico'&&<WorksPage db={db} obraId={workId} selectWork={selectWork} onChange={refresh}/>}
     </main>
   </div>;
 }

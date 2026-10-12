@@ -3,7 +3,7 @@
 Bundled with PyInstaller (no customer credentials/private signing keys included).
 Supported commands:
     cbim-runtime.exe health
-    cbim-runtime.exe validate-dwg ...
+    cbim-runtime.exe validate-dwg|validate-dxf ...
     cbim-runtime.exe studio prepare|verify|serve ...
     cbim-runtime.exe ifc-clash modelA.ifc modelB.ifc ...
     cbim-runtime.exe ifc-viewer model.ifc ... --out view.html
@@ -18,7 +18,7 @@ import sys
 def main(argv: list[str] | None = None) -> int:
     args = list(argv if argv is not None else sys.argv[1:])
     if not args:
-        print("Uso: cbim-runtime.exe health|validate-dwg|studio|ifc-clash|ifc-viewer|ifc-legacy", file=sys.stderr)
+        print("Uso: cbim-runtime.exe health|validate-dwg|validate-dxf|studio|ifc-clash|ifc-viewer|ifc-legacy", file=sys.stderr)
         return 2
     command, *options = args
     if command == 'health':
@@ -40,6 +40,8 @@ def main(argv: list[str] | None = None) -> int:
         return 0
     if command == 'validate-dwg':
         from compatibilizabim_core.validation.cli import main as cli
+    elif command == 'validate-dxf':
+        from compatibilizabim_core.validation.dxf_cli import main as cli
     elif command == 'studio':
         from compatibilizabim_core.desktop.p1_launcher import main as cli
     elif command == 'ifc-clash':

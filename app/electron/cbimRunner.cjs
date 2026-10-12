@@ -8,24 +8,35 @@ const activeConversions = new Set();
 
 const DISCIPLINES = new Set(['architecture', 'structure', 'hydraulic', 'fire']);
 
-function parseDwgRequest(input) {
-  if (!input || typeof input !== 'object') throw new TypeError('Nenhum desenho DWG foi recebido.');
+function parseCadRequest(input) {
+  if (!input || typeof input !== 'object') throw new TypeError('Nenhum arquivo CAD foi recebido.');
   const original = String(input.name || '').trim();
-  if (!/^.{1,180}\.dwg$/i.test(original)) throw new TypeError('Selecione um arquivo DWG válido.');
+  if (!/^.{1,180}\.(dwg|dxf)$/i.test(original)) throw new TypeError('Selecione um arquivo DWG ou DXF válido.');
+  const format = path.extname(original).slice(1).toLowerCase();
   const discipline = String(input.discipline || '');
-  if (!DISCIPLINES.has(discipline)) throw new TypeError('Informe uma disciplina válida para o DWG.');
+  if (!DISCIPLINES.has(discipline)) throw new TypeError('Informe uma disciplina válida para o CAD.');
   const encoded = String(input.base64 || '').replace(/\s/g, '');
-  if (!encoded || !/^[A-Za-z0-9+/]+={0,2}$/.test(encoded) || encoded.length % 4 !== 0) throw new TypeError('Conteúdo DWG em base64 inválido.');
+  if (!encoded || !/^[A-Za-z0-9+/]+={0,2}$/.test(encoded) || encoded.length % 4 !== 0)
+    throw new TypeError('Conteúdo CAD em base64 inválido.');
   const bytes = Buffer.from(encoded, 'base64');
-  if (!bytes.length || bytes.toString('base64') !== encoded) throw new TypeError('Conteúdo DWG não corresponde à codificação informada.');
+  if (!bytes.length || bytes.toString('base64') !== encoded)
+    throw new TypeError('Conteúdo CAD não corresponde à codificação informada.');
   const filename = path.basename(original).replace(/[^a-zA-Z0-9._-]/g, '_');
-  return { filename, discipline, bytes };
+  return { filename, discipline, bytes, format, unitlessScaleToM: input.unitlessScaleToM };
 }
 
-function parseCbimBatch(batch, expectedDiscipline) {
+function parseDwgRequest(input) {
+  if (!/^.{1,180}\.dwg$/i.test(String(input?.name || '').trim())) throw new TypeError('Selecione um arquivo DWG válido.');
+  return parseCadRequest(input);
+}
+
+function parseCbimBatch(batch, expectedDiscipline, format = 'dwg') {
   if (!batch || !Array.isArray(batch.reports)) throw new Error('Relatório CBIM inválido ou ausente.');
   const report = batch.reports.find(x => x?.discipline === expectedDiscipline);
-  if (!report || report.provider !== 'acadsharp') throw new Error('Relatório CBIM não comprova processamento pelo ACadSharp.');
+  const provider = format === 'dxf' ? 'ezdxf' : 'acadsharp';
+  if (!report || report.provider !== provider) throw new Error(format === 'dxf'
+    ? 'Relatório DXF não comprova processamento pelo ezdxf.'
+    : 'Relatório CBIM não comprova processamento pelo ACadSharp.');
   if (typeof report.ifc_sanity_passed !== 'boolean' || typeof report.import_coverage !== 'number') throw new Error('Relatório CBIM não contém métricas essenciais.');
   return report;
 }
@@ -69,7 +80,8 @@ function cancelConversion() {
 }
 
 async function convertDwg({ input, documentsDir, appSourceDir, resourcesDir, pythonExecutable, isPackaged = false, licenseMode = process.env.CBIM_STUDIO_LICENSE_MODE, runProcess = runCbimProcess, onProgress = () => {} }) {
-  const request = parseDwgRequest(input);
+  const request = parseCadRequest(input);
+  const isDxf = request.format === 'dxf';
   const command = pythonStudioCommand({ appSourceDir, resourcesDir });
   const embedded = path.join(resourcesDir || '', 'runtime', 'cbim-runtime.exe');
   const packedRuntime = fs.existsSync(embedded);
@@ -107,15 +119,22 @@ async function convertDwg({ input, documentsDir, appSourceDir, resourcesDir, pyt
   const name = request.discipline + '-' + stem;
   const bridge = path.join(resourcesDir || '', 'bridges', 'acadsharp', 'CompatibilizaBIM.ACadSharpBridge.exe');
   const bridgeProject = path.join(integrated, 'dwg-acadsharp-bridge', 'CompatibilizaBIM.ACadSharpBridge.csproj');
-  const args = [
-    ...(packedRuntime ? ['validate-dwg'] : ['-m', 'compatibilizabim_core.validation.cli']),
-    '--' + request.discipline, inputPath, '--output', outputDir
-  ];
-  if (fs.existsSync(bridge)) args.push('--bridge-exe', bridge);
+  const args = isDxf
+    ? [...(packedRuntime ? ['validate-dxf'] : ['-m', 'compatibilizabim_core.validation.dxf_cli']),
+       '--source', inputPath, '--discipline', request.discipline, '--output', outputDir]
+    : [...(packedRuntime ? ['validate-dwg'] : ['-m', 'compatibilizabim_core.validation.cli']),
+       '--' + request.discipline, inputPath, '--output', outputDir];
+  if (isDxf) {
+    if (request.unitlessScaleToM !== undefined) {
+      const factor = Number(request.unitlessScaleToM);
+      if (!Number.isFinite(factor) || factor <= 0 || factor > 1000) throw new Error('Escala do DXF sem unidade deve ser positiva e compatível com metros.');
+      args.push('--unitless-scale-to-m', String(factor));
+    }
+  } else if (fs.existsSync(bridge)) args.push('--bridge-exe', bridge);
   else if (process.env.CBIM_ACADSHARP_BRIDGE && fs.existsSync(process.env.CBIM_ACADSHARP_BRIDGE)) args.push('--bridge-exe', process.env.CBIM_ACADSHARP_BRIDGE);
   else if (!isPackaged && fs.existsSync(bridgeProject)) args.push('--bridge-project', bridgeProject);
   else throw new Error('Ponte ACadSharp não empacotada ou indisponível para importar DWG.');
-  onProgress({ stage: 'Importação DWG e reconhecimento CBIM', status: 'running' });
+  onProgress({ stage: 'Importação '+request.format.toUpperCase()+' e reconhecimento CBIM', status: 'running' });
   const result = await runProcess(python, args, { cwd: core, env, logPath, onProgress });
 
   const batchPath = path.join(outputDir, 'validation-batch.json');
@@ -123,7 +142,7 @@ async function convertDwg({ input, documentsDir, appSourceDir, resourcesDir, pyt
     throw new Error('Conversão não concluiu. Arquivos preservados em ' + outputDir + '. ' + (result.stderr.trim() || 'Código ' + result.code));
   }
   const batch = JSON.parse(fs.readFileSync(batchPath, 'utf8'));
-  const report = parseCbimBatch(batch, request.discipline);
+  const report = parseCbimBatch(batch, request.discipline, request.format);
   const ifcName = name + '.ifc';
   const ifcPath = path.join(outputDir, ifcName);
   if (!fs.existsSync(ifcPath) || !report.ifc_exported || !report.ifc_sanity_passed) {
@@ -157,4 +176,4 @@ async function convertDwg({ input, documentsDir, appSourceDir, resourcesDir, pyt
   };
 }
 
-module.exports = { parseDwgRequest, parseCbimBatch, convertDwg, cancelConversion, runCbimProcess };
+module.exports = { parseCadRequest, parseDwgRequest, parseCbimBatch, convertDwg, cancelConversion, runCbimProcess };

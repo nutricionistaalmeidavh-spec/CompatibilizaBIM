@@ -184,7 +184,7 @@ class DesktopApplication:
 
     def studio_state_payload(self) -> dict:
         return {
-            'project': self.store.load_project().model_dump(mode='json'),
+            'project': self.store.load_project().model_dump(mode='json', exclude_computed_fields=True),
             'plan': self.store.load_import_plan().model_dump(mode='json'),
             'report': build_conversion_report(self.store.load_project(), import_plan=self.store.load_import_plan()).model_dump(mode='json'),
             'status': self.status_payload(),
