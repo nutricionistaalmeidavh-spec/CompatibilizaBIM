@@ -18,7 +18,7 @@ import sys
 def main(argv: list[str] | None = None) -> int:
     args = list(argv if argv is not None else sys.argv[1:])
     if not args:
-        print("Uso: cbim-runtime.exe health|validate-dwg|validate-dxf|studio|ifc-clash|ifc-viewer|ifc-legacy", file=sys.stderr)
+        print("Uso: cbim-runtime.exe health|validate-dwg|validate-dxf|studio|p2|ifc-clash|ifc-viewer|ifc-legacy", file=sys.stderr)
         return 2
     command, *options = args
     if command == 'health':
@@ -42,6 +42,8 @@ def main(argv: list[str] | None = None) -> int:
         from compatibilizabim_core.validation.cli import main as cli
     elif command == 'validate-dxf':
         from compatibilizabim_core.validation.dxf_cli import main as cli
+    elif command == 'p2':
+        from compatibilizabim.p2_workflow import main as cli
     elif command == 'studio':
         from compatibilizabim_core.desktop.p1_launcher import main as cli
     elif command == 'ifc-clash':
