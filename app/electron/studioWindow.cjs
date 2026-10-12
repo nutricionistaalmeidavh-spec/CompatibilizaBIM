@@ -174,10 +174,9 @@ async function openStudioWindow({ workspacePath, documentsDir, appSourceDir, res
           .catch(() => {
             if (hostWindow && hostedStudioSessions.has(win)) {
               hostedStudioSessions.get(win).restore().catch(() => {});
-            } else if (win && !win.isDestroyed()) {
-        if (hostWindow && hostedStudioSessions.has(win)) hostedStudioSessions.get(win).restore().catch(() => {});
-        else if (!hostWindow) win.close();
-      }
+            } else if (!hostWindow && win && !win.isDestroyed()) {
+              win.close();
+            }
           });
         resolve({ workspace, port: ready.port });
       }
@@ -186,7 +185,11 @@ async function openStudioWindow({ workspacePath, documentsDir, appSourceDir, res
       activeStudioSessions.delete(child);
       clearTimeout(timeout);
       if (!opened) fail(new Error('Studio não iniciou: ' + (stderr.trim() || 'código ' + code)));
-      else if (win && !win.isDestroyed()) win.close();
+      else if (win && !win.isDestroyed()) {
+        if (hostWindow) {
+          if (hostedStudioSessions.has(win)) hostedStudioSessions.get(win).restore().catch(() => {});
+        } else win.close();
+      }
     });
   });
 }
