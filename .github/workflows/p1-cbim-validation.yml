@@ -93,3 +93,31 @@ jobs:
             app/dist-installers/*.exe
           if-no-files-found: error
           retention-days: 7
+
+  react-browser-qa:
+    if: github.event_name == 'workflow_dispatch' || github.event.label.name == 'run-cbim-qa'
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Install UI and browser test dependencies
+        run: |
+          npm install --package-lock-only --prefix app
+          npm ci --prefix app
+          npm install --no-save --prefix app playwright@1.56.0
+          ./app/node_modules/.bin/playwright install --with-deps chromium
+      - name: Run local-first React browser smoke QA
+        run: |
+          npm run dev --prefix app -- --host 127.0.0.1 > /tmp/cbim-vite.log 2>&1 &
+          node test/reactBrowserSmoke.cjs
+      - name: Save React regression screenshots
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: CompatibilizaBIM-React-QA-screenshots
+          path: test/react-qa-artifacts/*.png
+          if-no-files-found: warn
+          retention-days: 7
