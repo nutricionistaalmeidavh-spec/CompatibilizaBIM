@@ -111,7 +111,7 @@ export function RdoPage({db,obraId,scope={},onChange}:{db:any;obraId:string|null
   if(!work)return <section className="cbim-react-section"><h1>Diário de obra</h1><p>Selecione uma obra para consultar e registrar RDOs.</p></section>;
   return <section className="cbim-react-section"><h1>RDO · {work.nome}</h1><p>Diário completo, fotos, aprovação e PDF usando os mesmos dados persistidos na aplicação anterior.</p>
     {(scope.periodo?.inicio||scope.periodo?.fim)&&<p className="studio-muted">Exibindo somente RDOs dentro do período selecionado. Um novo registro fora desse período ficará salvo, mas não aparecerá nesta lista.</p>}
-    {scope.frenteId&&<p role="status" className="cbim-react-panel">RDOs existentes não possuem vínculo canônico com frente; a seleção de frente não filtra esses registros. O filtro de datas continua aplicado.</p>
+    {scope.frenteId&&<p role="status" className="cbim-react-panel">RDOs existentes não possuem vínculo canônico com frente; a seleção de frente não filtra esses registros. O filtro de datas continua aplicado.</p>}
     <p className="studio-muted">A aprovação é imutável. Retificações devem ser registradas em novo RDO; as fotos permanecem no SQLite local. O PDF inclui as fotografias locais em páginas anexas, além do índice de evidências. Fotos externas antigas permanecem apenas referenciadas.</p><button onClick={()=>choose(null)}>+ Novo RDO completo</button>{error&&<p role="alert">{error}</p>}
     {editing&&<form className="cbim-react-panel" onSubmit={e=>{void submit(e);}}>
       <h2>{editing==='new'?'Novo RDO':'Corrigir RDO'}</h2>
