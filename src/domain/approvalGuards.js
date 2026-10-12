@@ -8,3 +8,10 @@ export function garantirMedicaoTransicao(anterior,proximo) {
  if(anterior==='rejeitada'&&proximo==='aprovada')throw new Error('Medição rejeitada exige nova conferência.');
  return true;
 }
+
+export function validarQuantidadeRecebida(total,recebido){
+ const n=Number(total),r=Number(recebido);
+ if(!Number.isFinite(n)||n<=0||!Number.isFinite(r)||r<0||r>n)
+   throw new Error('Recebimento deve estar entre zero e a quantidade pedida, sem arredondamento silencioso.');
+ return r;
+}
