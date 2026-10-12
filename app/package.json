@@ -2,7 +2,7 @@
   "name": "engenharia360-offline-app",
   "version": "0.2.0-p1.0",
   "private": true,
-  "description": "CompatibilizaBIM Studio Preview — conversão DWG/IFC, revisão e histórico offline",
+  "description": "CompatibilizaBIM Studio — aplicação local React com motor CBIM",
   "author": "Artificial Solution",
   "type": "module",
   "main": "electron/main.cjs",
@@ -32,7 +32,7 @@
   },
   "build": {
     "appId": "br.artisys.compatibilizabim.studio.preview",
-    "productName": "CompatibilizaBIM Studio Preview",
+    "productName": "CompatibilizaBIM Studio",
     "directories": {
       "output": "dist-installers"
     },

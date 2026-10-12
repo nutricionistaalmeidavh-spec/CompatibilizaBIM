@@ -1,29 +1,37 @@
+# CompatibilizaBIM Studio — publicação React
 
-# CompatibilizaBIM Studio — paridade Vanilla / React
+## Aplicação única
+- `app/index.html` é o **único** ponto de entrada HTML e monta React.
+- A navegação `AppShell` reúne obras, operação, finanças, RDO, cálculos, estruturas, estudos BIM, BIM de obra e histórico, usando o armazenamento canônico.
+- A revisão CBIM usa o mesmo entry React (`?surface=review`) e a mesma janela Electron. O servidor Python local exige cookie de sessão e token efêmero, tem guarda de origem e não recebe o preload SQLite.
+- `app/src/main.js`, `bootstrap.js`, `rendererMode.js` e módulos DOM Vanilla foram excluídos. Nenhum carregamento de Vanilla ou escolha de renderer está disponível no aplicativo empacotado.
+- CSS e formulários da interface são componentes React; a matemática, validação, viewer e análises reutilizam as fontes originais sem fork de motor.
 
-## Estado verificável nesta revisão do PR #4
+## Dados existentes, sem troca de contrato
+- Banco: `Documents/Engenharia360/engenharia360.sqlite` no Windows; armazenamento web `engenharia360-db-v1` (sem alteração).
+- SQLite: tabelas e migrations existentes; `obras`, `rdos`, `historico_obra`, `documentos_obra`, `bim_modelos`, `bim_analises`, `bim_projetos` e workspaces do CBIM continuam nos diretórios originais.
+- Importar backup mantém contrato `versao: 1`. A leitura de documentos foi expandida por consulta condicionada à obra, sem migração nem duplicação.
+- Operações e revisões não sobrescrevem workspaces legados e preservam auditoria pelo `WorkspaceStore`.
 
-- Fonte canônica: SQLite em Engenharia360, mesmo endereço e esquema; NÃO migrar, recriar ou limpar banco.
-- Motor CBIM: ACadSharp, IfcOpenShell e workspace Python são invocados pelos contratos existentes, sem fork de cálculo.
-- Um catálogo de 34 calculadoras é importado por Vanilla e React, com validação independente e persistência existentes.
-- React em \`?renderer=react\`: cria/lista obras e registros de etapa/pendência/RDO/material/frente; cria estudos BIM; importa IFC/JSON; executa análise, visualizador, DWG e ações de conflitos; consulta workspaces; executa cálculos.
-- Retido: renderer Vanilla como padrão. \`?renderer=legacy\` permanece explícito.
-- A revisão do WorkspaceStore passa a carregar na **mesma janela Electron** com ação 'Voltar ao painel'. O ambiente servido via loopback expõe apenas navegação, nunca a API SQLite do preload. Ainda falta confirmar paridade completa das telas e unificação de estados React, então a migração NÃO está concluída.
-- Operação agora possui formulários React para frentes, subfrentes, checklist, medições, compras, contratos, aditivos e orçamento. Financeiro agora possui contas, DRE simples e folha. Também foram adicionados RDO completo com edição/aprovação/PDF e estruturas com criação de modelos/nós/barras, análises 2D/3D e visualização isométrica em SVG React. Ainda faltam paridade de vários recursos avançados, relatórios especializados, modelagem/visualização estrutural detalhada e comparação E2E de cada fluxo com a Vanilla.
-- NÃO remover \`app/src/main.js\`, \`standaloneBimUi.js\`, \`bimUi.js\` ou alterar o default para React enquanto a lista de lacunas permanecer.
+## Paridade por área
+| Área | Rotas e operações React |
+|---|---|
+| Obras | carteira, indicadores, etapas, pendências, materiais, documentos originais e histórico |
+| RDO | edição, aprovação, fotos, emissão PDF e exclusão confirmada |
+| Financeiro | lançamentos, folha, DRE, contratos, fluxo medido/pago por frente |
+| Operação | frentes, subfrentes, checklists, medições, contratos/aditivos, compras e orçamento |
+| Cálculos | catálogo canônico, oráculo independente, persistência, PDF, JSON, CSV e DXF |
+| Estruturas | pavimentos, nós e cargas, barras, análise 2D/3D e viewer |
+| BIM | estudos autônomos e vinculados à obra, DWG→IFC, importação IFC/JSON, clash, viewer, resolução, pendências, JSON/CSV, histórico |
+| Revisão | fontes CAD, configuração, revisão humana, perfis, exportações, snapshots/recuperação no React |
 
-## Critérios obrigatórios antes de merge
+## Gates de merge
+- `npm test`: regressão Node com invariantes de entrada única e compatibilidade do banco.
+- `npm run build` (Vite): React e interface de revisão com entry único.
+- Regressão Python Core/SDK, segurança do servidor e semântica do fluxo DWG.
+- Browser smoke Playwright/Chromium de navegação, criação de obra, cálculo, operação, RDO e histórico, com screenshots do QA.
+- Instalador Windows NSIS via GitHub Actions, com artefato e sem publicação automática.
+- **Não mergir se qualquer check falhar.** O instalador não apaga dados de documentos na desinstalação.
 
-1. Mapear cada tela, formulário, cálculo, visualização, exportação, operação e evento da Vanilla e reproduzir em React.
-2. Verificar em E2E a navegação StudioApp ↔ painel na mesma janela Electron, mantendo isolamento, token de sessão, guarda de origem e ausência de ponte SQLite no loopback.
-3. Testar round-trip SQLite/backup/projetos antigos, histórico e recuperação sem sobrescrita.
-4. Garantir E2E de DWG real, IFC, clash, decisões humanas, estado recuperado e visualizadores (inclusive 3D).
-5. Testar painel financeiro e operação completa, incluindo os fluxos e relatórios.
-6. Executar \`npm test\`, regressão Python CBIM/SDK, build Vite e NSIS no Windows. Inspecionar logs e artefato de instalação do PR #4.
-7. Remover Vanilla **somente** após paridade comprovada, e então atualizar default e empacotamento. Não mesclar PR #4 com qualquer etapa pendente.
-
-Dependências de runtime: open source / local / self-hosted, sem API paga silenciosa. CI é disparado manualmente/por label \`run-cbim-qa\`, não por cada commit.
-
-## Dependências obrigatórias e licença
-
-O núcleo é local e não requer API, conta, nuvem nem serviço pago. Instalação empacotada usa `CBIM_STUDIO_LICENSE_MODE=free` por padrão. A verificação Ed25519 existente é **opcional**, ativada somente com `CBIM_STUDIO_LICENSE_MODE=commercial`, e usa arquivos offline do cliente; sem esses arquivos, o modo comercial falha explicitamente. Os contratos de assinatura e validação permanecem intactos. Em ambos os modos o servidor de revisão permanece restrito ao loopback com token de sessão.
+## Infra e licenças
+O núcleo é **R$ 0, self-hosted e open source**, sem API externa de execução. A verificação de licença comercial offline é opcional e explícita (`CBIM_STUDIO_LICENSE_MODE=commercial`); padrão `free`.

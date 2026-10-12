@@ -7,7 +7,7 @@ const exists=(p)=>fs.existsSync(new URL(p,app));
 test('the shipped desktop has exactly one React entry without Vanilla renderer',()=>{
   assert.match(read('index.html'),/\/src\/react\/main\.tsx/);
   assert.doesNotMatch(read('index.html'),/\/src\/bootstrap\.js|\/src\/main\.js/);
-  for(const file of ['src/bootstrap.js','src/rendererMode.js','src/main.js','src/advanced.js','src/bimUi.js','src/standaloneBimUi.js','src/structural3dUi.js'])assert.equal(exists(file),false,file);
+  for(const file of ['src/bootstrap.js','src/rendererMode.js','src/main.js','src/advanced.js','src/bimUi.js','src/standaloneBimUi.js','src/bimEnhancements.js','src/structural3dUi.js','src/react/studio/main.tsx'])assert.equal(exists(file),false,file);
   assert.equal(exists('studio-react.html'),false);
 });
 test('same React entry selects authenticated review surface and existing workspace renderer',()=>{

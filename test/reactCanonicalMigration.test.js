@@ -4,7 +4,7 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import { CALCULADORAS, CALCULATOR_GROUPS } from '../app/src/calculatorCatalog.js';
 
-test('shared catalog is canonical for React and Vanilla during migration',()=>{
+test('shared catalog is canonical for all calculators in the React-only application',()=>{
   const react=fs.readFileSync(new URL('../app/src/react/shell/CalculatorsPage.tsx',import.meta.url),'utf8');
   assert.match(react,/from '\.\.\/\.\.\/calculatorCatalog\.js'/);
   assert.ok(Object.keys(CALCULADORAS).length>=30);
