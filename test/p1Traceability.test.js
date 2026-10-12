@@ -1,9 +1,9 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {
-  REVIEW_LINK, MEASUREMENT_LINK, MATERIAL_LINK,
+  REVIEW_LINK, MEASUREMENT_LINK, MATERIAL_LINK, FINANCE_LINK,
   prepareReviewLink,prepareMeasurementLink,prepareMaterialLink,parseTraceLink,
-  summarizeMeasurementReconciliation,summarizePurchaseMaterialTrace,
+  summarizeMeasurementReconciliation,summarizePurchaseMaterialTrace,preparePurchaseFinanceLink,summarizePurchaseFinanceTrace,
 } from '../src/domain/p1Traceability.js';
 
 const project={id:'S1',nome:'Projeto BIM',obra_id:'OBRA-1'};
@@ -78,4 +78,29 @@ test('P1 purchase material association is explicit, same work and unit, with no 
  assert.ok(!('autoPostedAmount' in result[0]));
  assert.throws(()=>prepareMaterialLink('OBRA-1',purchase,{...material,unidade:'kg'},[],'Pessoa'),/unidade/i);
  assert.throws(()=>prepareMaterialLink('OBRA-1',purchase,{...material,obra_id:'OBRA-2'},[],'Pessoa'),/obra/i);
+});
+
+test('P1 purchasing financial trace is reference-only, validates work and expense type, and detects mismatched money',()=>{
+ const purchase={id:'BUY-A',obra_id:'OBRA-1',valor_total:120,quantidade:1,recebido:1,unidade:'un',pagamento_status:'pago'};
+ const entry={id:'LED-A',obra_id:'OBRA-1',tipo:'despesa',valor:100,status:'previsto'};
+ const link=preparePurchaseFinanceLink('OBRA-1',purchase,entry,[],'Conferente');
+ assert.equal(link.moduleId,FINANCE_LINK);
+ const references=[{module_id:FINANCE_LINK,entity_id:'BUY-A',source:link.source}];
+ const result=summarizePurchaseFinanceTrace([purchase],[entry],references)[0];
+ assert.equal(result.purchaseAmount,120);
+ assert.equal(result.recordedExpenseAmount,100);
+ assert.equal(result.delta,20);
+ assert.equal(result.state,'divergente');
+ assert.equal(result.paymentStatus,'pago');
+ assert.equal(result.ledgerStatus,'previsto');
+ assert.ok(!('postedTransaction' in result));
+ assert.throws(()=>preparePurchaseFinanceLink('OBRA-1',purchase,{...entry,tipo:'receita'},[],'Conferente'),/despesa/i);
+ assert.throws(()=>preparePurchaseFinanceLink('OBRA-1',purchase,{...entry,obra_id:null},[],'Conferente'),/obra/i);
+ assert.throws(()=>preparePurchaseFinanceLink('OBRA-1',purchase,entry,references,'Conferente'),/já vincula/i);
+});
+test('P1 purchasing reference cannot reuse the same expense on another purchase',()=>{
+ const p={id:'P1',obra_id:'OBRA-1',valor_total:10};
+ const e={id:'E1',obra_id:'OBRA-1',tipo:'despesa',valor:10,status:'pago'};
+ const l=preparePurchaseFinanceLink('OBRA-1',p,e,[],'Técnico');
+ assert.throws(()=>preparePurchaseFinanceLink('OBRA-1',{...p,id:'P2'},e,[{module_id:FINANCE_LINK,entity_id:l.entityId,source:l.source}],'Técnico'),/já vincula/i);
 });
