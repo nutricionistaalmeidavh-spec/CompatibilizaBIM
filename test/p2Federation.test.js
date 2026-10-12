@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { federarModelos, reconciliarConflitos, validarConfiguracaoFederacao, validarDecisaoConflito } from '../src/bim/p2Coordination.js';
+import { federarModelos, reconciliarConflitos, validarConfiguracaoFederacao, validarDecisaoConflito, compararRevisoesConflitos } from '../src/bim/p2Coordination.js';
 const model=(id,x)=>({id,nome:id,arquivo_nome:id+'.json',arquivo_hash:id+'-v1',revisao:1,disciplina:'hydraulic',elementos:[{id:'e-'+id,bbox:{min:[x,0,0],max:[x+2,1,1]}}]});
 test('F4 N model pairs are all analyzed, never just the first two',async()=>{
  const a=[model('a',0),model('b',1),model('c',1.5)];
