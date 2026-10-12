@@ -18,7 +18,14 @@ const {chromium}=require('../../app/node_modules/playwright');
   };
   try{
     await page.goto('http://127.0.0.1:5173/',{waitUntil:'domcontentloaded'});
-    await page.getByRole('heading',{name:'Carteira de obras'}).waitFor({timeout:25000});
+    try{await page.getByRole('heading',{name:'Carteira de obras'}).waitFor({timeout:25000});}
+    catch(e){
+      console.error('React startup URL:',page.url());
+      console.error('React startup body:',(await page.locator('body').innerText().catch(()=>'' )).slice(0,3000));
+      console.error('React startup console errors:',errors);
+      await screenshots('failure-startup');
+      throw e;
+    }
     assert.equal(await page.locator('.studio-sidebar button').count()>=7,true);
     await screenshots('01-obras');
     await page.getByRole('button',{name:'+ Nova obra'}).click();
