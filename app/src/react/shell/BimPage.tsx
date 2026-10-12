@@ -11,8 +11,8 @@ const runtime=()=> (globalThis as any).engineeringStorage?.bim;
 const fingerprint=async(file:File)=>contentFingerprint(new Uint8Array(await file.arrayBuffer()));
 const toBase64=async(file:File)=>{const bytes=new Uint8Array(await file.arrayBuffer());let out='';for(let i=0;i<bytes.length;i+=32768)out+=String.fromCharCode(...bytes.subarray(i,i+32768));return btoa(out);};
 const download=(name:string,text:string,type:string)=>{const url=URL.createObjectURL(new Blob([text],{type}));const a=document.createElement('a');a.href=url;a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);};
-type Props={db:any;obraId:string|null;version:number;onChange:()=>void};
-export function BimPage({db,obraId,version,onChange}:Props) {
+type Props={db:any;obraId:string|null;version:number;onChange:()=>void;studyId?:string;onSelectStudy?:(id:string)=>void};
+export function BimPage({db,obraId,version,onChange,studyId='',onSelectStudy}:Props) {
   const [id,setId]=React.useState(()=>{try{return sessionStorage.getItem('cbim-selected-study')||'';}catch{return '';}});
   const [creating,setCreating]=React.useState(false);
   const [left,setLeft]=React.useState('');
@@ -26,7 +26,7 @@ export function BimPage({db,obraId,version,onChange}:Props) {
   const [workspaces,setWorkspaces]=React.useState<any[]>([]);
   const [discipline,setDiscipline]=React.useState('hydraulic');
   const projects=listarProjetosBim(db);
-  const selected=projects.some((p:any)=>p.id===id)?id:projects[0]?.id||'';
+  const selected=projects.some((p:any)=>p.id===studyId)?studyId:(projects.some((p:any)=>p.id===id)?id:projects[0]?.id||'');
   const project=selected?buscarProjetoBim(db,selected):null;
   const models=project?.modelos||[];
   const analyses=project?.analises||[];
@@ -41,7 +41,7 @@ export function BimPage({db,obraId,version,onChange}:Props) {
   };
   const create=(e:React.FormEvent<HTMLFormElement>)=>{
     e.preventDefault();const form=new FormData(e.currentTarget);
-    try{const newid=criarProjetoBimPersistido(db,{nome:String(form.get('name')||''),descricao:String(form.get('description')||''),obraId:form.get('linked')==='on'?obraId:null});setId(newid);setCreating(false);onChange();}
+    try{const newid=criarProjetoBimPersistido(db,{nome:String(form.get('name')||''),descricao:String(form.get('description')||''),obraId:form.get('linked')==='on'?obraId:null});setId(newid);onSelectStudy?.(newid);setCreating(false);onChange();}
     catch(e:any){setMessage(e.message);}
   };
   const importFile=async(file:File|null)=>{
@@ -114,9 +114,9 @@ export function BimPage({db,obraId,version,onChange}:Props) {
     try{atualizarConflitoBimProjeto(db,a,i,status);onChange();}catch(e:any){setMessage(e.message);}
   };
   return <section className="cbim-react-section"><h1>Compatibilização BIM</h1><p>Importação, conversão e análise usam os contratos canônicos; resultado pendente não é apresentado como análise concluída.</p>
-    <div className="cbim-react-toolbar"><label>Estudo BIM<select value={selected} onChange={e=>setId(e.target.value)}><option value="">Selecione estudo</option>{projects.map((p:any)=><option key={p.id} value={p.id}>{p.nome}</option>)}</select></label><button onClick={()=>setCreating(v=>!v)}>+ Estudo</button></div>
+    <div className="cbim-react-toolbar"><label>Estudo BIM<select value={selected} onChange={e=>{setId(e.target.value);onSelectStudy?.(e.target.value);}}><option value="">Selecione estudo</option>{projects.map((p:any)=><option key={p.id} value={p.id}>{p.nome}</option>)}</select></label><button onClick={()=>setCreating(v=>!v)}>+ Estudo</button></div>
     {creating&&<form className="cbim-react-panel cbim-react-form-grid" onSubmit={create}><label>Nome<input name="name" required/></label><label>Descrição<input name="description"/></label>{obraId&&<label><input type="checkbox" name="linked"/> Vincular à obra atual</label>}<button type="submit">Criar estudo</button></form>}
-    {project&&<><div className="cbim-react-panel"><h2>{project.nome} · {models.length} modelos</h2>
+    {project&&<><p className="studio-muted">Contexto: {project.obra_id?'Estudo vinculado à obra '+(project.obra_id===obraId?'atual.':'de origem '+project.obra_id+'.'):'Estudo BIM independente.'} {project.obra_id&&obraId&&project.obra_id!==obraId?'A obra selecionada no cabeçalho não altera o conteúdo deste estudo.':''}</p><div className="cbim-react-panel"><h2>{project.nome} · {models.length} modelos</h2>
       <div className="cbim-react-form-grid"><label>Disciplina<select value={discipline} onChange={e=>setDiscipline(e.target.value)}><option value="hydraulic">Hidráulica</option><option value="structure">Estrutura</option><option value="architecture">Arquitetura</option><option value="fire">Incêndio</option></select></label>
         <label>Importar IFC / CBIM JSON<input disabled={busy} type="file" accept=".ifc,.json,.cbim.json" onChange={e=>{void importFile(e.target.files?.[0]||null);e.target.value='';}}/></label>
         <label>Converter CAD (DWG / DXF)<input disabled={busy} type="file" accept=".dwg,.dxf" onChange={e=>{void convert(e.target.files?.[0]||null);e.target.value='';}}/></label><label>DXF sem unidade<select value={unitlessScale} disabled={busy} onChange={e=>setUnitlessScale(e.target.value)}><option value="1">Metros (m)</option><option value="0.01">Centímetros (cm)</option><option value="0.001">Milímetros (mm)</option></select></label></div><p className="studio-muted">Selecione a disciplina antes da importação. DWG usa ACadSharp; DXF usa ezdxf e respeita unidades INSUNITS. A escala acima só se aplica quando não há unidade declarada. XREFs ausentes são diagnosticados; o original e o relatório ficam no job local.</p>
