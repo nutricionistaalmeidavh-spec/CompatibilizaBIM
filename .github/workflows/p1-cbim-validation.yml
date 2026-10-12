@@ -84,6 +84,41 @@ jobs:
         shell: pwsh
         run: |
           .\scripts\build-p1-windows.ps1
+      - name: Checkout immutable real DWG samples (LFS pointers)
+        uses: actions/checkout@v4
+        with:
+          ref: 6feeb60e8b376def69d9e8ddb6b3788c56418397
+          path: .f0-real-samples
+          lfs: false
+          sparse-checkout-cone-mode: false
+          sparse-checkout: |
+            .gitattributes
+            materiais-local-2026-09-30/DWG/BARRILETE.dwg
+            materiais-local-2026-09-30/DWG/QUA-HID-LO-0100-TERR-R02.dwg
+      - name: Verify real DWG SHA256 inputs
+        shell: pwsh
+        run: |
+          Push-Location .f0-real-samples
+          try {
+            git lfs install --local
+            git lfs pull --include="materiais-local-2026-09-30/DWG/BARRILETE.dwg,materiais-local-2026-09-30/DWG/QUA-HID-LO-0100-TERR-R02.dwg" --exclude=""
+            $a=(Get-FileHash -Algorithm SHA256 'materiais-local-2026-09-30/DWG/BARRILETE.dwg').Hash.ToLower()
+            $b=(Get-FileHash -Algorithm SHA256 'materiais-local-2026-09-30/DWG/QUA-HID-LO-0100-TERR-R02.dwg').Hash.ToLower()
+            if ($a -ne 'b2f02c77c3028f3be107b2f06f78508321732015143a87443f884362002f9be5') { throw 'BARRILETE hash mismatch' }
+            if ($b -ne 'f48290b8b8d9fb626ece26d325f1f2570e134c61c17ebc12f812f6f49190ea17') { throw 'QUA-HID hash mismatch' }
+          } finally { Pop-Location }
+      - name: Validate bundled ACadSharp, real DWGs and IFC sanity (no installation)
+        shell: pwsh
+        run: |
+          .\scripts\f0-smoke-real-dwg.ps1 -SamplesDir (Join-Path (Get-Location) '.f0-real-samples/materiais-local-2026-09-30/DWG')
+      - name: Save F0 sanitized Windows smoke summary
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: CompatibilizaBIM-F0-RealDWG-Windows-QA
+          path: .p1-build/f0-smoke/f0-windows-smoke-summary.json
+          if-no-files-found: warn
+          retention-days: 7
       - name: Disponibilizar instalador apenas como artefato QA
         if: success()
         uses: actions/upload-artifact@v4
