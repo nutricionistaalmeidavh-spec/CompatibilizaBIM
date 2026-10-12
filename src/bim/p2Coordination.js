@@ -46,3 +46,14 @@ export async function federarModelos(modelos,config={},services={}){
  }
  return {modelos:modelos.map(m=>({id:m.id,hash:m.arquivo_hash||null,disciplina:m.disciplina,nome:m.nome})),modo:mode.modo,tolerancia:mode.tolerancia,afastamento:mode.afastamento,formato:formats[0],motor:engine,pairs,conflitos:clashes,geradoEm:new Date().toISOString()};
 }
+
+export function validarDecisaoConflito(input={}){
+ const status=String(input.status||'aberto');
+ if(!['aberto','em_revisao','resolvido','ignorado'].includes(status))throw new Error('Estado de conflito desconhecido.');
+ const responsavel=String(input.responsavel||'').trim(),motivo=String(input.motivo||'').trim();
+ if(['resolvido','ignorado'].includes(status)&&!responsavel)throw new Error('Informe responsável pela decisão.');
+ if(status==='ignorado'&&!motivo)throw new Error('Informe motivo ao ignorar o conflito.');
+ const prazo=String(input.prazo||'').trim();
+ if(prazo&&!/^\d{4}-\d{2}-\d{2}$/.test(prazo))throw new Error('Prazo deve usar AAAA-MM-DD.');
+ return {status,responsavel,prazo,motivo,comentario:String(input.comentario||'').trim().slice(0,2000)};
+}
