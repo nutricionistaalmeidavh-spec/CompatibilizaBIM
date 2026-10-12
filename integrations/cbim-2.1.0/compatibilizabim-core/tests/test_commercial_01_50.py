@@ -58,8 +58,10 @@ def test_autosave_detects_crash_recovers_and_rotates(tmp_path):
     for i in range(3):
         changed=p.model_copy(update={'name':f'R{i}'})
         mgr.autosave(changed)
+    assert mgr.recovery_candidates()==[]  # sessão atual não é tratada como falha
+    mgr.begin_session()  # simula reabertura após encerramento sem mark_clean_shutdown
     candidates=mgr.recovery_candidates()
-    assert len(candidates)==2
+    assert len(candidates)==1
     recovered=mgr.recover_latest()
     assert recovered.name=='R2'
     mgr.mark_clean_shutdown()
@@ -111,6 +113,11 @@ def test_desktop_server_serves_status_and_persists_project(tmp_path):
     try:
         status=json.loads(urlopen(base+'/api/status',timeout=3).read())
         assert status['project_name']=='Pilot Project'
+        canonical=json.loads(urlopen(base+'/api/canonical',timeout=3).read())
+        assert canonical['project']['id']==p.id
+        assert canonical['revision']==0
+        assert canonical['elements'][0]['id']=='w1'
+        assert canonical['elements'][0]['review_state']=='confirmed'
         assert b'CompatibilizaBIM Studio' in urlopen(base+'/',timeout=3).read()
         changed=p.model_copy(update={'name':'Saved from Desktop'})
         req=Request(base+'/api/project',data=changed.model_dump_json(by_alias=True,exclude_computed_fields=True).encode(),method='POST',headers={'Content-Type':'application/json'})

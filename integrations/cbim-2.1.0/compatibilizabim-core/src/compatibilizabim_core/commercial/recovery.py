@@ -38,6 +38,7 @@ class SessionState(RecoveryModel):
     clean_shutdown: bool = False
     last_autosave: str | None = None
     last_autosave_sha256: str | None = None
+    recovery_autosaves: list[str] = Field(default_factory=list)
 
 
 class RecoveryCandidate(RecoveryModel):
@@ -57,7 +58,11 @@ class AutosaveManager:
         self.autosave_dir.mkdir(parents=True,exist_ok=True)
 
     def begin_session(self) -> SessionState:
-        state=SessionState()
+        previous=self.session()
+        recoverable=[]
+        if previous and not previous.clean_shutdown and previous.last_autosave:
+            recoverable=[previous.last_autosave]
+        state=SessionState(recovery_autosaves=recoverable)
         _atomic(self.session_path,state.model_dump_json(indent=2))
         return state
 
@@ -88,10 +93,17 @@ class AutosaveManager:
         state=self.session()
         if state is None or state.clean_shutdown: return []
         out=[]
+        allowed={str((self.workspace.root/path).resolve()) for path in state.recovery_autosaves}
         for path in sorted(self.autosave_dir.glob('*.cbim.json'),reverse=True):
+            if str(path.resolve()) not in allowed: continue
             raw=path.read_bytes(); project=CBIMProject.model_validate_json(raw)
             out.append(RecoveryCandidate(path=str(path),created_at=datetime.fromtimestamp(path.stat().st_mtime,tz=timezone.utc),sha256=hashlib.sha256(raw).hexdigest(),project_id=project.id,project_name=project.name))
         return out
+
+    def clear_recovery_candidates(self) -> None:
+        state=self.session()
+        if state is None: return
+        _atomic(self.session_path,state.model_copy(update={'recovery_autosaves':[]}).model_dump_json(indent=2))
 
     def recover_latest(self, *, commit: bool = False) -> CBIMProject:
         candidates=self.recovery_candidates()
