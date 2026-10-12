@@ -180,7 +180,7 @@ class DesktopApplication:
         if not candidate:
             return None
         path = Path(candidate).resolve()
-        return path if (path / 'studio-react.html').is_file() else None
+        return path if (path / 'index.html').is_file() else None
 
     def studio_state_payload(self) -> dict:
         return {
@@ -378,7 +378,7 @@ class DesktopApplication:
                     return self._json(403, {'error': 'A sessão do Studio não foi autenticada'})
                 if route.path == '/':
                     ui = application.react_ui_dir()
-                    page = ui / 'studio-react.html' if ui else application.generate_studio()
+                    page = ui / 'index.html' if ui else application.generate_studio()
                     self._send(200, 'text/html; charset=utf-8', page.read_bytes(), cookie=allow_cookie)
                 elif route.path.startswith('/assets/') and application.react_ui_dir():
                     ui = application.react_ui_dir()

@@ -175,7 +175,7 @@ async function openStudioWindow({ workspacePath, documentsDir, appSourceDir, res
           };
           hostedStudioSessions.set(win, { origin, restore });
         }
-        win.loadURL(origin + '/?token=' + encodeURIComponent(ready.token))
+        win.loadURL(origin + '/?token=' + encodeURIComponent(ready.token) + '&surface=review')
           .catch(() => {
             if (hostWindow && hostedStudioSessions.has(win)) {
               hostedStudioSessions.get(win).restore().catch(() => {});

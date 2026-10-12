@@ -3,12 +3,9 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import { CALCULADORAS, CALCULATOR_GROUPS } from '../app/src/calculatorCatalog.js';
-import { resolveRendererMode } from '../app/src/rendererMode.js';
 
 test('shared catalog is canonical for React and Vanilla during migration',()=>{
-  const old=fs.readFileSync(new URL('../app/src/main.js',import.meta.url),'utf8');
   const react=fs.readFileSync(new URL('../app/src/react/shell/CalculatorsPage.tsx',import.meta.url),'utf8');
-  assert.match(old,/from '\.\/calculatorCatalog\.js'/);
   assert.match(react,/from '\.\.\/\.\.\/calculatorCatalog\.js'/);
   assert.ok(Object.keys(CALCULADORAS).length>=30);
   const ids=CALCULATOR_GROUPS.flatMap(group=>group.ids);
@@ -24,13 +21,10 @@ test('React uses the original SQLite and BIM engine modules instead of a paralle
   assert.match(bim,/salvarAnaliseBimProjeto/);
   assert.match(bim,/ifc_sanity_passed/);
 });
-test('legacy entry remains available until true screen parity is proven',()=>{
-  assert.equal(resolveRendererMode(''),'legacy');
-  assert.equal(resolveRendererMode('?renderer=react'),'react');
-  const source=fs.readFileSync(new URL('../app/src/bootstrap.js',import.meta.url),'utf8');
-  assert.match(source,/import\('\.\/main\.js'\)/);
+test('React entry and canonical storage work without a Vanilla bootstrap',()=>{
+  const entry=fs.readFileSync(new URL('../app/index.html',import.meta.url),'utf8');
+  assert.match(entry,/react\/main\.tsx/);
 });
-
 test('operational and financial screens use canonical storage contracts',()=>{
   const op=fs.readFileSync(new URL('../app/src/react/shell/OperationsPage.tsx',import.meta.url),'utf8');
   const fin=fs.readFileSync(new URL('../app/src/react/shell/FinancePage.tsx',import.meta.url),'utf8');
