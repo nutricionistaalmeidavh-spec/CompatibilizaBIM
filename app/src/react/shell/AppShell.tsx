@@ -6,9 +6,11 @@ import { BimPage } from './BimPage';
 import { CalculatorsPage } from './CalculatorsPage';
 import { OperationsPage } from './OperationsPage';
 import { FinancePage } from './FinancePage';
+import { RdoPage } from './RdoPage';
+import { StructuralPage } from './StructuralPage';
 import { Status } from '../components/ui';
 
-const sections=['Obras','BIM','Cálculos','Operação','Financeiro','Revisão','Histórico'];
+const sections=['Obras','BIM','Cálculos','Estruturas','Operação','RDO','Financeiro','Revisão','Histórico'];
 export function AppShell(){
   const [db,setDb]=React.useState<any>(null);
   const [error,setError]=React.useState('');
@@ -49,6 +51,8 @@ export function AppShell(){
       {active==='Obras'&&<WorksPage db={db} obraId={workId} selectWork={selectWork} onChange={refresh}/>}
       {active==='BIM'&&<BimPage db={db} obraId={workId} version={version} onChange={refresh}/>}
       {active==='Cálculos'&&<CalculatorsPage db={db} obraId={workId} onSaved={refresh}/>}
+      {active==='Estruturas'&&<StructuralPage db={db} obraId={workId} onChange={refresh}/>}
+      {active==='RDO'&&<RdoPage db={db} obraId={workId} onChange={refresh}/>}
       {active==='Operação'&&<OperationsPage db={db} obraId={workId} onChange={refresh}/>}
       {active==='Financeiro'&&<FinancePage db={db} obraId={workId} onChange={refresh}/>}
       {active==='Revisão'&&<BimPage db={db} obraId={workId} version={version} onChange={refresh}/>}
