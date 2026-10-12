@@ -3,7 +3,16 @@ import React from 'react';
 import { CALCULADORAS, CALCULATOR_GROUPS } from '../../calculatorCatalog.js';
 import { validarCalculoIndependente } from '../../../../src/validation/independentOracle.js';
 import { salvarCalculo } from '../../../../storage/sqliteStore.js';
+import { gerarPdfRelatorio } from '../../pdfTemplates.js';
+import { exportarDetalhamentoCsv, exportarDetalhamentoDxf, exportarDetalhamentoJson } from '../../../../src/export/detailingExport.js';
 
+const saveFile=(name:string,data:Blob|string,mime:string)=>{
+  const blob=data instanceof Blob?data:new Blob([data],{type:mime});
+  const link=document.createElement('a'),url=URL.createObjectURL(blob);
+  link.href=url;link.download=name;link.click();setTimeout(()=>URL.revokeObjectURL(url),1500);
+};
+const textLines=(v:any)=>Object.entries(v||{}).map(([k,x])=>k+': '+(typeof x==='object'?JSON.stringify(x):String(x)));
+const detailExportIds=new Set(['detalhamentoArmadura','listaAco','quadroFormas']);
 type CalcDefinition = { label:string; fields:[string,string,number][]; fn:(args:any)=>any };
 const catalog = CALCULADORAS as Record<string, CalcDefinition>;
 
@@ -34,6 +43,23 @@ export function CalculatorsPage({db, obraId, onSaved}:{db:any;obraId:string|null
       setError('');
     } catch(e:any) {setError(e.message);setResult(null);}
   };
+  const exportResult=(format:'pdf'|'csv'|'dxf'|'json')=>{
+    if(!result)return;
+    const values=result.output?.resultados||result.output;
+    try{
+      if(format==='pdf'){
+        saveFile('calculo-'+calculator+'.pdf',gerarPdfRelatorio('Cálculo - '+entry.label,{
+          Entradas:textLines(result.inputs),Resultados:textLines(result.output),
+          Validação:[result.validation.ok?'Aprovada':'Requer revisão',...(result.validation.errors||[])],
+          Norma:[result.output?.metadados?.normaDeclarada||'Não declarada']
+        }),'application/pdf');
+      }
+      if(format==='csv')saveFile('detalhamento-'+calculator+'.csv',exportarDetalhamentoCsv(values),'text/csv;charset=utf-8');
+      if(format==='dxf')saveFile('detalhamento-'+calculator+'.dxf',exportarDetalhamentoDxf(values,{titulo:entry.label}),'application/dxf');
+      if(format==='json')saveFile('calculo-'+calculator+'.json',exportarDetalhamentoJson(values,{titulo:entry.label}),'application/json');
+      setError('');
+    }catch(e:any){setError(e.message);}
+  };
   const save=()=>{
     if (!obraId || !result?.validation?.ok) return;
     try {
@@ -55,7 +81,10 @@ export function CalculatorsPage({db, obraId, onSaved}:{db:any;obraId:string|null
       {!result.validation.ok&&<p>{(result.validation.errors||[]).join('; ')}</p>}
       <pre>{JSON.stringify(result.output,null,2)}</pre>
       <p>Norma declarada: {result.output?.metadados?.normaDeclarada||'não informada'}</p>
-      <button type="button" onClick={save} disabled={!obraId||!result.validation.ok}>Salvar na obra</button>
+      <div className="cbim-react-toolbar"><button type="button" onClick={save} disabled={!obraId||!result.validation.ok}>Salvar na obra</button>
+        <button type="button" onClick={()=>exportResult('pdf')}>Memória PDF</button>
+        <button type="button" onClick={()=>exportResult('json')}>Exportar JSON</button>
+        {detailExportIds.has(calculator)&&<><button type="button" onClick={()=>exportResult('csv')}>Detalhamento CSV</button><button type="button" onClick={()=>exportResult('dxf')}>Detalhamento DXF</button></>}</div>
     </section>}
   </section>;
 }
