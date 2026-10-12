@@ -30,3 +30,17 @@ test('legacy entry remains available until true screen parity is proven',()=>{
   const source=fs.readFileSync(new URL('../app/src/bootstrap.js',import.meta.url),'utf8');
   assert.match(source,/import\('\.\/main\.js'\)/);
 });
+
+test('operational and financial screens use canonical storage contracts',()=>{
+  const op=fs.readFileSync(new URL('../app/src/react/shell/OperationsPage.tsx',import.meta.url),'utf8');
+  const fin=fs.readFileSync(new URL('../app/src/react/shell/FinancePage.tsx',import.meta.url),'utf8');
+  assert.match(op,/salvarMedicao/);
+  assert.match(op,/salvarCompra/);
+  assert.match(op,/salvarContrato/);
+  assert.match(op,/salvarOrcamentoItem/);
+  assert.match(fin,/listarLancamentosFinanceiros/);
+  assert.match(fin,/salvarFolhaPagamento/);
+  const shell=fs.readFileSync(new URL('../app/src/react/shell/AppShell.tsx',import.meta.url),'utf8');
+  assert.match(shell,/<OperationsPage /);
+  assert.match(shell,/<FinancePage /);
+});

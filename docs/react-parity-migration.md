@@ -9,7 +9,7 @@
 - React em \`?renderer=react\`: cria/lista obras e registros de etapa/pendência/RDO/material/frente; cria estudos BIM; importa IFC/JSON; executa análise, visualizador, DWG e ações de conflitos; consulta workspaces; executa cálculos.
 - Retido: renderer Vanilla como padrão. \`?renderer=legacy\` permanece explícito.
 - Revisão do WorkspaceStore ainda inicia outra janela Electron. Isso NÃO comprova aplicação unificada.
-- Módulos de Operação/Financeiro, RDO completo, orçamento, medições, contratos, relatórios e visualização estrutural 3D ainda NÃO têm paridade React integral.
+- Operação agora possui formulários React para frentes, subfrentes, checklist, medições, compras, contratos, aditivos e orçamento. Financeiro agora possui contas, DRE simples e folha. Ainda faltam paridade de edições avançadas, RDO completo, relatórios especializados, visualização estrutural 3D e comparação detalhada de cada fluxo com a Vanilla.
 - NÃO remover \`app/src/main.js\`, \`standaloneBimUi.js\`, \`bimUi.js\` ou alterar o default para React enquanto a lista de lacunas permanecer.
 
 ## Critérios obrigatórios antes de merge
