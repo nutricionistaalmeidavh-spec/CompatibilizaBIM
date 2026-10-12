@@ -1,5 +1,6 @@
 
 import React from 'react';
+import { LinkedBimPanel } from './LinkedBimPanel';
 import {listarProjetosBim,buscarProjetoBim,criarProjetoBimPersistido,salvarModeloBimProjeto,salvarAnaliseBimProjeto,atualizarConflitoBimProjeto} from '../../../../storage/sqliteStore.js';
 import {criarModeloBim,detectarConflitosBim,validarCabecalhoIfc} from '../../../../src/bim/compatibility.js';
 import {executarAnaliseBim,formatoModeloBim} from '../../../../src/bim/p0Workflow.js';
@@ -124,6 +125,7 @@ export function BimPage({db,obraId,version,onChange}:Props) {
       {workspaces.map((w:any)=><article key={w.path}><b>{w.project_name}</b><small>{w.job} · revisão {w.revision} · {w.updated_at}</small><button disabled={busy} onClick={()=>review(w.path)}>Abrir revisão React</button></article>)}
       {!workspaces.length&&<p>Nenhum workspace convertido encontrado.</p>}
     </div>
+    <LinkedBimPanel db={db} obraId={obraId} onChange={onChange}/>
     {(message||progress)&&<p role="status">{progress||message}</p>}
     {busy&&<p aria-busy="true">Processamento em andamento…</p>}
   </section>;
