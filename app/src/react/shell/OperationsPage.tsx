@@ -2,11 +2,13 @@
 import React from 'react';
 import {PurchaseMaterialTraceability} from './PurchaseMaterialTraceability';
 import {filterScopedRecords} from '../../../../src/domain/workspaceScope.js';
+import {resolveSourceRecord} from '../../../../src/domain/engineeringJourney.js';
+import {MEASUREMENT_LINK,parseTraceLink} from '../../../../src/domain/p1Traceability.js';
 import {
   listarFrentes, salvarFrente, listarSubfrentes, salvarSubfrente, listarChecklistFrente,
   salvarChecklistFrente, atualizarStatusChecklist, listarMedicoes, salvarMedicao,
   atualizarStatusMedicao, listarContratos, salvarContrato, salvarAditivoContrato,
-  listarCompras, salvarCompra, atualizarRecebimentoCompra, atualizarPagamentoCompra,
+  listarCompras, salvarCompra, atualizarRecebimentoCompra, atualizarPagamentoCompra, listarModuleLinks,
   listarOrcamento, salvarOrcamentoItem, atualizarRealizadoOrcamento
 } from '../../../../storage/sqliteStore.js';
 
@@ -14,15 +16,20 @@ const currency=(v:any)=>new Intl.NumberFormat('pt-BR',{style:'currency',currency
 const number=(data:FormData,k:string)=>Number(data.get(k)||0);
 const str=(data:FormData,k:string)=>String(data.get(k)||'').trim();
 const views=['Frentes','Medições','Compras','Contratos','Orçamento'];
-export function OperationsPage({db,obraId,scope={},onChange}:{db:any;obraId:string|null;scope?:any;onChange:()=>void}){
+export function OperationsPage({db,obraId,scope={},onChange,target,onNavigate}:{db:any;obraId:string|null;scope?:any;onChange:()=>void;target?:any;onNavigate?:(route:string,target?:any)=>void}){
   const [view,setView]=React.useState('Frentes');
+  React.useEffect(()=>{if(target?.kind==='medicao')setView('Medições');},[target?.kind,target?.id]);
   const [error,setError]=React.useState('');
   const [front,setFront]=React.useState('');
   const [contract,setContract]=React.useState('');
   const [measureApprover,setMeasureApprover]=React.useState('');
   const fronts=obraId?listarFrentes(db,obraId):[];
   const selectedFronts=fronts.filter((f:any)=>!scope.frenteId||f.id===scope.frenteId);
-  const measure=obraId?filterScopedRecords(listarMedicoes(db,obraId),scope,{frontField:'frente_id',dateField:'periodo'}):[];
+  const allMeasures=obraId?listarMedicoes(db,obraId):[];
+  const measure=filterScopedRecords(allMeasures,scope,{frontField:'frente_id',dateField:'periodo'});
+  const focused=target?.kind==='medicao'?resolveSourceRecord(allMeasures,measure,target.id):{record:null,outsideScope:false};
+  const shownMeasures=focused.outsideScope?[focused.record,...measure]:measure;
+  const bimLinks=obraId?listarModuleLinks(db,obraId).filter((l:any)=>l.module_id===MEASUREMENT_LINK).map((l:any)=>parseTraceLink(l)).filter(Boolean):[];
   const buys=obraId?filterScopedRecords(listarCompras(db,obraId),scope,{frontField:'frente_id',dateField:'pedido_em'}):[];
   // Contracts have no frente_id. Never present them as filtered by front.
   const contracts=obraId?filterScopedRecords(listarContratos(db,obraId),scope,{intervalStartField:'inicio',intervalEndField:'fim'}):[];
@@ -40,6 +47,8 @@ export function OperationsPage({db,obraId,scope={},onChange}:{db:any;obraId:stri
     {(scope.periodo?.inicio||scope.periodo?.fim)&&<p className="studio-muted">Período: competência de medição/orçamento, data do pedido de compra e vigência do contrato. Registros sem data aplicável não entram no recorte.</p>}
     <nav className="cbim-react-toolbar" aria-label="Módulos operacionais">{views.map(v=><button key={v} className={v===view?'selected':''} onClick={()=>setView(v)}>{v}</button>)}</nav>
     {error&&<p role="alert">{error}</p>}
+    {target?.kind==='medicao'&&!focused.record&&<p role="alert" className="cbim-react-panel">Medição de origem {target.id} não localizada nesta obra. O vínculo histórico não foi alterado; confira a obra ou o identificador no estudo BIM.</p>}
+    {focused.outsideScope&&<p role="status" className="cbim-react-panel">A medição de origem está fora do filtro atual de frente ou período. Ela aparece destacada somente para inspeção; os filtros, demais registros e totais não foram modificados.</p>}
     {view==='Frentes'&&<>{(scope.periodo?.inicio||scope.periodo?.fim)&&<p className="studio-muted">Frentes e checklists são cadastros operacionais; sem período próprio para aplicar este filtro nesta visualização.</p>}<form className="cbim-react-panel" onSubmit={handle(d=>salvarFrente(db,obraId,{nome:str(d,'nome'),responsavel:str(d,'responsavel')}))}><h2>Nova frente de serviço</h2><div className="cbim-react-form-grid"><label>Nome<input name="nome" required/></label><label>Responsável<input name="responsavel"/></label></div><button type="submit">Cadastrar frente</button></form>
       <div className="cbim-react-panel"><h2>Frentes e subfrentes</h2>{selectedFronts.map((f:any)=><article key={f.id}><b>{f.nome}</b> · <small>{f.status} · {f.percentual_concluido}%</small><button onClick={()=>setFront(f.id)}>Gerenciar</button></article>)}</div>
       {selectedFront&&<><form className="cbim-react-panel" onSubmit={handle(d=>salvarSubfrente(db,selectedFront,{nome:str(d,'nome'),descricao:str(d,'descricao')}))}><h2>Nova subfrente</h2><label>Nome<input name="nome" required/></label><label>Descrição<input name="descricao"/></label><button type="submit">Salvar subfrente</button></form>
@@ -54,7 +63,13 @@ export function OperationsPage({db,obraId,scope={},onChange}:{db:any;obraId:stri
       <div className="cbim-react-panel"><h2>Medições registradas</h2>
       <label>Responsável pela aprovação<input value={measureApprover} onChange={e=>setMeasureApprover(e.target.value)} placeholder="Nome de quem conferiu e aprovou"/></label>
       <p className="studio-muted">A aprovação é definitiva e fica registrada no histórico da obra. Para corrigir uma medição aprovada, crie uma retificação independente.</p>
-      {measure.map((m:any)=><article key={m.id}><b>{m.descricao}</b> · {currency(m.quantidade*m.preco_unitario)} · {m.status} · {m.periodo}
+      {shownMeasures.map((m:any)=><article key={m.id} className={target?.kind==='medicao'&&target.id===m.id?'cbim-journey-focus':''}><b>{m.descricao}</b> · {currency(m.quantidade*m.preco_unitario)} · {m.status} · {m.periodo}
+       {target?.kind==='medicao'&&target.id===m.id&&<p role="status">Registro operacional de origem · {m.id} · {m.quantidade} {m.unidade} × {currency(m.preco_unitario)}. A medição aprovada não equivale a receita recebida.</p>}
+       {onNavigate&&<div className="cbim-react-toolbar">
+         {bimLinks.find((link:any)=>link.operationalId===m.id)&&<button type="button" onClick={()=>{const link=bimLinks.find((l:any)=>l.operationalId===m.id);onNavigate('BIM',{kind:'bim-conciliacao',id:link.batchId,obraId,studyId:link.projectId,period:m.periodo});}}>Abrir conferência BIM</button>}
+         <button type="button" onClick={()=>onNavigate('RDO',{kind:'rdo-competencia',period:m.periodo,obraId,studyId:target?.studyId||'',origin:{kind:'medicao',id:m.id,obraId,period:m.periodo}})}>Ver RDOs da competência</button>
+         <button type="button" onClick={()=>onNavigate('Financeiro',{kind:'contas-competencia',period:m.periodo,obraId,studyId:target?.studyId||'',origin:{kind:'medicao',id:m.id,obraId,period:m.periodo}})}>Ver contas por vencimento</button>
+       </div>}
        {m.status==='aprovada'?<p>Registro aprovado — não editável</p>:<select aria-label={'Status da medição '+m.descricao} value={m.status} onChange={e=>mutate(()=>atualizarStatusMedicao(db,m.id,e.target.value,measureApprover))}>
         {['rascunho','conferida','aprovada','rejeitada'].map(s=><option key={s} value={s}>{s}</option>)}</select>}
       </article>)}</div>
