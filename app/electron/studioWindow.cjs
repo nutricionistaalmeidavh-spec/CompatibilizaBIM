@@ -4,6 +4,15 @@ const path = require('node:path');
 const { spawn } = require('node:child_process');
 
 const activeStudioSessions = new Set();
+const hostedStudioSessions = new WeakMap();
+
+function returnToMainWindow(window) {
+  const session = window && hostedStudioSessions.get(window);
+  if (!session) throw new Error('Não há revisão aberta nesta janela.');
+  if (!window.webContents.getURL().startsWith(session.origin + '/')) throw new Error('Origem de revisão inválida.');
+  return session.restore();
+}
+
 
 function workspaceRoot(documentsDir) {
   return path.join(documentsDir, 'Engenharia360', 'CBIM', 'jobs');
@@ -79,7 +88,8 @@ function pythonStudioCommand({ appSourceDir, resourcesDir }) {
   };
 }
 
-async function openStudioWindow({ workspacePath, documentsDir, appSourceDir, resourcesDir, BrowserWindow, isPackaged }) {
+async function openStudioWindow({ workspacePath, documentsDir, appSourceDir, resourcesDir, BrowserWindow, isPackaged, hostWindow = null }) {
+  if (hostWindow && hostedStudioSessions.has(hostWindow)) throw new Error('Uma revisão já está aberta nesta janela.');
   const workspace = resolveCbimWorkspace(documentsDir, workspacePath);
   const command = pythonStudioCommand({ appSourceDir, resourcesDir });
   const packagedUi = path.join(resourcesDir || '', 'studio-ui');
@@ -134,19 +144,41 @@ async function openStudioWindow({ workspacePath, documentsDir, appSourceDir, res
         settled = true;
         clearTimeout(timeout);
         opened = true;
-        win = new BrowserWindow({
+        const origin = 'http://127.0.0.1:' + ready.port;
+        win = hostWindow || new BrowserWindow({
           width: 1420, height: 920, autoHideMenuBar: true,
           title: 'CompatibilizaBIM Studio',
           webPreferences: { nodeIntegration: false, contextIsolation: true, sandbox: true }
         });
-        const origin = 'http://127.0.0.1:' + ready.port;
-        win.webContents.on('will-navigate', (event, url) => {
+        const homeUrl = hostWindow ? win.webContents.getURL() : '';
+        const guard = (event, url) => {
           if (!url.startsWith(origin + '/')) event.preventDefault();
-        });
+        };
+        win.webContents.on('will-navigate', guard);
         win.webContents.setWindowOpenHandler(() => ({ action: 'deny' }));
         win.on('closed', stop);
+        if (hostWindow) {
+          const restore = () => {
+            const session = hostedStudioSessions.get(win);
+            if (session) {
+              hostedStudioSessions.delete(win);
+              win.webContents.removeListener('will-navigate', guard);
+            }
+            stop();
+            if (!win.isDestroyed()) return win.loadURL(homeUrl);
+            return Promise.resolve();
+          };
+          hostedStudioSessions.set(win, { origin, restore });
+        }
         win.loadURL(origin + '/?token=' + encodeURIComponent(ready.token))
-          .catch(e => { if (win && !win.isDestroyed()) win.close(); });
+          .catch(() => {
+            if (hostWindow && hostedStudioSessions.has(win)) {
+              hostedStudioSessions.get(win).restore().catch(() => {});
+            } else if (win && !win.isDestroyed()) {
+        if (hostWindow && hostedStudioSessions.has(win)) hostedStudioSessions.get(win).restore().catch(() => {});
+        else if (!hostWindow) win.close();
+      }
+          });
         resolve({ workspace, port: ready.port });
       }
     });
@@ -167,4 +199,4 @@ function stopAllStudios() {
   activeStudioSessions.clear();
 }
 
-module.exports = { resolveCbimWorkspace, listCbimWorkspaces, parseStudioReady, pythonStudioCommand, openStudioWindow, stopAllStudios };
+module.exports = { resolveCbimWorkspace, listCbimWorkspaces, parseStudioReady, pythonStudioCommand, openStudioWindow, returnToMainWindow, stopAllStudios };

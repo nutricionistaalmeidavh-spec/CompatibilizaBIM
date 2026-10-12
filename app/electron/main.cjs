@@ -1,7 +1,7 @@
 const { app, BrowserWindow, ipcMain, shell } = require('electron');
 const fs = require('node:fs'); const path = require('node:path'); const { spawn } = require('node:child_process');
 const { convertDwg, cancelConversion } = require('./cbimRunner.cjs');
-const { openStudioWindow, listCbimWorkspaces, stopAllStudios } = require('./studioWindow.cjs');
+const { openStudioWindow, returnToMainWindow, listCbimWorkspaces, stopAllStudios } = require('./studioWindow.cjs');
 const { createCbimApplication } = require('./cbimApplication.cjs');
 const { createJobQueue } = require('./cbimJobQueue.cjs');
 const cbimConversionQueue = createJobQueue((context) => convertDwg(context));
@@ -71,14 +71,16 @@ ipcMain.handle('bim:clash-base64', async (event, files, options = {}) => { event
 ipcMain.handle('bim:clash', (_event, fileA, fileB, options = {}) => runBimPython([fileA, fileB, '--mode', options.mode || 'intersection', '--tolerance', String(options.tolerance ?? .002), '--clearance', String(options.clearance ?? .05), '--out', options.out || path.join(app.getPath('documents'), 'Engenharia360', 'bim-reports')]));
 ipcMain.handle('cbim:conversion-jobs', () => cbimConversionQueue.snapshot());
 ipcMain.handle('cbim:list-workspaces', () => cbimApplication.query('GetHistory', { documentsDir: app.getPath('documents') }));
-ipcMain.handle('cbim:open-studio', (_event, workspacePath) => cbimApplication.execute('OpenProject', {
+ipcMain.handle('cbim:open-studio', (event, workspacePath) => cbimApplication.execute('OpenProject', {
   workspacePath,
   documentsDir: app.getPath('documents'),
   appSourceDir: path.join(__dirname, '..'),
   resourcesDir: process.resourcesPath,
   BrowserWindow,
+  hostWindow: BrowserWindow.fromWebContents(event.sender),
   isPackaged: app.isPackaged
 }));
+ipcMain.handle('cbim:return-to-app', (event) => returnToMainWindow(BrowserWindow.fromWebContents(event.sender)));
 ipcMain.handle('bim:convert-dwg-base64', async (event, input) => cbimApplication.execute('StartConversion', {
   input,
   documentsDir: app.getPath('documents'),

@@ -44,3 +44,15 @@ test('operational and financial screens use canonical storage contracts',()=>{
   assert.match(shell,/<OperationsPage /);
   assert.match(shell,/<FinancePage /);
 });
+
+test('studio review is hosted in the main Electron window without exposing SQLite to loopback',()=>{
+  const win=fs.readFileSync(new URL('../app/electron/studioWindow.cjs',import.meta.url),'utf8');
+  const main=fs.readFileSync(new URL('../app/electron/main.cjs',import.meta.url),'utf8');
+  const preload=fs.readFileSync(new URL('../app/electron/preload.cjs',import.meta.url),'utf8');
+  assert.match(main,/BrowserWindow\.fromWebContents\(event\.sender\)/);
+  assert.match(win,/hostWindow \|\| new BrowserWindow/);
+  assert.match(win,/returnToMainWindow/);
+  assert.match(preload,/if \(trustedApp\)/);
+  assert.match(preload,/studioNavigation/);
+  assert.match(preload,/locationInfo\.hostname === '127\.0\.0\.1'/);
+});

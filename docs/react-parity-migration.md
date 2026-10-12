@@ -8,14 +8,14 @@
 - Um catálogo de 34 calculadoras é importado por Vanilla e React, com validação independente e persistência existentes.
 - React em \`?renderer=react\`: cria/lista obras e registros de etapa/pendência/RDO/material/frente; cria estudos BIM; importa IFC/JSON; executa análise, visualizador, DWG e ações de conflitos; consulta workspaces; executa cálculos.
 - Retido: renderer Vanilla como padrão. \`?renderer=legacy\` permanece explícito.
-- Revisão do WorkspaceStore ainda inicia outra janela Electron. Isso NÃO comprova aplicação unificada.
+- A revisão do WorkspaceStore passa a carregar na **mesma janela Electron** com ação 'Voltar ao painel'. O ambiente servido via loopback expõe apenas navegação, nunca a API SQLite do preload. Ainda falta confirmar paridade completa das telas e unificação de estados React, então a migração NÃO está concluída.
 - Operação agora possui formulários React para frentes, subfrentes, checklist, medições, compras, contratos, aditivos e orçamento. Financeiro agora possui contas, DRE simples e folha. Ainda faltam paridade de edições avançadas, RDO completo, relatórios especializados, visualização estrutural 3D e comparação detalhada de cada fluxo com a Vanilla.
 - NÃO remover \`app/src/main.js\`, \`standaloneBimUi.js\`, \`bimUi.js\` ou alterar o default para React enquanto a lista de lacunas permanecer.
 
 ## Critérios obrigatórios antes de merge
 
 1. Mapear cada tela, formulário, cálculo, visualização, exportação, operação e evento da Vanilla e reproduzir em React.
-2. Incorporar StudioApp e API local sob uma só navegação/Janela Electron, mantendo isolamento, token de sessão e defesa contra navegação externa.
+2. Verificar em E2E a navegação StudioApp ↔ painel na mesma janela Electron, mantendo isolamento, token de sessão, guarda de origem e ausência de ponte SQLite no loopback.
 3. Testar round-trip SQLite/backup/projetos antigos, histórico e recuperação sem sobrescrita.
 4. Garantir E2E de DWG real, IFC, clash, decisões humanas, estado recuperado e visualizadores (inclusive 3D).
 5. Testar painel financeiro e operação completa, incluindo os fluxos e relatórios.
