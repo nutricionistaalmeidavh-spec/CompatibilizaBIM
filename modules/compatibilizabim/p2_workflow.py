@@ -13,9 +13,9 @@ import tempfile
 from datetime import date, datetime, timezone
 from pathlib import Path
 
-from .budget import BudgetEngine, PriceBookStore, pricebook_from_json, write_budget_json
+from .budget import BudgetEngine, PriceBookStore, pricebook_from_json, write_budget_json, write_budget_csv, write_budget_pdf
 from .ifc_backend import IfcOpenShellBackend
-from .quantities import QuantityEngine, quantity_report, write_quantity_json
+from .quantities import QuantityEngine, quantity_report, write_quantity_json, write_quantity_csv
 from .schedule import ScheduleService, ScheduleStore
 from .simulation4d import Simulation4D
 from .measurements import MeasurementService, MeasurementStore
@@ -101,6 +101,8 @@ class P2Service:
             return {'record_count':report['record_count'],'group_count':report['group_count'],
                     'records':report.get('records',[])[:600],'groups':report.get('groups',[])[:600],
                     'truncated':len(report.get('records',[]))>600,'revision_sha256':report['revision_sha256']}
+        if action=='export_quantities':
+            return self._export_report(self._quantities(), params, 'quantities', write_quantity_csv, None)
         if action=='pricebook':
             book=params.get('book')
             if not isinstance(book,dict) or not str(book.get('source') or '').strip() or not str(book.get('reference_date') or '').strip():
@@ -127,6 +129,8 @@ class P2Service:
             report['quantity_revision_sha256']=q.get('revision_sha256',{})
             write_budget_json(self.bpath,report)
             return report
+        if action=='export_budget':
+            return self._export_report(_read(self.bpath), params, 'budget', write_budget_csv, write_budget_pdf)
         if action=='import_schedule':
             raw=str(params.get('csv') or '')
             if not raw or len(raw)>2_000_000:raise ValueError('CSV de cronograma vazio ou maior que 2 MB')
@@ -186,6 +190,23 @@ class P2Service:
             return self._export_bcf(params)
         raise ValueError('Operação P2 não reconhecida: '+str(action))
 
+    def _export_report(self, report, params, prefix, csv_writer, pdf_writer):
+        fmt=str(params.get('format') or 'csv')
+        if fmt not in ('json','csv','pdf') or (fmt=='pdf' and pdf_writer is None):
+            raise ValueError('Formato de relatório indisponível')
+        with tempfile.TemporaryDirectory(prefix='p2-export-', dir=self.root) as d:
+            target=Path(d)/(prefix+'.'+fmt)
+            if fmt=='json':
+                target.write_text(json.dumps(report, ensure_ascii=False, indent=2), encoding='utf-8')
+            elif fmt=='csv':
+                csv_writer(target,report)
+            else:
+                pdf_writer(target,report)
+            raw=target.read_bytes()
+            if len(raw)>5_000_000: raise ValueError('Relatório excede 5 MB: divida o estudo para exportar.')
+            return {'name':prefix+'.'+fmt,'base64':base64.b64encode(raw).decode('ascii'),
+                    'format':fmt,'bytes':len(raw)}
+
     def _summary(self,p):
         if not p.is_file():return None
         d=_read(p)
@@ -241,11 +262,17 @@ class P2Service:
                         ignored_reason=row.get('motivo') if status=='ignored' else None)
                     for comment in row.get('comentarios',[]):
                         service.add_comment(store,issue.issue_id,author=comment.get('autor') or author,text=comment.get('texto') or '')
-            path=base/'issues.bcf'; summary=ExportService().write_bcf(store,path,author=author)
+            fmt=str(params.get('format') or 'bcf')
+            if fmt not in ('bcf','csv','pdf'): raise ValueError('Formato de pendências deve ser BCF, CSV ou PDF')
+            path=base/('issues.'+fmt)
+            service_export=ExportService()
+            if fmt=='bcf': summary=service_export.write_bcf(store,path,author=author)
+            elif fmt=='csv': summary=service_export.write_csv(store,path)
+            else: summary=service_export.write_pdf(store,path,author=author)
             encoded=base64.b64encode(path.read_bytes()).decode('ascii')
             if len(encoded)>7_000_000:raise ValueError('BCF grande demais para transferência IPC; exporte por partes')
-            return {'name':'compatibiliza-'+project_id+'.bcf','base64':encoded,
-                    'issue_count':summary.issue_count,'format':'BCF-3.0'}
+            return {'name':'compatibiliza-'+project_id+'.'+fmt,'base64':encoded,
+                    'issue_count':summary.issue_count,'format':'BCF-3.0' if fmt=='bcf' else fmt}
 
 
 def main(argv=None):
