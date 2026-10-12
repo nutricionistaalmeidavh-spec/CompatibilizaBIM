@@ -26,7 +26,7 @@ from .exports import ExportService
 
 def _read(path: Path):
     if not path.is_file():
-        raise ValueError('Não existem ' + path.name.replace('.json', '') + ' validados neste estudo.')
+        raise ValueError('Não existem '+({'quantities.json':'quantitativos IFC','budget.json':'orçamento 5D'}.get(path.name,path.stem))+' validados neste estudo.')
     return json.loads(path.read_text(encoding='utf-8'))
 
 
