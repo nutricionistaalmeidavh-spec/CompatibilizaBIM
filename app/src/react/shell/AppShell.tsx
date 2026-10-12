@@ -1,5 +1,6 @@
 
 import React from 'react';
+import {groupedRoutes,normalizeStudioRoute} from './navigation.js';
 import { abrirBanco, listarObras, lerWorkspaceContext, salvarWorkspaceContext, exportarBackup, importarBackup } from '../../../../storage/sqliteStore.js';
 import { WorksPage } from './WorksPage';
 import { BimPage } from './BimPage';
@@ -14,12 +15,12 @@ import { listarProjetosBim, listarFrentes } from '../../../../storage/sqliteStor
 import { carregarDemo, carregarDemoOperacional, carregarDemoBimIndependente } from '../../demoData.js';
 import { enriquecerDemoBim3D, garantirModeloEstruturalDemo } from '../../demoBim3d.js';
 
-const sections=['Obras','BIM','Cálculos','Estruturas','Operação','RDO','Financeiro','Revisão','Histórico'];
+const sections=groupedRoutes();
 export function AppShell(){
   const [db,setDb]=React.useState<any>(null);
   const [error,setError]=React.useState('');
   const [backupError,setBackupError]=React.useState('');
-  const [active,setActive]=React.useState(()=>{try{return sessionStorage.getItem('cbim-studio-section')||'Obras';}catch{return 'Obras';}});
+  const [active,setActive]=React.useState(()=>{try{return normalizeStudioRoute(sessionStorage.getItem('cbim-studio-section'));}catch{return 'Obras';}});
   const [workId,setWorkId]=React.useState<string|null>(null);
   const [version,refresh]=React.useReducer(n=>n+1,0);
   React.useEffect(()=>{
@@ -94,7 +95,7 @@ export function AppShell(){
       <button onClick={()=>{selectWork(null);updateContext({obraId:null,frenteId:null,periodo:{inicio:null,fim:null},bimMode:'independente'});}}>Limpar contexto</button>
     </section>
     <aside className="studio-sidebar" aria-label="Navegação única">
-      {sections.map(s=><button key={s} className={active===s?'active':''} onClick={()=>setActive(s)}>{s}</button>)}
+      {sections.map(group=><div className="studio-nav-group" key={group.section}><p className="studio-nav-label">{group.section}</p>{group.routes.map(route=><button key={route.key} type="button" aria-current={active===route.key?'page':undefined} className={active===route.key?'active':''} onClick={()=>setActive(route.key)}>{route.key}</button>)}</div>)}
       <button onClick={downloadBackup}>Exportar backup</button>
       <label>Importar backup<input aria-label="Selecionar arquivo de backup" type="file" accept=".json" onChange={e=>{void readBackup(e.target.files?.[0]||null);e.target.value='';}}/></label>
     </aside>
@@ -107,8 +108,6 @@ export function AppShell(){
       {active==='RDO'&&<RdoPage db={db} obraId={workId} onChange={refresh}/>}
       {active==='Operação'&&<OperationsPage db={db} obraId={workId} onChange={refresh}/>}
       {active==='Financeiro'&&<FinancePage db={db} obraId={workId} onChange={refresh}/>}
-      {active==='Revisão'&&<BimPage db={db} obraId={workId} version={version} onChange={refresh}/>}
-      {active==='Histórico'&&<WorksPage db={db} obraId={workId} selectWork={selectWork} onChange={refresh}/>}
     </main>
   </div>;
 }
