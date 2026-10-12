@@ -1,5 +1,5 @@
 import React from 'react';
-import {federarModelos,reconciliarConflitos,validarDecisaoConflito} from '../../../../src/bim/p2Coordination.js';
+import {federarModelos,reconciliarConflitos,validarDecisaoConflito,compararRevisoesConflitos} from '../../../../src/bim/p2Coordination.js';
 import {salvarAnaliseBimProjeto,registrarDecisaoConflitoBimProjeto,listarEventosConflitosBimProjeto} from '../../../../storage/sqliteStore.js';
 type Props={db:any;project:any;onChange:()=>void};
 const runtime=()=> (globalThis as any).engineeringStorage?.bim;
@@ -16,6 +16,7 @@ export function BimCoordinationPanel({db,project,onChange}:Props){
  const picked=chosen.filter(id=>models.some((m:any)=>m.id===id));
  const selectedModels=models.filter((m:any)=>picked.includes(m.id));
  const latest=analyses[0];
+ const revisions=analyses[1]?compararRevisoesConflitos(analyses[1]?.conflitos||[],latest?.conflitos||[]):null;
  const issues=(latest?.conflitos||[]).filter((c:any)=>filter==='todos'||(c.status||'aberto')===filter);
  const events=latest?listarEventosConflitosBimProjeto(db,latest.id):[];
  const toggle=(id:string)=>setChosen(prev=>prev.includes(id)?prev.filter(x=>x!==id):[...prev,id]);
@@ -41,16 +42,16 @@ export function BimCoordinationPanel({db,project,onChange}:Props){
     setEditing('');setComment('');onChange();setNotice('Decisão registrada no histórico, com responsável e data.');
   }catch(e:any){setError(e.message||String(e));}
  };
- const exportBcf=async()=>{
+ const exportIssues=async(format:'bcf'|'csv'|'pdf')=>{
   setBusy(true);setError('');
   try{
-   if(latest?.proveniencia!=='ifcopenshell_real')throw Error('BCF com GUID IFC exige compatibilização por motor IFC real; não exporte conflitos de bbox como IFC.');
+   if(format==='bcf'&&latest?.proveniencia!=='ifcopenshell_real')throw Error('BCF com GUID IFC exige compatibilização por motor IFC real; não exporte bbox como IFC.');
    if(!(latest?.conflitos||[]).length)throw Error('Nenhum conflito para exportar.');
    const response=await runtime()?.p2?.({projectId:project.id,action:'bcf',
-     params:{projectId:project.id,issues:latest.conflitos,author:'CompatibilizaBIM Studio'}});
+     params:{projectId:project.id,issues:latest.conflitos,author:'CompatibilizaBIM Studio',format}});
    if(!response?.base64)throw Error('BCF não retornou arquivo.');
-   fileDownload(response.name,bytes(response.base64),'application/zip');
-   setNotice('BCF 3.0 gerado com '+response.issue_count+' pendências rastreadas.');
+   fileDownload(response.name,bytes(response.base64),format==='bcf'?'application/zip':format==='pdf'?'application/pdf':'text/csv');
+   setNotice(response.format+' gerado com '+response.issue_count+' pendências rastreadas.');
   }catch(e:any){setError(e.message||String(e));}finally{setBusy(false);}
  };
  return <section className="cbim-react-panel"><h2>Coordenação · Federação e conflitos (F4)</h2>
@@ -62,8 +63,9 @@ export function BimCoordinationPanel({db,project,onChange}:Props){
     <label>Afastamento (m)<input type="number" min="0" max="100" step="any" value={clearance} onChange={e=>setClearance(e.target.value)}/></label>
    </div>
    <div className="cbim-react-toolbar"><button disabled={busy||picked.length<2} onClick={()=>void execute()}>{busy?'Analisando…':'Executar federação ('+picked.length+' modelos)'}</button>
-    <button disabled={busy||!latest?.conflitos?.length||latest.proveniencia!=='ifcopenshell_real'} onClick={()=>void exportBcf()}>Exportar BCF 3.0 (IFC)</button></div>
+    <button disabled={busy||!latest?.conflitos?.length||latest.proveniencia!=='ifcopenshell_real'} onClick={()=>void exportIssues('bcf')}>Exportar BCF 3.0 (IFC)</button><button disabled={busy||!latest?.conflitos?.length} onClick={()=>void exportIssues('csv')}>Pendências CSV</button><button disabled={busy||!latest?.conflitos?.length} onClick={()=>void exportIssues('pdf')}>Relatório PDF</button></div>
    {latest&&<p className="studio-muted">Última execução: {latest.criado_em} · {latest.proveniencia||'motor não identificado'} · {(latest.conflitos||[]).length} pendências · {JSON.parse(latest.modelos_json||'[]').length||2} modelos.</p>}
+   {revisions&&<p role="status">Comparação com execução anterior: {revisions.novos.length} novos · {revisions.persistentes.length} persistentes · {revisions.reaparecidos.length} com evidência alterada · {revisions.naoObservados.length} não observados (sem resolução automática).</p>}
    <label>Filtrar conflitos<select value={filter} onChange={e=>setFilter(e.target.value)}><option value="todos">Todos</option><option value="aberto">Abertos</option><option value="em_revisao">Em revisão</option><option value="resolvido">Resolvidos por decisão</option><option value="ignorado">Ignorados</option></select></label>
    {!latest&&<p>Nenhuma federação executada. Selecione os modelos e execute para produzir evidência.</p>}
    {latest&&!issues.length&&<p>Nenhum conflito no filtro atual. Isso não equivale à aprovação de um projeto não revisado.</p>}
