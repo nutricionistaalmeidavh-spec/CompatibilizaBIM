@@ -82,6 +82,8 @@ export function AppShell(){
   const works=listarObras(db);
   const selectedWork=works.find((w:any)=>w.id===workId);
   const context=lerWorkspaceContext(db);
+  const studies=listarProjetosBim(db);
+  const selectedStudy=studies.find((s:any)=>s.id===context.projetoBimId);
   const fronts=workId?listarFrentes(db,workId):[];
   return <div className="studio-shell cbim-react-app">
     <header className="studio-topbar"><div><span className="studio-product">CompatibilizaBIM</span> <strong>Studio</strong></div>
@@ -91,7 +93,8 @@ export function AppShell(){
       <label>Frente<select value={fronts.some((f:any)=>f.id===context.frenteId)?context.frenteId||'':''} disabled={!workId} onChange={e=>updateContext({frenteId:e.target.value||null})}><option value="">Todas as frentes</option>{fronts.map((f:any)=><option key={f.id} value={f.id}>{f.nome}</option>)}</select></label>
       <label>Início<input type="date" value={context.periodo?.inicio||''} onChange={e=>updateContext({periodo:{inicio:e.target.value||null}})}/></label>
       <label>Fim<input type="date" value={context.periodo?.fim||''} onChange={e=>updateContext({periodo:{fim:e.target.value||null}})}/></label>
-      <label>BIM<select value={context.bimMode||'independente'} onChange={e=>updateContext({bimMode:e.target.value})}><option value="independente">Independente</option><option value="vinculado">Vinculado</option></select></label>
+      <label>Estudo BIM<select value={selectedStudy?.id||''} onChange={e=>updateContext({projetoBimId:e.target.value||null})}><option value="">Escolher no módulo BIM</option>{studies.map((p:any)=><option key={p.id} value={p.id}>{p.nome}{p.obra_id?' · Vinculado':' · Independente'}</option>)}</select></label>
+      <label>Vínculo BIM<select value={context.bimMode||'independente'} onChange={e=>updateContext({bimMode:e.target.value})}><option value="independente">Independente</option><option value="vinculado">Vinculado</option></select></label>
       <button onClick={()=>{selectWork(null);updateContext({obraId:null,frenteId:null,periodo:{inicio:null,fim:null},bimMode:'independente'});}}>Limpar contexto</button>
     </section>
     <aside className="studio-sidebar" aria-label="Navegação única">
@@ -102,7 +105,7 @@ export function AppShell(){
     {backupError&&<p role="alert" className="cbim-react-panel">Importação não realizada: {backupError} O banco e a sessão atual foram preservados. Confira o arquivo e tente novamente.</p>}
     <main className="studio-content">
       {active==='Obras'&&<WorksPage db={db} obraId={workId} selectWork={selectWork} onChange={refresh} onNavigate={setActive}/>}
-      {active==='BIM'&&<BimPage db={db} obraId={workId} version={version} onChange={refresh}/>}
+      {active==='BIM'&&<BimPage db={db} obraId={workId} version={version} onChange={refresh} studyId={context.projetoBimId||''} onSelectStudy={id=>updateContext({projetoBimId:id||null})}/>}
       {active==='Cálculos'&&<CalculatorsPage db={db} obraId={workId} onSaved={refresh}/>}
       {active==='Estruturas'&&<StructuralPage db={db} obraId={workId} onChange={refresh}/>}
       {active==='RDO'&&<RdoPage db={db} obraId={workId} onChange={refresh}/>}
