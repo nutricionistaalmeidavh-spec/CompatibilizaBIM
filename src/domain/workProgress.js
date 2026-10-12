@@ -17,7 +17,7 @@ export function calculateWorkProgress(stages=[]){
  const numerator=rows.reduce((s,row)=>s+row.progress*(weighted?row.weight:1),0);
  return {
   value:Math.round(numerator/denominator*100)/100,
-  method:weighted?'média ponderada por peso das etapas':'média simples (pesos incompletos ou não definidos)'
+  method:weighted?'média ponderada por peso das etapas':rows.every(row=>row.weight===0)?'média simples (pesos não definidos)':'média simples (pesos incompletos)'
  };
 }
 export function projectWorkProgress(works=[],stages=[]){
