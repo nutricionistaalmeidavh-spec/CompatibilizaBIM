@@ -9,15 +9,35 @@ import { FinancePage } from './FinancePage';
 import { RdoPage } from './RdoPage';
 import { StructuralPage } from './StructuralPage';
 import { Status } from '../components/ui';
+import { listarProjetosBim, listarFrentes } from '../../../../storage/sqliteStore.js';
+import { carregarDemo, carregarDemoOperacional, carregarDemoBimIndependente } from '../../demoData.js';
+import { enriquecerDemoBim3D, garantirModeloEstruturalDemo } from '../../demoBim3d.js';
 
 const sections=['Obras','BIM','Cálculos','Estruturas','Operação','RDO','Financeiro','Revisão','Histórico'];
 export function AppShell(){
   const [db,setDb]=React.useState<any>(null);
   const [error,setError]=React.useState('');
-  const [active,setActive]=React.useState('Obras');
+  const [active,setActive]=React.useState(()=>{try{return sessionStorage.getItem('cbim-studio-section')||'Obras';}catch{return 'Obras';}});
   const [workId,setWorkId]=React.useState<string|null>(null);
   const [version,refresh]=React.useReducer(n=>n+1,0);
-  React.useEffect(()=>{let alive=true;abrirBanco().then((database:any)=>{if(!alive)return;setDb(database);setWorkId(lerWorkspaceContext(database).obraId||null);}).catch((e:any)=>setError(e.message));return()=>{alive=false;};},[]);
+  React.useEffect(()=>{
+    let alive=true;
+    abrirBanco().then((database:any)=>{
+      if(!alive)return;
+      if(new URLSearchParams(location.search).get('demo')==='1'){
+        if(!listarObras(database).length)carregarDemo(database);
+        if(!listarProjetosBim(database).some((x:any)=>x.id==='demo-bim-001'))carregarDemoBimIndependente(database);
+        if(listarObras(database).some((x:any)=>x.id==='demo-obra-001')&&!listarFrentes(database,'demo-obra-001').length)carregarDemoOperacional(database);
+        enriquecerDemoBim3D(database);
+        if(listarObras(database).some((x:any)=>x.id==='demo-obra-001'))garantirModeloEstruturalDemo(database,'demo-obra-001');
+      }
+      setDb(database);
+      const saved=lerWorkspaceContext(database).obraId;
+      setWorkId(saved&&listarObras(database).some((w:any)=>w.id===saved)?saved:null);
+    }).catch((e:any)=>{if(alive)setError(e.message);});
+    return()=>{alive=false;};
+  },[]);
+  React.useEffect(()=>{try{sessionStorage.setItem('cbim-studio-section',active);}catch{}},[active]);
   const selectWork=(id:string|null)=>{
     if(!db)return;
     const current=lerWorkspaceContext(db);

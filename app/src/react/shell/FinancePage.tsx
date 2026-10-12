@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { listarLancamentosFinanceiros, salvarLancamentoFinanceiro, listarFolhaPagamentos, salvarFolhaPagamento } from '../../../../storage/sqliteStore.js';
+import { listarLancamentosFinanceiros, salvarLancamentoFinanceiro, listarFolhaPagamentos, salvarFolhaPagamento, listarContratos, listarMedicoes, listarFrentes } from '../../../../storage/sqliteStore.js';
 const money=(v:any)=>new Intl.NumberFormat('pt-BR',{style:'currency',currency:'BRL'}).format(Number(v)||0);
 const safe=(d:FormData,k:string)=>String(d.get(k)||'').trim();
 export function FinancePage({db,obraId,onChange}:{db:any;obraId:string|null;onChange:()=>void}) {
@@ -8,6 +8,12 @@ export function FinancePage({db,obraId,onChange}:{db:any;obraId:string|null;onCh
   const [error,setError]=React.useState('');
   const entries=listarLancamentosFinanceiros(db,obraId);
   const payroll=listarFolhaPagamentos(db,obraId);
+  const contracts=obraId?listarContratos(db,obraId):[];
+  const measures=obraId?listarMedicoes(db,obraId):[];
+  const fronts=obraId?listarFrentes(db,obraId):[];
+  const contratado=contracts.reduce((s:number,c:any)=>s+Number(c.valor)+c.aditivos.reduce((q:number,a:any)=>q+Number(a.valor),0),0);
+  const medido=measures.filter((m:any)=>m.status==='aprovada').reduce((s:number,m:any)=>s+Number(m.quantidade)*Number(m.preco_unitario),0);
+  const pago=entries.filter((e:any)=>e.tipo==='despesa'&&e.status==='pago').reduce((s:number,e:any)=>s+Number(e.valor),0);
   const receitas=entries.filter((e:any)=>e.tipo==='receita').reduce((v:number,e:any)=>v+Number(e.valor),0);
   const despesas=entries.filter((e:any)=>e.tipo==='despesa').reduce((v:number,e:any)=>v+Number(e.valor),0);
   const submit=(fn:(d:FormData)=>void)=>(event:React.FormEvent<HTMLFormElement>)=>{
@@ -18,6 +24,8 @@ export function FinancePage({db,obraId,onChange}:{db:any;obraId:string|null;onCh
     <nav className="cbim-react-toolbar" aria-label="Financeiro">{(['DRE','Contas','Folha'] as const).map(tab=><button key={tab} className={active===tab?'selected':''} onClick={()=>setActive(tab)}>{tab}</button>)}</nav>
     {error&&<p role="alert">{error}</p>}
     {active==='DRE'&&<><div className="cbim-react-metrics"><article>Receitas: {money(receitas)}</article><article>Despesas: {money(despesas)}</article><article>Saldo: {money(receitas-despesas)}</article><article>Folha prevista: {money(payroll.reduce((s:number,e:any)=>s+Number(e.valor_bruto),0))}</article></div>
+      <div className="cbim-react-metrics"><article>Contratado: {money(contratado)}</article><article>Medições aprovadas: {money(medido)}</article><article>Despesas pagas: {money(pago)}</article><article>Saldo contratual: {money(contratado-pago)}</article></div>
+      <div className="cbim-react-panel"><h2>Fluxo por frente</h2>{fronts.map((f:any)=><article key={f.id}><b>{f.nome}</b> · {money(measures.filter((m:any)=>m.frente_id===f.id).reduce((s:number,m:any)=>s+Number(m.quantidade)*Number(m.preco_unitario),0))} · {measures.filter((m:any)=>m.frente_id===f.id).length} medições</article>)}{!fronts.length&&<p>Selecione uma obra com frentes e medições para ver o fluxo.</p>}</div>
       <div className="cbim-react-panel"><h2>Por categoria</h2>{Object.entries(entries.reduce((acc:any,e:any)=>{const k=e.tipo+' / '+e.categoria;acc[k]=(acc[k]||0)+Number(e.valor);return acc;},{})).map(([k,v])=><p key={k}>{k} · {money(v)}</p>)}</div></>}
     {active==='Contas'&&<><form className="cbim-react-panel" onSubmit={submit(d=>salvarLancamentoFinanceiro(db,{obraId,tipo:safe(d,'tipo'),categoria:safe(d,'categoria'),descricao:safe(d,'descricao'),valor:Number(d.get('valor')),vencimento:safe(d,'vencimento'),status:safe(d,'status')}))}><h2>Novo lançamento</h2>
       <div className="cbim-react-form-grid"><label>Tipo<select name="tipo"><option value="receita">Receita</option><option value="despesa">Despesa</option></select></label><label>Categoria<input name="categoria" required/></label><label>Descrição<input name="descricao" required/></label><label>Valor<input type="number" min="0" step="any" name="valor" required/></label><label>Vencimento<input type="date" name="vencimento"/></label><label>Status<select name="status"><option value="previsto">Previsto</option><option value="confirmado">Confirmado</option></select></label></div>
