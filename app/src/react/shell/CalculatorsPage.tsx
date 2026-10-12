@@ -50,7 +50,7 @@ export function CalculatorsPage({db, obraId, onSaved}:{db:any;obraId:string|null
       if(format==='pdf'){
         saveFile('calculo-'+calculator+'.pdf',gerarPdfRelatorio('Cálculo - '+entry.label,{
           Entradas:textLines(result.inputs),Resultados:textLines(result.output),
-          Validação:[result.validation.ok?'Aprovada':'Requer revisão',...(result.validation.errors||[])],
+          Validação:[result.validation.ok?'Verificação matemática parcial aprovada':'Divergência matemática; não usar',...(result.validation.errors||[]),...(result.validation.avisos||[])],
           Norma:[result.output?.metadados?.normaDeclarada||'Não declarada']
         }),'application/pdf');
       }
@@ -64,11 +64,11 @@ export function CalculatorsPage({db, obraId, onSaved}:{db:any;obraId:string|null
     if (!obraId || !result?.validation?.ok) return;
     try {
       salvarCalculo(db,obraId,{tipo:calculator,titulo:entry.label,entradas:result.inputs,resultados:{...result.output,validacao:result.validation},norma:result.output?.metadados?.normaDeclarada});
-      onSaved();setError('Cálculo validado e salvo na obra selecionada.');
+      onSaved();setError('Memória de cálculo preliminar salva com a evidência matemática e ressalvas normativas.');
     } catch(e:any){setError(e.message);}
   };
   return <section className="cbim-react-section">
-    <h1>Biblioteca de cálculos</h1><p>Mesmo catálogo, motores matemáticos e validador independente do renderer original.</p>
+    <h1>Biblioteca de cálculos</h1><p>34 ferramentas com verificações independentes por equação ou dimensionalidade. Verificação matemática parcial não é homologação normativa, projeto executivo ou ART.</p>
     <div className="cbim-react-calc-groups">{CALCULATOR_GROUPS.map((group:any,index:number)=><details key={group.id} open={index===0||group.ids.includes(calculator)||undefined}>
       <summary><strong>{group.label}</strong><span>{group.ids.length} cálculos</span></summary>
       <div className="cbim-react-card-grid">{group.ids.map((id:string)=><button className={calculator===id?'selected':''} key={id} onClick={()=>select(id)}>{catalog[id]?.label}</button>)}</div>
@@ -77,11 +77,13 @@ export function CalculatorsPage({db, obraId, onSaved}:{db:any;obraId:string|null
       <button type="submit">Calcular e validar</button></form>}
     {error&&<p role="status">{error}</p>}
     {result&&<section className="cbim-react-panel" aria-label="Resultado de cálculo">
-      <h2>{result.validation.ok?'Resultado validado':'Resultado requer revisão'}</h2>
-      {!result.validation.ok&&<p>{(result.validation.errors||[]).join('; ')}</p>}
+      <h2>{result.validation.ok?'Verificação matemática parcial aprovada':'Resultado bloqueado: divergência matemática'}</h2>
+      {!result.validation.ok&&<p role="alert">{(result.validation.errors||[]).join('; ')}</p>}
+      <p role="status">Oráculo: {result.validation.metodo}. {result.validation.verificacoes.length} teste(s) independente(s) · Estado normativo: {result.validation.normaPendente?'Revisão obrigatória':'Perfil declarado; revisão técnica obrigatória'}.</p>
+      <p className="studio-muted">{(result.validation.avisos||[]).join(' ')}</p>
       <pre>{JSON.stringify(result.output,null,2)}</pre>
       <p>Norma declarada: {result.output?.metadados?.normaDeclarada||'não informada'}</p>
-      <div className="cbim-react-toolbar"><button type="button" onClick={save} disabled={!obraId||!result.validation.ok}>Salvar na obra</button>
+      <div className="cbim-react-toolbar"><button type="button" onClick={save} disabled={!obraId||!result.validation.ok}>Salvar memória preliminar</button>
         <button type="button" onClick={()=>exportResult('pdf')}>Memória PDF</button>
         <button type="button" onClick={()=>exportResult('json')}>Exportar JSON</button>
         {detailExportIds.has(calculator)&&<><button type="button" onClick={()=>exportResult('csv')}>Detalhamento CSV</button><button type="button" onClick={()=>exportResult('dxf')}>Detalhamento DXF</button></>}</div>
