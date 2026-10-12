@@ -10,6 +10,7 @@ import { FinancePage } from './FinancePage';
 import { RdoPage } from './RdoPage';
 import { StructuralPage } from './StructuralPage';
 import { Status } from '../components/ui';
+import {validateWorkspacePeriod} from '../../../../src/domain/workspaceScope.js';
 import { validarContratoBackup } from '../../../../src/storage/backupContract.js';
 import { listarProjetosBim, listarFrentes } from '../../../../storage/sqliteStore.js';
 import { carregarDemo, carregarDemoOperacional, carregarDemoBimIndependente } from '../../demoData.js';
@@ -20,6 +21,7 @@ export function AppShell(){
   const [db,setDb]=React.useState<any>(null);
   const [error,setError]=React.useState('');
   const [backupError,setBackupError]=React.useState('');
+  const [contextError,setContextError]=React.useState('');
   const [active,setActive]=React.useState(()=>{try{return normalizeStudioRoute(sessionStorage.getItem('cbim-studio-section'));}catch{return 'Obras';}});
   const [workId,setWorkId]=React.useState<string|null>(null);
   const [version,refresh]=React.useReducer(n=>n+1,0);
@@ -49,9 +51,14 @@ export function AppShell(){
   };
   const updateContext=(patch:any)=>{
     if(!db)return;
-    const current=lerWorkspaceContext(db);
-    salvarWorkspaceContext(db,{...current,...patch,periodo:{...current.periodo,...(patch.periodo||{})}});
-    refresh();
+    try {
+      const current=lerWorkspaceContext(db);
+      const next={...current,...patch,periodo:{...current.periodo,...(patch.periodo||{})}};
+      validateWorkspacePeriod(next.periodo);
+      salvarWorkspaceContext(db,next);
+      setContextError('');
+      refresh();
+    } catch(e:any){setContextError(e.message||String(e));}
   };
   const downloadBackup=()=>{
     if(!db)return;
@@ -82,6 +89,7 @@ export function AppShell(){
   const works=listarObras(db);
   const selectedWork=works.find((w:any)=>w.id===workId);
   const context=lerWorkspaceContext(db);
+  const scope={obraId:workId,frenteId:context.frenteId||null,periodo:context.periodo||{inicio:null,fim:null}};
   const studies=listarProjetosBim(db);
   const selectedStudy=studies.find((s:any)=>s.id===context.projetoBimId);
   const fronts=workId?listarFrentes(db,workId):[];
@@ -102,15 +110,16 @@ export function AppShell(){
       <button onClick={downloadBackup}>Exportar backup</button>
       <label>Importar backup<input aria-label="Selecionar arquivo de backup" type="file" accept=".json" onChange={e=>{void readBackup(e.target.files?.[0]||null);e.target.value='';}}/></label>
     </aside>
-    {backupError&&<p role="alert" className="cbim-react-panel">Importação não realizada: {backupError} O banco e a sessão atual foram preservados. Confira o arquivo e tente novamente.</p>}
     <main className="studio-content">
-      {active==='Obras'&&<WorksPage db={db} obraId={workId} selectWork={selectWork} onChange={refresh} onNavigate={setActive}/>}
+      {contextError&&<p role="alert" className="cbim-react-error">{contextError}</p>}
+      {backupError&&<p role="alert" className="cbim-react-error">Importação não realizada: {backupError} O banco e a sessão atual foram preservados. Confira o arquivo e tente novamente.</p>}
+      {active==='Obras'&&<WorksPage db={db} obraId={workId} scope={scope} selectWork={selectWork} onChange={refresh} onNavigate={setActive}/>}
       {active==='BIM'&&<BimPage db={db} obraId={workId} version={version} onChange={refresh} studyId={context.projetoBimId||''} onSelectStudy={id=>updateContext({projetoBimId:id||null})}/>}
       {active==='Cálculos'&&<CalculatorsPage db={db} obraId={workId} onSaved={refresh}/>}
       {active==='Estruturas'&&<StructuralPage db={db} obraId={workId} onChange={refresh}/>}
-      {active==='RDO'&&<RdoPage db={db} obraId={workId} onChange={refresh}/>}
-      {active==='Operação'&&<OperationsPage db={db} obraId={workId} onChange={refresh}/>}
-      {active==='Financeiro'&&<FinancePage db={db} obraId={workId} onChange={refresh}/>}
+      {active==='RDO'&&<RdoPage db={db} obraId={workId} scope={scope} onChange={refresh}/>}
+      {active==='Operação'&&<OperationsPage db={db} obraId={workId} scope={scope} onChange={refresh}/>}
+      {active==='Financeiro'&&<FinancePage db={db} obraId={workId} scope={scope} onChange={refresh}/>}
     </main>
   </div>;
 }

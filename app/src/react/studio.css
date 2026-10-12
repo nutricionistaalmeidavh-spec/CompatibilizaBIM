@@ -60,3 +60,15 @@
 @media(max-width:850px){.p2-kpis{grid-template-columns:1fr}.p2-issues{max-height:none}}
 
 .p2-gantt{border:1px solid #d6e0ea;border-radius:7px;overflow:auto;margin:14px 0;padding:12px}.p2-gantt-row{display:grid;grid-template-columns:minmax(100px,220px) 1fr 90px;align-items:center;gap:10px;padding:7px 0;font-size:12px;border-bottom:1px solid #eef2f7}.p2-gantt-track{background:#e5ebf1;border-radius:4px;height:25px;overflow:hidden;position:relative}.p2-gantt-plan{background:#7da4ca;height:13px}.p2-gantt-real{background:#258e76;height:12px}.p2-curve{margin:10px 0 20px;border:1px solid #d6e0ea;border-radius:7px;padding:12px}.p2-curve svg{width:100%;max-height:210px}.p2-curve h4{margin:0 0 10px;font-size:14px}.p2-curve p{font-size:12px;color:#475569}@media(max-width:640px){.p2-gantt-row{grid-template-columns:minmax(90px,130px) 1fr}.p2-gantt-row small{grid-column:2}}
+
+/* P0: context occupies an explicit full-width grid row, never the sidebar slot. */
+.studio-shell.cbim-react-app{grid-template-columns:232px minmax(0,1fr);grid-template-rows:64px auto minmax(0,1fr)}
+.cbim-react-app>.studio-topbar{grid-column:1/-1;grid-row:1}
+.cbim-react-app>.cbim-contextbar{grid-column:1/-1;grid-row:2;min-width:0}
+.cbim-react-app>.studio-sidebar{grid-column:1;grid-row:3;min-height:0}
+.cbim-react-app>.studio-content{grid-column:2;grid-row:3;min-width:0;min-height:0;overflow:auto}
+@media(max-width:800px){
+ .studio-shell.cbim-react-app{grid-template-columns:minmax(0,1fr);grid-template-rows:64px auto auto minmax(0,1fr)}
+ .cbim-react-app>.studio-sidebar{grid-column:1;grid-row:3;overflow-x:auto}
+ .cbim-react-app>.studio-content{grid-column:1;grid-row:4}
+}
