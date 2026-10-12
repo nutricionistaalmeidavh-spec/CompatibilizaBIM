@@ -5,7 +5,7 @@ const money=(v:any)=>new Intl.NumberFormat('pt-BR',{style:'currency',currency:'B
 export function Bim4D5DPanel({project}:Props){
  const [tab,setTab]=React.useState('qto'),[busy,setBusy]=React.useState(false),[error,setError]=React.useState(''),[notice,setNotice]=React.useState('');
  const [overview,setOverview]=React.useState<any>(null),[quant,setQuant]=React.useState<any>(null),[budget,setBudget]=React.useState<any>(null),[simulation,setSimulation]=React.useState<any>(null),[financial,setFinancial]=React.useState<any>(null);
- const [date,setDate]=React.useState('2026-10-12'),[activity,setActivity]=React.useState(''),[guid,setGuid]=React.useState(''),[quantity,setQuantity]=React.useState(''),[percent,setPercent]=React.useState('0'),[period,setPeriod]=React.useState('2026-10'),[approver,setApprover]=React.useState('');
+ const [date,setDate]=React.useState(()=>new Date(Date.now()-new Date().getTimezoneOffset()*60000).toISOString().slice(0,10)),[activity,setActivity]=React.useState(''),[guid,setGuid]=React.useState(''),[quantity,setQuantity]=React.useState(''),[percent,setPercent]=React.useState('0'),[period,setPeriod]=React.useState(()=>new Date(Date.now()-new Date().getTimezoneOffset()*60000).toISOString().slice(0,7)),[approver,setApprover]=React.useState('');
  const api=async(action:string,params:any={})=>{
    const native=bridge();if(!native)throw Error('Operação 4D/5D exige o runtime desktop empacotado.');
    return await native({projectId:project.id,action,params});

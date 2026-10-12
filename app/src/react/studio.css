@@ -72,3 +72,13 @@
  .cbim-react-app>.studio-sidebar{grid-column:1;grid-row:3;overflow-x:auto}
  .cbim-react-app>.studio-content{grid-column:1;grid-row:4}
 }
+
+/* P1: one canonical BIM workflow with distinct, keyboard-accessible workspaces. */
+.cbim-p1-steps{display:flex;flex-wrap:wrap;gap:8px;margin:14px 0 18px;max-width:100%;padding:8px;background:#edf2f8;border-radius:12px;border:1px solid #dfe7f1}
+.cbim-p1-steps button{border:1px solid transparent;padding:10px 14px;min-height:40px;background:transparent;color:#334155;font-weight:650;border-radius:9px;cursor:pointer}
+.cbim-p1-steps button:hover{background:white}
+.cbim-p1-steps button.selected{background:white;color:#174a84;border-color:#bfcee0;box-shadow:0 1px 4px #13243f16}
+.cbim-p1-steps button:focus-visible,.cbim-p1-review button:focus-visible{outline:3px solid #4d83c9;outline-offset:2px}
+.cbim-p1-review{padding:14px 0;border-bottom:1px solid #e2e8f0}
+.cbim-p1-review:last-of-type{border-bottom:0}
+@media(max-width:700px){.cbim-p1-steps{display:grid;grid-template-columns:repeat(2,minmax(0,1fr))}.cbim-p1-steps button{text-align:center}}
