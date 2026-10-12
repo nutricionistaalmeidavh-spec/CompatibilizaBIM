@@ -22,7 +22,7 @@ export function WorkCloseoutPanel({db,work,onNavigate}:Props){
    <Metric label="RDOs aprovados" value={String(data.approvedRdoCount)} source={data.draftRdoCount+' não aprovados · Diário de obra'}/>
    <Metric label="Medições aprovadas" value={money(data.approvedMeasurementValue)} source={data.approvedMeasurementCount+' registros · Operação (não é receita recebida)'}/>
    <Metric label="Materiais registrados" value={money(data.registeredMaterialCost)} source="Quantidade realizada × custo unitário cadastrado; não é despesa paga"/>
-   <Metric label="Compras a receber" value={String(data.pendingReceiptCount)} source={data.pendingPaymentCount+' com pagamento pendente · Compras'/>
+   <Metric label="Compras a receber" value={String(data.pendingReceiptCount)} source={data.pendingPaymentCount+' com pagamento pendente · Compras'}/>
    <Metric label="Documentos" value={String(data.documentCount)} source="Anexos locais da obra"/>
    <Metric label="Estudos BIM vinculados" value={String(data.studyCount)} source={data.reviewLinkCount+' vínculos de revisão · '+data.measureLinkCount+' conferências de medição'}/>
   </div>
