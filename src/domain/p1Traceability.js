@@ -2,7 +2,8 @@
 export const REVIEW_LINK='cbim_review_workspace';
 export const MEASUREMENT_LINK='bim_measurement_reconciliation';
 export const MATERIAL_LINK='purchase_material_trace';
-const TYPES=new Set([REVIEW_LINK,MEASUREMENT_LINK,MATERIAL_LINK]);
+export const FINANCE_LINK='purchase_financial_trace';
+const TYPES=new Set([REVIEW_LINK,MEASUREMENT_LINK,MATERIAL_LINK,FINANCE_LINK]);
 const required=(value,name)=>{const v=String(value??'').trim();if(!v)throw Error(name+' é obrigatório.');return v;};
 const nonnegative=(value,name)=>{const n=Number(value);if(!Number.isFinite(n)||n<0)throw Error(name+' inválida.');return n;};
 const numeric=(value,name)=>{const n=Number(value);if(!Number.isFinite(n))throw Error(name+' inválida.');return n;};
@@ -87,5 +88,37 @@ export function summarizePurchaseMaterialTrace(purchases=[],materials=[],links=[
    registeredConsumption:valid?nonnegative(m.quantidade_realizada,'Consumo registrado'):null,
    paymentStatus:p.pagamento_status,unit:p.unidade,
    state:!entry?'nao_vinculada':!valid?'referencia_invalida':'rastreada'};
+ });
+}
+
+// Purchase/ledger link does not post, modify or settle either side. One-to-one
+// is deliberately conservative until the product supports partial payments.
+export function preparePurchaseFinanceLink(obraId,purchase,entry,existing=[],actor=''){
+ const workId=required(obraId,'Obra'), responsible=required(actor,'Responsável');
+ const purchaseId=required(purchase?.id,'Pedido de compra'),entryId=required(entry?.id,'Lançamento financeiro');
+ if(purchase.obra_id!==workId||entry.obra_id!==workId)throw Error('Pedido e lançamento precisam pertencer à mesma obra.');
+ if(entry.tipo!=='despesa')throw Error('A conciliação exige um lançamento do tipo despesa.');
+ nonnegative(purchase.valor_total,'Valor da compra');
+ nonnegative(entry.valor,'Valor do lançamento');
+ const used=currentLinks(existing,FINANCE_LINK);
+ if(used.some(x=>x.detail.purchaseId===purchaseId||x.detail.entryId===entryId))throw Error('Compra ou despesa já vinculada; não é permitido associar o mesmo valor duas vezes.');
+ return {moduleId:FINANCE_LINK,entityId:purchaseId,obraId:workId,
+ source:serialized({kind:FINANCE_LINK,purchaseId,entryId,responsible,recordedAt:new Date().toISOString(),
+  note:'Referência conferida. Não registra despesa, não muda pagamento nem duplica valores.'})};
+}
+export function summarizePurchaseFinanceTrace(purchases=[],entries=[],links=[]){
+ const indexed=currentLinks(links,FINANCE_LINK);
+ return purchases.map(p=>{
+  const trace=indexed.find(x=>x.detail.purchaseId===p.id);
+  const entry=trace&&entries.find(e=>e.id===trace.detail.entryId&&e.obra_id===p.obra_id&&e.tipo==='despesa');
+  const amount=nonnegative(p.valor_total,'Valor da compra');
+  const posted=entry?nonnegative(entry.valor,'Valor da despesa'):null;
+  const delta=posted===null?null:Math.round((amount-posted)*100)/100;
+  const paymentStatus=String(p.pagamento_status||'pendente');
+  const ledgerStatus=entry?.status||null;
+  const paymentCompatible=entry?((paymentStatus==='pago')===(ledgerStatus==='pago')):false;
+  return {purchaseId:p.id,entryId:entry?.id||null,purchaseAmount:amount,recordedExpenseAmount:posted,delta,
+   paymentStatus,ledgerStatus,responsible:trace?.detail.responsible||null,
+   state:!trace?'nao_vinculada':!entry?'referencia_invalida':Math.abs(delta)<=0.01&&paymentCompatible?'conferida':'divergente'};
  });
 }
