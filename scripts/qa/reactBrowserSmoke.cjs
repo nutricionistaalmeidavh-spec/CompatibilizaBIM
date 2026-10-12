@@ -43,7 +43,7 @@ const {chromium}=require('../../app/node_modules/playwright');
     await section('Operação','Operação de obra');
     await page.locator('form input[name="nome"]').first().fill('Frente QA');
     await page.getByRole('button',{name:'Cadastrar frente'}).click();
-    await page.getByText('Frente QA').first().waitFor();
+    await page.locator('article b').filter({hasText:'Frente QA'}).first().waitFor();
     await section('RDO',/RDO/);
     await page.getByRole('button',{name:'+ Novo RDO completo'}).click();
     await page.locator('form textarea').first().waitFor();
