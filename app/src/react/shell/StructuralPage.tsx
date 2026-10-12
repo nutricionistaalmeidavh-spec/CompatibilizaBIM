@@ -34,6 +34,7 @@ export function StructuralPage({db,obraId,onChange}:{db:any;obraId:string|null;o
   const [action,setAction]=React.useState<'modelo'|'pavimento'|'no'|'elemento'|'carga'|''>('');
   const [analysis,setAnalysis]=React.useState<any>(null);
   const [loadCase,setLoadCase]=React.useState<'permanente'|'variavel'|'acidental'>('permanente');
+  const [loadType,setLoadType]=React.useState<'distribuida'|'concentrada'|'momento'>('distribuida');
   const [error,setError]=React.useState('');
   const models=obraId?listarModelosEstruturais(db,obraId):[];
   const id=selected||models[0]?.id||'';
@@ -74,10 +75,10 @@ export function StructuralPage({db,obraId,onChange}:{db:any;obraId:string|null;o
       {action==='pavimento'&&<><label>Nível<input name="nivel" type="number" step="any" defaultValue={0}/></label><label>Altura<input name="altura" type="number" step="any" defaultValue={3}/></label></>}
       {action==='no'&&<>{(['x','y','z','fx','fy','fz','mx','my','mz'] as const).map(key=><label key={key}>{key.toUpperCase()}<input type="number" name={key} step="any" defaultValue={0}/></label>)}{(['ux','uy','uz','rx','ry','rz'] as const).map(key=><label key={key}><input type="checkbox" name={key}/> Restrição {key.toUpperCase()}</label>)}</>}
       {action==='carga'&&<><label>Descrição<input name="descricao" required/></label>
-        <label>Tipo<select name="tipo"><option value="distribuida">Distribuída</option><option value="concentrada">Concentrada</option><option value="momento">Momento</option></select></label>
-        <label>Elemento<select name="elementoId"><option value="">Selecione a barra (obrigatório)</option>{model?.elementos?.map((e:any)=><option key={e.id} value={e.id}>{e.nome}</option>)}</select></label>
+        <label>Tipo<select name="tipo" value={loadType} onChange={e=>setLoadType(e.target.value as any)}><option value="distribuida">Distribuída</option><option value="concentrada">Concentrada</option><option value="momento">Momento</option></select></label>
+        <label>Elemento<select name="elementoId" required defaultValue=""><option value="">Selecione a barra (obrigatório)</option>{model?.elementos?.map((e:any)=><option key={e.id} value={e.id}>{e.nome}</option>)}</select></label>
         <label>Valor<input type="number" name="valor" step="any" required/></label>
-        <label>Unidade<input name="unidade" key={model?.unidade} defaultValue={model?.unidade==='tf-m'?'tf':'kN'} required/></label><p>Convenção: forças e cargas distribuídas atuam no eixo Y global; momentos em Z global. Carga concentrada e momento são aplicados no meio do vão. Informe kN, kN/m ou kN.m conforme o tipo (tf para modelos tf-m).</p>
+        <label>Unidade<input name="unidade" readOnly key={loadType+'-'+model?.unidade} value={(model?.unidade==='tf-m'?'tf':'kN')+(loadType==='distribuida'?'/m':loadType==='momento'?'.m':'')}/></label><p>Convenção: forças e cargas distribuídas atuam no eixo Y global; momentos em Z global. Carga concentrada e momento são aplicados no meio do vão. Informe kN, kN/m ou kN.m conforme o tipo (tf para modelos tf-m).</p>
         <label>Combinação<select name="combinacao"><option value="permanente">Permanente</option><option value="variavel">Variável</option><option value="acidental">Acidental</option></select></label></>}
       {action==='elemento'&&<><label>Tipo<select name="tipo"><option value="viga">Viga</option><option value="pilar">Pilar</option><option value="barra">Barra</option></select></label>
         <label>Nó inicial<select name="nodeI" required>{model?.nos?.map((n:any)=><option key={n.id} value={n.nome}>{n.nome}</option>)}</select></label><label>Nó final<select name="nodeJ" required>{model?.nos?.map((n:any)=><option key={n.id} value={n.nome}>{n.nome}</option>)}</select></label>
