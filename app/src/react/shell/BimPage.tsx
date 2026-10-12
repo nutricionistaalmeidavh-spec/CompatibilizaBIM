@@ -114,7 +114,7 @@ export function BimPage({db,obraId,version,onChange,studyId='',onSelectStudy}:Pr
         <label>Converter CAD (DWG / DXF)<input disabled={busy} type="file" accept=".dwg,.dxf" onChange={e=>{void convert(e.target.files?.[0]||null);e.target.value='';}}/></label><label>DXF sem unidade<select value={unitlessScale} disabled={busy} onChange={e=>setUnitlessScale(e.target.value)}><option value="1">Metros (m)</option><option value="0.01">Centímetros (cm)</option><option value="0.001">Milímetros (mm)</option></select></label></div><p className="studio-muted">Selecione a disciplina antes da importação. DWG usa ACadSharp; DXF usa ezdxf e respeita unidades INSUNITS. A escala acima só se aplica quando não há unidade declarada. XREFs ausentes são diagnosticados; o original e o relatório ficam no job local.</p>
       {models.map((m:any)=><p key={m.id}>{m.nome} · {m.disciplina} · {m.elementos?.length||0} elementos</p>)}
       <div className="cbim-react-toolbar"><button disabled={busy||!models.length} onClick={view}>Gerar visualizador geométrico</button></div>
-    </div>
+    </div>}
     {project&&step==='Coordenação'&&<BimCoordinationPanel db={db} project={project} onChange={onChange}/>}
     {project&&step==='4D/5D'&&<><Bim4D5DPanel project={project}/><BimMeasurementReconciliationPanel db={db} project={project} onChange={onChange}/></>}
     {!project&&['Coordenação','4D/5D'].includes(step)&&<div className="cbim-react-panel">Selecione um estudo para acessar suas análises e quantitativos.</div>}
