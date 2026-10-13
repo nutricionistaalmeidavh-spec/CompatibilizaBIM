@@ -180,3 +180,6 @@
 .cbim-gantt-host{min-width:740px;min-height:200px}
 .cbim-quantities-grid{margin:14px 0;min-width:0}
 .cbim-quantities-grid p{margin-bottom:8px}
+
+/* P0/P1: searchable local engineering file explorer; presentation only. */
+.cbim-file-explorer{display:grid;gap:8px;margin:12px 0}.cbim-file-explorer article{display:flex;flex-direction:column;gap:4px;border:1px solid #d1dfe9;border-radius:8px;padding:12px;background:#f9fbfe;word-break:break-word}.cbim-file-explorer small{color:#516a82}

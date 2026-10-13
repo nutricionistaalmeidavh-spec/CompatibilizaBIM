@@ -1,5 +1,6 @@
 
 import React from 'react';
+import {filterBimFiles,summarizeBimAlerts} from '../../../../src/bim/studioExplorer.js';
 import {checkImportFile,readCbimElements,contentFingerprint} from './importContract.js';
 import { LinkedBimPanel } from './LinkedBimPanel';
 import { BimCoordinationPanel } from './BimCoordinationPanel';
@@ -26,6 +27,7 @@ export function BimPage({db,obraId,version,onChange,studyId='',onSelectStudy,tar
   const [message,setMessage]=React.useState('');
   const [error,setError]=React.useState('');
   const [unitlessScale,setUnitlessScale]=React.useState('1');
+  const [fileQuery,setFileQuery]=React.useState('');
   const [progress,setProgress]=React.useState('');
   React.useEffect(()=>{if(target?.kind==='bim-conciliacao')setStep('4D/5D');},[target?.kind,target?.id]);
   const [workspaces,setWorkspaces]=React.useState<any[]>([]);
@@ -112,9 +114,20 @@ export function BimPage({db,obraId,version,onChange,studyId='',onSelectStudy,tar
       <div className="cbim-react-form-grid"><label>Disciplina<select value={discipline} onChange={e=>setDiscipline(e.target.value)}><option value="hydraulic">Hidráulica</option><option value="structure">Estrutura</option><option value="architecture">Arquitetura</option><option value="fire">Incêndio</option></select></label>
         <label>Importar IFC / CBIM JSON<input disabled={busy} type="file" accept=".ifc,.json,.cbim.json" onChange={e=>{void importFile(e.target.files?.[0]||null);e.target.value='';}}/></label>
         <label>Converter CAD (DWG / DXF)<input disabled={busy} type="file" accept=".dwg,.dxf" onChange={e=>{void convert(e.target.files?.[0]||null);e.target.value='';}}/></label><label>DXF sem unidade<select value={unitlessScale} disabled={busy} onChange={e=>setUnitlessScale(e.target.value)}><option value="1">Metros (m)</option><option value="0.01">Centímetros (cm)</option><option value="0.001">Milímetros (mm)</option></select></label></div><p className="studio-muted">Selecione a disciplina antes da importação. DWG usa ACadSharp; DXF usa ezdxf e respeita unidades INSUNITS. A escala acima só se aplica quando não há unidade declarada. XREFs ausentes são diagnosticados; o original e o relatório ficam no job local.</p>
-      {models.map((m:any)=><p key={m.id}>{m.nome} · {m.disciplina} · {m.elementos?.length||0} elementos</p>)}
+      <label>Explorar modelos do estudo<input type="search" aria-label="Buscar modelos do estudo" value={fileQuery}
+        onChange={e=>setFileQuery(e.target.value)} placeholder="Nome, revisão, disciplina ou arquivo"/></label>
+      <p role="status" className="studio-muted">{filterBimFiles(models,fileQuery).length} de {models.length} arquivo(s) encontrados no estudo.</p>
+      <div className="cbim-file-explorer">{filterBimFiles(models,fileQuery).map((m:any)=><article key={m.id}>
+       <strong>{m.nome}</strong><small>{m.disciplina} · revisão {m.revisao||1} · {m.arquivo_nome||'arquivo local'}</small>
+       <small>{m.elementos?.length||0} elementos catalogados no SQLite{String(m.arquivo_nome||'').toLowerCase().endsWith('.ifc')?' · geometria IFC exige motor desktop':''}</small>
+       <small>Identificador existente: {m.arquivo_hash||'ausente'} · Não usar como SHA-256 se não declarado</small>
+      </article>)}</div>
+      {models.length>0&&!filterBimFiles(models,fileQuery).length&&<p>Nenhum modelo encontrado. Limpe o filtro para visualizar os demais.</p>}
       <div className="cbim-react-toolbar"><button disabled={busy||!models.length} onClick={view}>Gerar visualizador geométrico</button></div>
     </div>}
+    {project&&step==='Coordenação'&&<p role="status" className="cbim-react-panel">
+      {(()=>{const x=summarizeBimAlerts(clashes);return x.total+' conflitos registrados · '+x.pending+' abertos/em revisão · '+x.resolved+' resolvidos por decisão explícita. Sem aprovação automática.';})()}
+    </p>}
     {project&&step==='Coordenação'&&<BimCoordinationPanel db={db} project={project} onChange={onChange}/>}
     {project&&step==='4D/5D'&&<><Bim4D5DPanel key={project.id} project={project}/><BimMeasurementReconciliationPanel key={project.id} db={db} project={project} onChange={onChange} target={target} onNavigate={onNavigate}/></>}
     {!project&&['Coordenação','4D/5D'].includes(step)&&<div className="cbim-react-panel">Selecione um estudo para acessar suas análises e quantitativos.</div>}
