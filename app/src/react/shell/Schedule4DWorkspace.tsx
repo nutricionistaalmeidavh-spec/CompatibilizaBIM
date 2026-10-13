@@ -50,11 +50,11 @@ export function Schedule4DWorkspace({activities,busy,desktop,projectId,onAction,
  React.useEffect(()=>{
    setSelectedId('');setPending(null);setGuidQuery('');setGuidResults([]);setGuidCount(0);setSimulation(null);setLocalError('');
  },[projectId]);
- const visible=activities.filter((a:any)=>filterActivity(a,query)&&(
+ const visible=React.useMemo(()=>activities.filter((a:any)=>filterActivity(a,query)&&(
    scope==='todas'||(scope==='vinculadas'&&a.linked_guids?.length)||
    (scope==='sem-vinculo'&&!a.linked_guids?.length)||
    (scope==='concluidas'&&pct(a.actual_progress)===100)
- ));
+ )),[activities,query,scope]);
  const linked=activities.filter((a:any)=>a.linked_guids?.length).length;
  const finished=activities.filter((a:any)=>pct(a.actual_progress)===100).length;
  const dependencies=activities.filter((a:any)=>a.predecessors?.length).length;

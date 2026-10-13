@@ -1,4 +1,4 @@
-import {CanonicalGantt} from './CanonicalGantt';
+import {Schedule4DWorkspace} from './Schedule4DWorkspace';
 import {SchedulePreview} from './SchedulePreview';
 import {IfcQueryPanel} from './IfcQueryPanel';
 import {QuantitiesGrid} from './QuantitiesGrid';
@@ -85,35 +85,27 @@ export function Bim4D5DPanel({project}:Props){
    </>}
   </>}
   {tab==='4d'&&<>
-   <h3>Cronograma de atividades</h3>
-   <SchedulePreview busy={busy} existingIds={activities.map((a:any)=>a.activity_id)} onImport={async(csv)=>{const result=await run('import_schedule',{csv},'Cronograma importado após validação canônica.');if(!result)throw Error('Importação recusada; o cronograma anterior foi preservado.');}}/>
-   <form className="cbim-react-form-grid" onSubmit={e=>{e.preventDefault();const f=new FormData(e.currentTarget);void run('activity',{activity_id:f.get('id'),name:f.get('name'),start_date:f.get('start'),end_date:f.get('end'),composition_code:f.get('composition')},'Atividade criada.');}}>
-    <label>Código<input name="id" required/></label><label>Atividade<input name="name" required/></label><label>Início<input type="date" name="start" required/></label><label>Fim<input type="date" name="end" required/></label><label>Composição (opcional)<input name="composition"/></label><button disabled={busy||!bridge()}>Adicionar</button>
-   </form>
-   <CanonicalGantt activities={activities}/>
-   <div className="p2-scroll"><table><thead><tr><th>Atividade</th><th>Início</th><th>Fim</th><th>Real</th><th>GUIDs</th></tr></thead><tbody>{activities.map((a:any)=><tr key={a.activity_id}><td>{a.activity_id} · {a.name}</td><td>{a.start_date}</td><td>{a.end_date}</td><td>{a.actual_progress}%</td><td>{(a.linked_guids||[]).length}</td></tr>)}</tbody></table></div>
-   <h3>Vincular GUID e registrar progresso</h3>
-   <div className="cbim-react-form-grid">
-    <label>Atividade<select value={activity} onChange={e=>setActivity(e.target.value)}><option value="">Selecione</option>{activities.map((a:any)=><option key={a.activity_id} value={a.activity_id}>{a.name}</option>)}</select></label>
-    <label>GUID IFC<select value={guid} onChange={e=>{setGuid(e.target.value);setQuantity('');}}><option value="">Selecione</option>{Array.from(new Map(records.map((r:any)=>[r.global_id,r])).values()).slice(0,300).map((r:any)=><option value={r.global_id} key={r.global_id}>{r.global_id}</option>)}</select></label>
-    <button disabled={busy||!activity||!guid} onClick={()=>void run('link',{activity_id:activity,guids:[guid]},'GUID associado à atividade.')}>Vincular</button>
-    <label>Data de referência<input type="date" value={date} onChange={e=>setDate(e.target.value)}/></label>
-    <label>Progresso real acumulado (%)<input type="number" min="0" max="100" value={percent} onChange={e=>setPercent(e.target.value)}/></label>
-    <button disabled={busy||!activity} onClick={()=>void run('progress',{activity_id:activity,progress:Number(percent),recorded_on:date},'Progresso registrado com data.')}>Registrar avanço</button>
-    <button disabled={busy||!activities.length} onClick={async()=>{setBusy(true);try{setSimulation(await api('simulate',{date}));}catch(e:any){setError(e.message);}finally{setBusy(false);}}}>Simular 4D na data</button>
-   </div>
-   {simulation&&<><div className="p2-kpis"><strong>{simulation.overall.planned_progress}%<small>Previsto</small></strong><strong>{simulation.overall.actual_progress}%<small>Real</small></strong><strong>{simulation.overall.variance_percent}%<small>Desvio</small></strong></div>
-    <div className="p2-gantt" role="group" aria-label="Cronograma gráfico por atividade">
-      {simulation.activities.map((a:any)=><div className="p2-gantt-row" key={a.activity_id}>
-       <span>{a.name}</span><div className="p2-gantt-track"><div className="p2-gantt-plan" style={{width:a.planned_progress+'%'}}/><div className="p2-gantt-real" style={{width:a.actual_progress+'%'}}/></div><small>{a.status}</small>
-      </div>)}
+    <div className="cbim-4d-import">
+      <SchedulePreview busy={busy} existingIds={activities.map((a:any)=>a.activity_id)} onImport={async(csv)=>{
+        const result=await run('import_schedule',{csv},'Cronograma CSV validado e importado pelo motor canônico.');
+        if(!result)throw Error('Importação recusada; o cronograma anterior foi preservado.');
+      }}/>
+      <details className="cbim-4d-add-activity"><summary>Cadastrar atividade manualmente</summary>
+        <form className="cbim-react-form-grid" onSubmit={e=>{e.preventDefault();const f=new FormData(e.currentTarget);
+          void run('activity',{activity_id:f.get('id'),name:f.get('name'),start_date:f.get('start'),end_date:f.get('end'),
+             composition_code:f.get('composition'),predecessors:String(f.get('predecessors')||'').split(/[;,]/).map(x=>x.trim()).filter(Boolean)},
+             'Atividade salva com datas e dependências no cronograma canônico.');
+        }}>
+          <label>Código<input name="id" required/></label><label>Atividade<input name="name" required/></label>
+          <label>Início<input type="date" name="start" required/></label><label>Fim<input type="date" name="end" required/></label>
+          <label>Predecessoras (códigos)<input name="predecessors" placeholder="A01, A02"/></label>
+          <label>Composição (opcional)<input name="composition"/></label>
+          <button disabled={busy||!bridge()} type="submit">Adicionar atividade</button>
+        </form>
+      </details>
     </div>
-    {simulation.curve?.length>1&&<div className="p2-curve"><h4>Curva S · Planejado × executado</h4>
-      <svg viewBox="0 0 600 180" role="img" aria-label="Curva S de progresso planejado e executado em porcentagem">
-       {[0,25,50,75,100].map(v=><g key={v}><line x1="35" y1={165-v*1.45} x2="585" y2={165-v*1.45} stroke="#d5dee9"/><text x="3" y={170-v*1.45} fontSize="10">{v}%</text></g>)}
-       {(['planned_progress','actual_progress'] as const).map((field,idx)=><polyline key={field} fill="none" stroke={idx?'#1c8d72':'#315a92'} strokeWidth="2.5" points={simulation.curve.map((p:any,i:number)=>(35+i*550/(simulation.curve.length-1))+','+(165-Number(p[field]||0)*1.45)).join(' ')}/>)}
-      </svg><p>Azul: planejado · Verde: executado. Pontos calculados pelo motor de simulação 4D.</p>
-    </div>}</>}
+    <Schedule4DWorkspace projectId={project.id} activities={activities} busy={busy} desktop={!!bridge()}
+      onAction={run} onQuery={api}/>
   </>}
   {tab==='med'&&<>
    <h3>Medição física cumulativa por GUID</h3>
