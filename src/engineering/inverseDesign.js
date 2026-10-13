@@ -85,5 +85,5 @@ export function buscarDimensionamentoInverso({definition,calculatorId,inputs,var
     }
   }
   return {status:'viavel_amostrado',candidato:best,amostras,
-    metodo:'Busca em 41 pontos com refinamento de fronteira por bisseção (até 24 passos). Solução viável encontrada; não garante ótimo global nem conformidade normativa.'};
+    metodo:'Busca por amostragem em 41 pontos com refinamento de fronteira por bisseção (até 24 passos). Solução viável encontrada; não garante ótimo global nem conformidade normativa.'};
 }

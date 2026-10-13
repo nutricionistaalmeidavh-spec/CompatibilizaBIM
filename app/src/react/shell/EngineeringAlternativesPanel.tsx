@@ -85,7 +85,7 @@ export function EngineeringAlternativesPanel({calculator,entry,inputs,output,pre
       {error&&<p className="cbim-react-error" role="alert">{error}</p>}
       {inverse&&<section className="cbim-assisted-feedback" aria-live="polite">
         <h4>{inverse.status==='viavel_amostrado'?'Candidato encontrado':'Nenhuma alternativa viável localizada na amostragem'}</h4>
-        {inverse.candidato&&<p><strong>{fields.find(f=>f[0]===variable)?.[1}:</strong> {formatarValorTecnico(inverse.candidato.x)} · verificações matemáticas parciais atendidas</p>}
+        {inverse.candidato&&<p><strong>{fields.find(f=>f[0]===variable)?.[1]}:</strong> {formatarValorTecnico(inverse.candidato.x)} · verificações matemáticas parciais atendidas</p>}
         <p className="studio-muted">{inverse.metodo}</p>
         {inverse.candidato&&<button type="button" onClick={()=>onApply(inverse.candidato.entradas)}>Carregar candidato no formulário para recalcular</button>}
         <EngineeringPlot title="Variação da grandeza principal" points={inverse.amostras.map((s:any)=>({
