@@ -42,7 +42,7 @@ export function FinancePage({db,obraId,scope={},onChange,target,onNavigate}:{db:
     {error&&<p role="alert" className="cbim-react-error">{error}</p>}
     {target?.kind==='contas-competencia'&&<section className="cbim-react-panel cbim-journey-focus" aria-label="Conferência de contas por vencimento">
       <h2>Lançamentos com vencimento em {target.period}</h2>
-      <p>Vinculado à obra, não à medição BIM. O vínculo com RDO ou medição é somente por competência temporal. Os valores abaixo são lançamentos registrados; não comprovam recebimento ou pagamento bancário.</p>
+      <p>Vinculado à obra, não à medição BIM. O vínculo com RDO ou medição é somente por competência temporal. Esta consulta de origem pode mostrar itens fora dos filtros, sem incluí-los nos totais filtrados. Os valores são lançamentos registrados; não comprovam recebimento ou pagamento bancário.</p>
       {dueEntries.map((entry:any)=><article key={entry.id}><b>{entry.descricao}</b> · {entry.categoria} · {entry.tipo} · {money(entry.valor)} · {entry.status} · vencimento {entry.vencimento}
        {onNavigate&&<button type="button" onClick={()=>onNavigate('Financeiro',{kind:'lancamento',id:entry.id,obraId,period:target.period,studyId:target.studyId})}>Inspecionar lançamento original</button>}
       </article>)}
