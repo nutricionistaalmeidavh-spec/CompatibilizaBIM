@@ -15,9 +15,15 @@
     "dist:p1:windows": "npm run build && electron-builder --config electron-builder.p1.config.cjs --win nsis --publish never"
   },
   "dependencies": {
-    "sql.js": "^1.11.0",
+    "@glideapps/glide-data-grid": "6.0.4-alpha24",
+    "frappe-gantt": "1.2.2",
+    "lodash": "^4.17.21",
+    "marked": "^16.0.10",
     "react": "^19.1.1",
-    "react-dom": "^19.1.1"
+    "react-dom": "^19.1.1",
+    "react-resizable-panels": "2.1.9",
+    "react-responsive-carousel": "^3.2.23",
+    "sql.js": "^1.11.0"
   },
   "devDependencies": {
     "vite": "^5.4.0",

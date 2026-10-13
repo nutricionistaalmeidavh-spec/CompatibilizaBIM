@@ -42,6 +42,8 @@ const {chromium}=require('../../app/node_modules/playwright');
     await page.locator('form input[name="nome"]').fill('Obra de regressão React');
     await page.getByRole('button',{name:'Criar obra'}).click();
     await page.getByRole('heading',{name:'Obra de regressão React'}).first().waitFor();
+    await page.getByRole('navigation',{name:'Caminho atual'}).getByText('Obras').waitFor();
+    assert.ok(await page.getByRole('table',{name:'Eventos da obra'}).count()===1,'History must be a single accessible canonical table');
     await page.getByRole('heading',{name:'Conferência para encerramento'}).waitFor();
     await page.locator('[data-testid="work-closeout"]').getByText(/Nenhum RDO aprovado/).waitFor();
     await screenshots('p2-encerramento-sem-dados');
@@ -51,14 +53,22 @@ const {chromium}=require('../../app/node_modules/playwright');
     await page.getByRole('button',{name:'Criar estudo'}).click();
     await page.getByRole('button',{name:'Vincular estudo à obra atual'}).click();
     await page.getByText(/Estudo vinculado à obra/).first().waitFor();
-    // P2: import an actual CBIM JSON fixture into the selected study, preserving the original geometry.
-    await page.locator('label').filter({hasText:'Importar IFC / CBIM JSON'}).locator('input[type=file]').setInputFiles({
+    await page.getByRole('navigation',{name:'Caminho atual'}).getByText('BIM').waitFor();
+    // A BIM study without a model cannot offer a Model/Element selector. Import a
+    // real CBIM JSON fixture via the same UI path used by engineers before linking a calculation.
+    const qaModel={
+      schema:'CBIM',schema_version:'0.2.0',
+      elements:[{id:'G-QA-001',name:'Tubulação hidráulica de QA',type:'pipe',
+        diameter:0.05,path:[{x:0,y:0,z:0},{x:2,y:0,z:0}],confidence:1,
+        review_state:'confirmed',properties:{}}]
+    };
+    await page.getByLabel('Importar IFC / CBIM JSON').setInputFiles({
       name:'qa-struct.cbim.json',mimeType:'application/json',
-      buffer:Buffer.from(JSON.stringify({schema:'CBIM',schema_version:'0.2.0',
-        elements:[{id:'qa-viga',globalId:'G-QA-001',name:'Viga de regressão',
-          bbox:{min:[0,0,0],max:[2,1,1]}}]}))
+      buffer:Buffer.from(JSON.stringify(qaModel))
     });
     await page.getByText(/Modelo CBIM JSON incorporado/).waitFor();
+    await page.getByRole('heading',{name:/Estudo P2 QA · 1 modelos/}).waitFor();
+
     await page.getByRole('button',{name:'Coordenação',exact:true}).click();
     await page.getByRole('heading',{name:/Coordenação.*Federação e conflitos/}).waitFor();
     assert.equal(await page.getByRole('heading',{name:/Quantitativos 5D, cronograma 4D e medições/}).count(),0,'No duplicate 4D panel in coordination step');
@@ -167,6 +177,11 @@ const {chromium}=require('../../app/node_modules/playwright');
     await screenshots('f7-rdo-with-photo');
     await page.getByRole('textbox',{name:'Nome do aprovador'}).fill('Coordenador QA');
     await page.getByRole('button',{name:'Aprovar',exact:true}).click();
+    const approvalModal=page.getByRole('dialog',{name:'Aprovar RDO definitivamente?'});
+    await approvalModal.waitFor();
+    assert.ok(await page.locator('article').filter({hasText:'Responsável QA'}).getByText(/rascunho/).count()>=1,
+      'RDO must remain a draft until confirmation');
+    await approvalModal.getByRole('button',{name:'Aprovar RDO'}).click();
     await page.locator('article').filter({hasText:'Responsável QA'}).getByText(/aprovado/).waitFor();
     assert.equal(await page.getByRole('button',{name:'Editar',exact:true}).count(),0,'Approved RDO must be immutable from UI');
     await page.getByRole('button',{name:'Criar retificação'}).click();
@@ -221,6 +236,8 @@ const {chromium}=require('../../app/node_modules/playwright');
     await page.getByRole('group',{name:'Projeção axonométrica da geometria CBIM'}).waitFor();
     await page.getByRole('button',{name:/Selecionar pipe pipe-qa/}).click();
     await page.getByRole('heading',{name:'Inspector'}).waitFor();
+    const splitHandle=page.getByRole('separator',{name:'Ajustar largura entre visualizador e inspetor'});
+    await splitHandle.waitFor();
     await screenshots('review-cbim-native-3d');
     assert.deepEqual(errors,[],'Uncaught browser errors: '+errors.join('\n'));
     console.log('PASS: React-only main app, SQLite works, calculators, BIM, structural, operations, RDO, financial and history.');

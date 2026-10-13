@@ -11,6 +11,8 @@ import { FinancePage } from './FinancePage';
 import { RdoPage } from './RdoPage';
 import { StructuralPage } from './StructuralPage';
 import { Status } from '../components/ui';
+import {EngineeringBreadcrumbs,EngineeringConfirmDialog,EngineeringFeedback} from '../components/EngineeringUI';
+import {studioBreadcrumbs} from '../../../../src/ui/studioPresentation.js';
 import {validateWorkspacePeriod} from '../../../../src/domain/workspaceScope.js';
 import {createEngineeringTarget,resolveJourneyStudy} from '../../../../src/domain/engineeringJourney.js';
 import { validarContratoBackup } from '../../../../src/storage/backupContract.js';
@@ -23,6 +25,7 @@ export function AppShell(){
   const [db,setDb]=React.useState<any>(null);
   const [error,setError]=React.useState('');
   const [backupError,setBackupError]=React.useState('');
+  const [backupPreview,setBackupPreview]=React.useState<{fileName:string;content:string;created:string;kilobytes:string}|null>(null);
   const [contextError,setContextError]=React.useState('');
   const [active,setActive]=React.useState(()=>{try{return normalizeStudioRoute(sessionStorage.getItem('cbim-studio-section'));}catch{return 'Obras';}});
   const [workId,setWorkId]=React.useState<string|null>(null);
@@ -76,16 +79,14 @@ export function AppShell(){
       const content=await file.text();
       const preview=validarContratoBackup(content);
       if(!preview.valido)throw new Error(preview.erros.join(' '));
-      const date=preview.exportadoEm||'não informada';
-      const size=preview.bytes?.length??0;
-      const accepted=window.confirm(
-        'Restaurar banco SQLite do CompatibilizaBIM?\\n\\nArquivo: '+file.name+
-        '\\nExportado em: '+date+'\\nTamanho: '+(size/1024).toFixed(1)+' KiB'+
-        '\\n\\nEste JSON contém o banco de dados, mas NÃO inclui arquivos externos e workspaces DWG/CBIM.'+
-        '\\nO banco atual será preservado em um snapshot .previous no desktop. Deseja continuar?'
-      );
-      if(accepted)importarBackup(db,content);
-    }catch(e:any){setBackupError(e.message);}
+      setBackupPreview({fileName:file.name,content,created:preview.exportadoEm||'não informada',
+        kilobytes:((preview.bytes?.length??0)/1024).toFixed(1)});
+    }catch(e:any){setBackupError(e.message||String(e));setBackupPreview(null);}
+  };
+  const confirmBackup=()=>{
+    if(!backupPreview||!db)return;
+    try{setBackupError('');importarBackup(db,backupPreview.content);}
+    catch(e:any){setBackupError(e.message||String(e));setBackupPreview(null);}
   };
   if(error)return <main role="alert"><h1>Falha ao abrir CompatibilizaBIM</h1><p>{error}</p></main>;
   if(!db)return <main aria-busy="true">Abrindo banco local…</main>;
@@ -141,12 +142,14 @@ export function AppShell(){
       <label>Importar backup<input aria-label="Selecionar arquivo de backup" type="file" accept=".json" onChange={e=>{void readBackup(e.target.files?.[0]||null);e.target.value='';}}/></label>
     </aside>
     <main className="studio-content">
-      {contextError&&<p role="alert" className="cbim-react-error">{contextError}</p>}
-      {backupError&&<p role="alert" className="cbim-react-error">Importação não realizada: {backupError} O banco e a sessão atual foram preservados. Confira o arquivo e tente novamente.</p>}
+      <EngineeringBreadcrumbs items={studioBreadcrumbs({route:active,work:selectedWork,study:active==='BIM'?selectedStudy:null})} onNavigate={navigateTo}/>
+      {contextError&&<EngineeringFeedback tone="danger" title="Contexto não atualizado">{contextError}</EngineeringFeedback>}
+      {backupError&&<EngineeringFeedback tone="danger" title="Backup não restaurado">{backupError} O banco e a sessão atual foram preservados. Confira o arquivo e tente novamente.</EngineeringFeedback>}
       {journey.length>1&&<nav className="cbim-journey-bar" aria-label="Navegação pelo registro de origem">
         <button type="button" onClick={returnToSource}>← Voltar a {journey[journey.length-2].route} · registro de origem</button>
         <span>Conferência contextual · {focus?.kind||'visão'} {focus?.id?'· '+focus.id:''}{focus?.period?' · '+focus.period:''}</span>
       </nav>}
+      <div key={active} className="cbim-route-appear">
       {active==='Obras'&&<WorksPage db={db} obraId={workId} scope={scope} selectWork={selectWork} onChange={refresh} onNavigate={navigateTo}/>}
       {active==='BIM'&&<BimPage db={db} obraId={workId} version={version} onChange={refresh} studyId={context.projetoBimId||''} onSelectStudy={id=>updateContext({projetoBimId:id||null})} target={focus} onNavigate={navigateTo}/>}
       {active==='Cálculos'&&<CalculatorsPage db={db} obraId={workId} studyId={context.projetoBimId||''} onSelectStudy={id=>updateContext({projetoBimId:id||null})} onSaved={refresh}/>}
@@ -155,6 +158,11 @@ export function AppShell(){
       {active==='RDO'&&<RdoPage db={db} obraId={workId} scope={scope} onChange={refresh} target={focus} onNavigate={navigateTo}/>}
       {active==='Operação'&&<OperationsPage db={db} obraId={workId} scope={scope} onChange={refresh} target={focus} onNavigate={navigateTo}/>}
       {active==='Financeiro'&&<FinancePage db={db} obraId={workId} scope={scope} onChange={refresh} target={focus} onNavigate={navigateTo}/>}
+      </div>
     </main>
+    <EngineeringConfirmDialog open={!!backupPreview} title="Restaurar banco de dados local?"
+      danger typedPhrase="RESTAURAR" confirmLabel="Restaurar SQLite"
+      description={<><p><strong>Arquivo:</strong> {backupPreview?.fileName} · {backupPreview?.kilobytes} KiB</p><p><strong>Exportado em:</strong> {backupPreview?.created}</p><p>O banco atual terá cópia anterior, mas arquivos externos e workspaces DWG/IFC não são incluídos neste JSON. A aplicação será reiniciada após a restauração.</p></>}
+      onCancel={()=>setBackupPreview(null)} onConfirm={confirmBackup}/>
   </div>;
 }

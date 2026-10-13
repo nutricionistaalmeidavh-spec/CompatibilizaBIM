@@ -1,0 +1,72 @@
+name: CompatibilizaBIM Canonical Visual QA
+
+on:
+  push:
+    branches:
+      - feat/studio-canonical-resizable-gantt-qto-grid
+    paths:
+      - .github/workflows/cbim-canonical-visual-qa.yml
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  canonical-visual:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Synchronize offline application lockfile
+        run: npm install --package-lock-only --prefix app
+      - name: Install exact dependency tree
+        run: npm ci --prefix app
+      - name: Expose app dependencies to root tests
+        run: ln -s app/node_modules node_modules
+      - name: Regression tests (including data-boundary adapters)
+        run: npm test
+      - name: Build canonical React renderer (including Frappe package style alias)
+        run: npm run build --prefix app
+      - name: Install free Chromium QA runtime
+        run: |
+          npm install --no-save --prefix app playwright@1.56.0
+          ./app/node_modules/.bin/playwright install --with-deps chromium
+      - name: React end-to-end smoke (breadcrumbs, RDO approval and review split)
+        run: |
+          npm run preview --prefix app -- --host 127.0.0.1 --port 5173 > /tmp/cbim-vite.log 2>&1 &
+          node scripts/qa/reactBrowserSmoke.cjs || { cat /tmp/cbim-vite.log; exit 1; }
+      - name: Save React UI screenshots
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: CBIM-canonical-UI-browser-screenshots
+          path: test/react-qa-artifacts/*.png
+          if-no-files-found: warn
+          retention-days: 7
+      - name: Save lockfile for branch synchronization
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: CBIM-visual-synchronized-package-lock
+          path: app/package-lock.json
+          retention-days: 7
+          if-no-files-found: warn
+      - name: Commit synchronized lockfile to isolated feature branch
+        if: success() && github.event_name == 'push' && github.ref == 'refs/heads/feat/studio-canonical-resizable-gantt-qto-grid'
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add app/package-lock.json
+          if git diff --cached --quiet; then
+            echo "Lockfile already synchronized"
+          else
+            git commit -m "chore(studio): synchronize pinned offline UI dependency lockfile"
+            git push origin HEAD:feat/studio-canonical-resizable-gantt-qto-grid
+          fi
+
+# Validate merged engineering journey and Studio React UI with branch-only QA.
+
+# Real CBIM model fixture now precedes the linked calculation end-to-end scenario.
