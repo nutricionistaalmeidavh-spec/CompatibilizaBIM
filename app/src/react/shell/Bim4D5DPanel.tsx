@@ -2,6 +2,7 @@ import {CanonicalGantt} from './CanonicalGantt';
 import {QuantitiesGrid} from './QuantitiesGrid';
 import {measurementSelection} from '../../../../src/bim/visualizationAdapters.js';
 import React from 'react';
+import {EngineeringFeedback} from '../components/EngineeringUI';
 type Props={project:any};
 const bridge=()=> (globalThis as any).engineeringStorage?.bim?.p2;
 const money=(v:any)=>new Intl.NumberFormat('pt-BR',{style:'currency',currency:'BRL'}).format(Number(v)||0);
@@ -123,7 +124,8 @@ export function Bim4D5DPanel({project}:Props){
     {!!financial.unmatched_line_count&&<p>{financial.unmatched_line_count} linha(s) sem composição inequívoca; não receberam preço.</p>}
     <p className="studio-muted">Valores pagos ou recebidos não são lançados por este módulo e não podem ser inferidos das medições.</p></>}
   </>}
-  {error&&<p role="alert" className="cbim-react-error">{error} Nenhum valor foi preenchido automaticamente.</p>}
-  {notice&&<p role="status">{notice}</p>}
+  {busy&&<EngineeringFeedback title="Processando operação BIM local" busy>Os dados serão confirmados apenas após resposta do motor Python.</EngineeringFeedback>}
+  {error&&<EngineeringFeedback tone="danger" title="Operação BIM não concluída">{error} Nenhum valor foi preenchido automaticamente.</EngineeringFeedback>}
+  {notice&&<EngineeringFeedback tone="success" title={notice}/>}
  </section>;
 }

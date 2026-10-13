@@ -1,5 +1,6 @@
 
 import React from 'react';
+import {EngineeringConfirmDialog,EngineeringFeedback} from '../components/EngineeringUI';
 import {RdoFieldRows} from './RdoFieldRows';
 import {SectionHeading} from '../components/ui';
 import {createRdoDraft,readRdoDraft,prepareRdoPayload,duplicateRdoContext} from '../../../../src/domain/rdoEditor.js';
@@ -28,6 +29,7 @@ export function RdoPage({db,obraId,scope={},onChange}:{db:any;obraId:string|null
   const [error,setError]=React.useState('');
   const [busy,setBusy]=React.useState(false);
   const [approver,setApprover]=React.useState('');
+  const [confirmAction,setConfirmAction]=React.useState<{mode:'approve'|'delete';id:string;date:string}|null>(null);
   const work=obraId?buscarObra(db,obraId):null;
   const rdos=filterScopedRecords(work?.rdos||[],{periodo:scope.periodo||{}},{dateField:'data'});
   const createDate=()=>scope.periodo?.fim||scope.periodo?.inicio||localToday();
@@ -50,13 +52,17 @@ export function RdoPage({db,obraId,scope={},onChange}:{db:any;obraId:string|null
   };
   const change=(key:string,value:string)=>setForm((f:any)=>({...f,[key]:value}));
   const changeRows=(key:string,values:any[])=>setForm((f:any)=>({...f,[key]:values}));
-  const approval=(r:any)=>{
-    try{aprovarRdo(db,r.id,approver);setApprover('');onChange();setError('');}catch(e:any){setError(e.message);}
-  };
-  const remove=(r:any)=>{
-    const confirmed=window.prompt('Para excluir definitivamente o RDO de '+r.data+', digite EXCLUIR:');
-    if(confirmed!=='EXCLUIR')return;
-    try{excluirRdo(db,r.id,confirmed);onChange();}catch(e:any){setError(e.message);}
+  const approval=(r:any)=>{if(!approver.trim()){setError('Informe o aprovador antes de aprovar.');return;}setConfirmAction({mode:'approve',id:r.id,date:r.data});};
+  const remove=(r:any)=>setConfirmAction({mode:'delete',id:r.id,date:r.data});
+  const confirmRdoAction=()=>{
+    if(!confirmAction)return;
+    const record=work?.rdos?.find((r:any)=>r.id===confirmAction.id);
+    if(!record){setError('RDO não encontrado. Atualize a obra antes de tentar novamente.');setConfirmAction(null);return;}
+    try{
+      if(confirmAction.mode==='approve'){aprovarRdo(db,record.id,approver);setApprover('');}
+      else excluirRdo(db,record.id,'EXCLUIR');
+      setConfirmAction(null);onChange();setError('');
+    }catch(e:any){setError(e.message||String(e));setConfirmAction(null);}
   };
   const pdf=async(r:any)=>{
     if(!work)return;
@@ -98,7 +104,8 @@ export function RdoPage({db,obraId,scope={},onChange}:{db:any;obraId:string|null
     {scope.frenteId&&<p role="status" className="cbim-react-panel">RDOs existentes não possuem vínculo canônico com frente; a seleção de frente não filtra esses registros. O filtro de datas continua aplicado.</p>}
     <p className="studio-muted">A aprovação é imutável. Um RDO aprovado só pode ser retificado mediante novo registro; fotos e histórico são preservados no SQLite. O PDF anexa as evidências locais.</p>
     <div className="cbim-react-toolbar"><button onClick={()=>choose(null)}>+ Novo RDO completo</button>{work.rdos?.length>0&&<button type="button" onClick={()=>useLast(work.rdos[0])}>Novo com equipe do último dia</button>}</div>
-    {error&&<p role="alert" className="cbim-react-error">{error}</p>}
+    {error&&<EngineeringFeedback tone="danger" title="RDO não atualizado">{error}</EngineeringFeedback>}
+    {busy&&<EngineeringFeedback title="Salvando RDO" busy>Validando fotos e dados do diário.</EngineeringFeedback>}
     {editing&&<form className="cbim-react-panel" onSubmit={e=>{void submit(e);}}>
       <SectionHeading title={editing==='new'?'Novo RDO':'Corrigir RDO'} description="Preencha campos separados; nenhuma lista precisa de ponto e vírgula. O registro existente permanece rascunho até a aprovação."/>
       <div className="cbim-rdo-editor-meta">
@@ -123,5 +130,11 @@ export function RdoPage({db,obraId,scope={},onChange}:{db:any;obraId:string|null
       </article>)}
       {!rdos.length&&<p>Nenhum RDO cadastrado.</p>}
     </div>
+    <EngineeringConfirmDialog open={!!confirmAction}
+      title={confirmAction?.mode==='delete'?'Excluir RDO definitivamente?':'Aprovar RDO definitivamente?'}
+      danger={confirmAction?.mode==='delete'} typedPhrase={confirmAction?.mode==='delete'?'EXCLUIR':undefined}
+      confirmLabel={confirmAction?.mode==='delete'?'Excluir RDO':'Aprovar RDO'}
+      description={<><p>RDO de <strong>{confirmAction?.date}</strong>.</p><p>{confirmAction?.mode==='delete'?'A exclusão elimina este RDO não aprovado. Verifique o registro antes de confirmar.':'A aprovação torna o RDO imutável. Futuras correções exigem um novo RDO de retificação.'}</p>{confirmAction?.mode==='approve'&&<p>Responsável pela aprovação: <strong>{approver}</strong></p>}</>}
+      onCancel={()=>setConfirmAction(null)} onConfirm={confirmRdoAction}/>
   </section>;
 }
