@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
 import {previewScheduleImport} from '../src/bim/scheduleImportPreview.js';
-import {filterBimFiles, summarizeBimAlerts} from '../src/bim/studioExplorer.js';
+import {filterBimFiles, filterBimIssues, summarizeBimAlerts} from '../src/bim/studioExplorer.js';
 
 test('P2 scheduled import previews quoted CSV and predecessor graph without writing schedule',()=>{
  const csv='\uFEFFactivity_id,name,start_date,end_date,predecessors\n'+
@@ -60,4 +60,14 @@ test('P3 query IPC must be read-only and validate selectors',()=>{
  assert.match(panel,/<SchedulePreview/);
  const previewComponent=readFileSync(new URL('../app/src/react/shell/SchedulePreview.tsx',import.meta.url),'utf8');
  assert.match(previewComponent,/previewScheduleImport/);
+});
+
+test('P0 conflict search considers GUID, source, responsible party and classification without modifying status',()=>{
+ const rows=[{aGlobalId:'GUID-PIPE',status:'aberto',origens:['HID.ifc'],responsavel:'Mariana'},
+             {aGlobalId:'GUID-WALL',status:'resolvido',origens:['ARQ.ifc'],responsavel:'José'}];
+ assert.deepEqual(filterBimIssues(rows,'pipe').map(r=>r.aGlobalId),['GUID-PIPE']);
+ assert.deepEqual(filterBimIssues(rows,'hid.ifc').map(r=>r.aGlobalId),['GUID-PIPE']);
+ assert.deepEqual(filterBimIssues(rows,'mariana').map(r=>r.aGlobalId),['GUID-PIPE']);
+ assert.deepEqual(filterBimIssues(rows,'nao'),[]);
+ assert.equal(rows[0].status,'aberto');
 });
