@@ -115,7 +115,7 @@ const {chromium}=require('../../app/node_modules/playwright');
 
     await screenshots('p2-cronograma');
     await page.getByRole('button',{name:'Medições',exact:true}).click();
-    await page.getByRole('heading',{name:/Medição física cumulativa/}).waitFor();
+    await page.getByRole('heading',{name:'Medições e conferência técnica'}).waitFor();
     await screenshots('p2-medicoes');
 
     await section('Qualidade','Qualidade e homologação');

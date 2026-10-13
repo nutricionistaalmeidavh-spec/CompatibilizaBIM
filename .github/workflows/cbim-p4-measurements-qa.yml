@@ -59,3 +59,5 @@ jobs:
         run: python -m pytest -q modules/compatibilizabim/tests/test_p2_workflow.py modules/compatibilizabim/tests/test_p3_gantt.py modules/compatibilizabim/tests/test_p4_measurements.py modules/compatibilizabim/tests/test_ifc_query.py
 
 # P4 QA checkpoint 2
+
+# P4 final QA checkpoint 3: align legacy Medicoes screen acceptance
