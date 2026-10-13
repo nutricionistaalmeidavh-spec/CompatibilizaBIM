@@ -1,0 +1,65 @@
+name: CompatibilizaBIM P3 Premium Gantt Canonical QA
+on:
+  push:
+    branches:
+      - feat/p3-premium-4d-canonical-gantt-20261013
+    paths:
+      - .github/workflows/cbim-p3-gantt-qa.yml
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  react-and-node:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Install pinned React desktop dependencies
+        run: |
+          npm ci --prefix app
+          ln -s app/node_modules node_modules
+      - name: Domain and native regression tests
+        run: npm test
+      - name: Build canonical React renderer
+        run: npm run build --prefix app
+      - name: Install Playwright Chromium
+        run: |
+          npm install --no-save --prefix app playwright@1.56.0
+          ./app/node_modules/.bin/playwright install --with-deps chromium
+      - name: Existing React engineering journey
+        run: |
+          npm run preview --prefix app -- --host 127.0.0.1 --port 5173 > /tmp/cbim-vite.log 2>&1 &
+          node scripts/qa/reactBrowserSmoke.cjs || { cat /tmp/cbim-vite.log; exit 1; }
+      - name: P3 real Gantt and CSV preview UI
+        run: node scripts/qa/reactGanttP3.cjs
+      - name: Store real Chromium screenshots
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: CBIM-P3-React-Gantt-Real-QA
+          path: test/react-qa-artifacts/*.png
+          if-no-files-found: warn
+          retention-days: 14
+  python-bim:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install offline IFC engine tests
+        run: python -m pip install -r modules/compatibilizabim-requirements.txt pytest
+      - name: Canonical P2 and P3 Python regression
+        env:
+          PYTHONPATH: modules
+        run: python -m pytest -q modules/compatibilizabim/tests/test_p2_workflow.py modules/compatibilizabim/tests/test_p3_gantt.py modules/compatibilizabim/tests/test_ifc_query.py
+
+# QA checkpoint 2: align canonical component wiring checks and cycle-error validation order.
+
+# QA checkpoint 3: preview Gantt is drawn from the actual validated CSV before any write.
+
+# QA visual checkpoint 4: capture actual Frappe Gantt bars, not only outer scroll area.

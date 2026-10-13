@@ -1,4 +1,5 @@
 import React from 'react';
+import {CanonicalGantt} from './CanonicalGantt';
 import {EngineeringTable,EngineeringFeedback} from '../components/EngineeringUI';
 import {previewScheduleImport} from '../../../../src/bim/scheduleImportPreview.js';
 type Preview={raw:string;filename:string;validation:ReturnType<typeof previewScheduleImport>};
@@ -25,6 +26,10 @@ export function SchedulePreview({busy,onImport,existingIds=[]}:{busy:boolean;exi
    <p>{preview.validation.count} atividade(s). A prévia não altera o cronograma.</p>
    {!!preview.validation.errors.length&&<EngineeringFeedback tone="danger" title="Corrija o CSV">{preview.validation.errors.slice(0,8).join(' · ')}</EngineeringFeedback>}
    {!!duplicates.length&&<EngineeringFeedback tone="warning" title="Códigos existentes">O motor canônico ignora atividades existentes: {duplicates.slice(0,10).join(', ')}.</EngineeringFeedback>}
+   {preview.validation.ok&&<div className="cbim-4d-csv-gantt-preview"><h5>Gantt de prévia — não salvo</h5>
+     <p className="studio-muted">Visualização exclusivamente das primeiras {preview.validation.rows.length} atividades lidas do CSV. Barras representam somente as datas e dependências; não há progresso realizado nesta prévia.</p>
+     <CanonicalGantt activities={preview.validation.rows} editable={false}/>
+   </div>}
    <EngineeringTable label="Prévia das atividades" rows={preview.validation.rows} rowKey={r=>r.activity_id} empty="Nenhuma atividade." columns={[
      {key:'id',header:'Código',cell:r=>r.activity_id},
      {key:'name',header:'Nome',cell:r=>r.name},
