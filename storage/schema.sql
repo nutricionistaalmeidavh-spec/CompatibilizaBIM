@@ -448,3 +448,15 @@ CREATE TABLE IF NOT EXISTS estudos_engenharia_bim (
 CREATE INDEX IF NOT EXISTS idx_estudos_engenharia_projeto ON estudos_engenharia_bim(projeto_id,criado_em DESC);
 CREATE INDEX IF NOT EXISTS idx_estudos_engenharia_conflito ON estudos_engenharia_bim(analise_id,conflito_chave);
 CREATE INDEX IF NOT EXISTS idx_estudos_engenharia_modelo ON estudos_engenharia_bim(modelo_id,elemento_ref);
+
+-- P4: snapshots of QTO and impact hypotheses, append-only within existing SQLite.
+-- Not an update to official 5D budget, measurement, IFC or issue history.
+CREATE TABLE IF NOT EXISTS impactos_engenharia_bim (
+  id TEXT PRIMARY KEY,
+  estudo_id TEXT NOT NULL REFERENCES estudos_engenharia_bim(id) ON DELETE RESTRICT,
+  projeto_id TEXT NOT NULL REFERENCES bim_projetos(id) ON DELETE RESTRICT,
+  snapshot_json TEXT NOT NULL,
+  status TEXT NOT NULL DEFAULT 'preliminar' CHECK(status='preliminar'),
+  criado_em TEXT NOT NULL
+);
+CREATE INDEX IF NOT EXISTS idx_impactos_engenharia_estudo ON impactos_engenharia_bim(estudo_id,criado_em DESC);

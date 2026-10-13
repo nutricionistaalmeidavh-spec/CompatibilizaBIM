@@ -1,12 +1,13 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { listarQuantitativosDaMemoria, simularImpacto5D } from '../src/engineering/p4Impact.js';
+import {prepararVinculoBim} from '../src/engineering/contextualStudies.js';
 import { gerarMemoriaBimPdf } from '../app/src/engineering/engineeringPdf.js';
 
 const model={id:'modelo1',arquivo_nome:'structure.ifc',arquivo_hash:'hash-a',revisao:2,elementos:[{globalId:'GUID-BEAM'}]};
 const project={id:'p1',modelos:[model],analises:[]};
 const study={id:'s1',projeto_id:'p1',titulo:'Viga testada',calculadora_tipo:'vigaBiapoiada',criado_em:'2026-10-12T16:00:00Z',
- contexto:{projetoId:'p1',modeloId:'modelo1',revisao:2,arquivoHash:'hash-a',elementosAssinatura:'43c92c04',elementoRef:'GUID-BEAM',analiseId:null,conflitoChave:null},
+ contexto:{projetoId:'p1',modeloId:'modelo1',revisao:2,arquivoHash:'hash-a',elementosAssinatura:prepararVinculoBim({project,modeloId:'modelo1',elementoRef:'GUID-BEAM'}).elementosAssinatura,elementoRef:'GUID-BEAM',analiseId:null,conflitoChave:null},
  entradas:{vaoM:5},resultados:{esforcos:{momento:80}},validacao:{ok:true,metodo:'oraculo',verificacoes:[{campo:'esforcos.momento'}],avisos:[]},alternativas:[],nota:'Hipotese inicial'};
 const quantity={models:['structure.ifc'],generated_at:'2026-10-12T17:00:00Z',
  records:[{global_id:'GUID-BEAM',source_file:'structure.ifc',source:'ifc_qto',discipline:'Estrutura',storey:'Térreo',ifc_class:'IfcBeam',type_name:'Viga',quantity_name:'NetVolume',kind:'volume',unit:'m3',value:2.5},
