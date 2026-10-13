@@ -1,0 +1,56 @@
+name: CompatibilizaBIM P0–P3 Remaining Scope QA
+on:
+  push:
+    branches:
+      - feat/p0-p3-studio-gap-completion-20261012
+    paths:
+      - .github/workflows/cbim-p0-p3-gap-qa.yml
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  react-and-node:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Install pinned React desktop dependencies
+        run: |
+          npm ci --prefix app
+          ln -s app/node_modules node_modules
+      - name: Node unit and regression suite
+        run: npm test
+      - name: Build canonical React UI
+        run: npm run build --prefix app
+      - name: Install browser testing dependencies
+        run: |
+          npm install --no-save --prefix app playwright@1.56.0
+          ./app/node_modules/.bin/playwright install --with-deps chromium
+      - name: React end-to-end smoke
+        run: |
+          npm run preview --prefix app -- --host 127.0.0.1 --port 5173 > /tmp/cbim-preview.log 2>&1 &
+          node scripts/qa/reactBrowserSmoke.cjs || { cat /tmp/cbim-preview.log; exit 1; }
+      - name: Save QA screenshots
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: CBIM-P0-P3-React-Screenshots
+          path: test/react-qa-artifacts/*.png
+          retention-days: 7
+  native-ifc-queries:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install offline BIM runtime and pytest
+        run: python -m pip install -r modules/compatibilizabim-requirements.txt pytest
+      - name: P2 regressions and read-only IFC query tests
+        env:
+          PYTHONPATH: modules
+        run: python -m pytest -q modules/compatibilizabim/tests/test_p2_workflow.py modules/compatibilizabim/tests/test_ifc_query.py
