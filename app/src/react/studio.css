@@ -193,3 +193,116 @@
 
 /* P0/P1: searchable local engineering file explorer; presentation only. */
 .cbim-file-explorer{display:grid;gap:8px;margin:12px 0}.cbim-file-explorer article{display:flex;flex-direction:column;gap:4px;border:1px solid #d1dfe9;border-radius:8px;padding:12px;background:#f9fbfe;word-break:break-word}.cbim-file-explorer small{color:#516a82}
+
+/* P0/P1 · Canonical premium shell + actual-data project portfolio. No paid UI dependencies. */
+:root{--cbim-navy:#0d1c33;--cbim-navy-soft:#172943;--cbim-blue:#155bef;--cbim-ink:#0e2142;--cbim-border:#e0e8f3;--cbim-surface:#fff;--cbim-page:#f2f6fc}
+body{background:var(--cbim-page)}
+.studio-shell.cbim-react-app{height:100vh;min-height:680px;grid-template-columns:248px minmax(0,1fr);grid-template-rows:92px minmax(0,1fr);background:var(--cbim-page)}
+.cbim-react-app>.studio-topbar{grid-column:1;grid-row:1;background:var(--cbim-navy);border:0;border-bottom:1px solid #304058;padding:0 22px;min-width:0;justify-content:flex-start}
+.studio-product-lockup{display:flex!important;align-items:center!important;gap:12px!important;min-width:0}
+.studio-product-lockup>div{display:flex;flex-direction:column;gap:1px;min-width:0}
+.studio-product-lockup .studio-product{font-size:16px;line-height:1.2;letter-spacing:-.03em;color:white;white-space:nowrap}
+.studio-edition{color:#bdcce3;font-size:13px;letter-spacing:.01em}
+.studio-brand-mark{display:grid;place-items:center;width:41px;height:41px;background:linear-gradient(145deg,#297aff,#0a3fbb);border:1px solid #468cff;border-radius:12px;color:#fff;font-size:29px;box-shadow:0 6px 16px #06112252}
+.cbim-react-app>.cbim-contextbar{grid-column:2;grid-row:1;min-width:0;align-content:center;align-items:center;background:#f7faff;padding:11px 20px;gap:8px 12px;border-bottom:1px solid var(--cbim-border)}
+.cbim-contextbar label{font-size:11px;color:#596b85;min-width:105px;flex:1 1 120px;gap:3px;font-weight:600}
+.cbim-contextbar label:first-child{flex:1.3 1 170px}
+.cbim-contextbar label:nth-child(5){flex:1.15 1 155px}
+.cbim-contextbar select,.cbim-contextbar input{background:#fff;border:1px solid #ccd8e8;border-radius:8px;min-height:34px;padding:6px 9px;color:#142946;font-size:12px;box-shadow:0 1px 2px #162b4510}
+.cbim-contextbar{position:relative;padding-bottom:20px}
+.cbim-contextbar .cbim-context-link-state{display:inline-block;position:absolute;bottom:3px;right:22px;color:#54729c;font-size:10px;white-space:nowrap}
+@media(max-width:850px){.cbim-contextbar .cbim-context-link-state{position:static;flex-basis:100%;white-space:normal}}
+.cbim-contextbar button{background:#fff;color:#1351ca;border:1px solid #c9d9f0;border-radius:8px;font-weight:650;font-size:12px;min-height:34px;white-space:nowrap}
+.studio-context-offline{display:inline-flex;align-items:center;white-space:nowrap;font-size:12px}
+.cbim-react-app>.studio-sidebar{grid-column:1;grid-row:2;min-height:0;overflow-y:auto;padding:12px 12px 18px;background:var(--cbim-navy);color:#ccdbed;border-right:1px solid #1c3252}
+.cbim-react-app .studio-nav-group+.studio-nav-group{border-top:1px solid #2d415d;padding-top:16px;margin-top:16px}
+.cbim-react-app .studio-nav-label{color:#90a4bd;margin:0 12px 10px;font-size:10px}
+.cbim-react-app .studio-sidebar button,.cbim-react-app .studio-sidebar label{font-weight:550;color:#dbe6f5;line-height:1.25;transition:background .12s ease,color .12s ease}
+.cbim-react-app .studio-sidebar .studio-nav-group button{display:flex;align-items:center;gap:13px;min-height:43px;padding:10px 13px;margin:2px 0;border-radius:9px}
+.cbim-react-app .studio-sidebar button:hover{background:#233c61;color:#fff}
+.cbim-react-app .studio-sidebar button.active,.cbim-react-app .studio-sidebar button[aria-current="page"]{background:linear-gradient(90deg,#1d4c9f,#16407c);color:#fff;box-shadow:inset 3px 0 0 #3d85ff}
+.studio-nav-symbol{display:inline-grid;place-items:center;flex:0 0 19px;font-size:17px;font-weight:600;line-height:1;color:#aabfdc}
+.cbim-react-app .studio-sidebar button.active .studio-nav-symbol{color:#fff}
+.studio-backup-tools{border-top:1px solid #30435c;margin-top:21px;padding-top:12px}
+.studio-backup-tools button{display:flex;align-items:center;gap:10px}
+.studio-backup-tools .studio-import-sqlite{display:block;padding:10px 14px;font-size:12px}
+.studio-import-sqlite input[type=file]{font-size:10px;margin-top:5px;color:#b8cae4}
+.cbim-react-app>.studio-content{grid-column:2;grid-row:2;min-width:0;min-height:0;overflow:auto;padding:22px 24px 40px}
+.cbim-react-section{max-width:none}
+.cbim-react-app .cbim-react-panel{border-color:var(--cbim-border);border-radius:12px;box-shadow:0 3px 15px #172b4510}
+.cbim-backup-info{font-size:12px;color:#596d86;margin:6px 0 12px}
+.cbim-portfolio{color:var(--cbim-ink);margin-bottom:22px}
+.cbim-portfolio-heading{display:flex;align-items:flex-start;justify-content:space-between;gap:16px;margin:4px 0 22px}
+.cbim-portfolio-overline{font-size:11px;letter-spacing:.09em;color:#1c60e5;font-weight:800}
+.cbim-portfolio-heading h1{margin:8px 0 4px;font-size:29px;letter-spacing:-.035em;color:#0c2143}
+.cbim-portfolio-heading p{margin:0;font-size:13px;color:#586c87}
+.cbim-react-section .cbim-portfolio-primary{background:#135bf1;border-color:#135bf1;color:white;padding:12px 20px;box-shadow:0 5px 12px #1c60e52b;white-space:nowrap;font-weight:700}
+.cbim-portfolio-kpis{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:13px;margin:14px 0}
+.cbim-portfolio-kpi{background:#fff;border:1px solid var(--cbim-border);border-radius:13px;min-height:118px;padding:18px 14px;display:flex;align-items:flex-start;gap:13px;box-shadow:0 3px 16px #17335b08}
+.cbim-portfolio-kpi>div{display:flex;flex-direction:column;gap:5px;min-width:0}
+.cbim-portfolio-kpi div>span{font-size:12px;color:#526783;font-weight:600}
+.cbim-portfolio-kpi strong{font-size:27px;line-height:1.1;letter-spacing:-.03em;color:#12284f}
+.cbim-portfolio-kpi small{font-size:11px;color:#75869d;line-height:1.3}
+.cbim-portfolio-kpi-icon{width:40px;height:40px;display:grid;place-items:center;flex-shrink:0;border-radius:11px;font-weight:800;font-size:20px}
+.cbim-portfolio-kpi-icon.blue{background:#e7f0ff;color:#1765ed}
+.cbim-portfolio-kpi-icon.green{background:#e3f8ed;color:#07915b}
+.cbim-portfolio-kpi-icon.purple{background:#f0eaff;color:#754af2}
+.cbim-portfolio-kpi-icon.red{background:#ffeaf0;color:#cc334e}
+.cbim-portfolio-surface{background:#fff;border:1px solid var(--cbim-border);border-radius:13px;overflow:hidden;box-shadow:0 3px 16px #17335b08}
+.cbim-portfolio-actions{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;padding:14px 14px 12px}
+.cbim-portfolio-filters{display:flex;gap:7px;flex-wrap:wrap}
+.cbim-react-section .cbim-portfolio-filters button{border:1px solid #e3eaf4;background:#f4f7fb;color:#4e627e;border-radius:9px;padding:9px 10px;font-size:12px;white-space:nowrap;font-weight:650}
+.cbim-portfolio-filters button span{margin-left:6px;background:#e5ecf7;border-radius:5px;padding:2px 5px;font-size:11px}
+.cbim-react-section .cbim-portfolio-filters button.is-active{background:#155bef;border-color:#155bef;color:#fff}
+.cbim-portfolio-filters button.is-active span{background:#ffffff2a;color:#fff}
+.cbim-portfolio-search{display:flex;align-items:center;gap:8px}
+.cbim-portfolio-search-field{min-width:225px;flex:1}
+.cbim-react-section .cbim-portfolio-search-field input{border:1px solid #d5e0ef;border-radius:8px;padding:9px 12px;min-height:37px;font-size:12px}
+.cbim-portfolio-sort{display:flex!important;flex-direction:row!important;align-items:center;gap:6px!important;font-size:11px;color:#6d7c92}
+.cbim-react-section .cbim-portfolio-sort select{width:98px;font-size:12px;padding:8px}
+.cbim-portfolio-scroll{overflow:auto;max-width:100%}
+.cbim-portfolio-table{width:100%;min-width:980px;border-collapse:collapse;font-size:12px}
+.cbim-portfolio-table th{background:#f5f8fc;padding:12px 10px;text-align:left;font-size:11px;color:#516481;font-weight:700;white-space:nowrap}
+.cbim-portfolio-table td{border-bottom:1px solid #eaf0f8;padding:10px;color:#3f536f;vertical-align:middle;max-width:210px;overflow-wrap:anywhere}
+.cbim-portfolio-table tr:last-child td{border-bottom:none}
+.cbim-portfolio-table tr.is-selected{background:#f0f6ff}
+.cbim-portfolio-table tr:hover{background:#f7faff}
+.cbim-portfolio-work{display:flex;align-items:center;gap:10px;min-width:160px}
+.cbim-portfolio-work b{display:block;color:#12264b;font-size:12px;line-height:1.35}
+.cbim-portfolio-work small{display:block;color:#7a8aa1;font-size:10px;margin-top:3px}
+.cbim-portfolio-work-icon{display:grid;place-items:center;flex:0 0 37px;height:37px;border-radius:9px;background:linear-gradient(150deg,#e9f2ff,#d4e4fc);color:#1761df;font-size:19px}
+.cbim-portfolio-status{display:inline-flex;border-radius:6px;background:#f0f2f8;color:#47556b;padding:5px 8px;white-space:nowrap;font-weight:650;font-size:11px}
+.cbim-portfolio-status.andamento{background:#e5efff;color:#1457d0}
+.cbim-portfolio-status.concluidas{background:#dff8e9;color:#087943}
+.cbim-portfolio-status.planejamento{background:#fff2cf;color:#8c6110}
+.cbim-portfolio-progress{display:flex;gap:7px;align-items:center;white-space:nowrap}
+.cbim-portfolio-track{height:7px;min-width:64px;flex:1;background:#e9edf5;border-radius:9px;overflow:hidden}
+.cbim-portfolio-track>span{display:block;background:#3076ef;height:100%;border-radius:9px}
+.cbim-portfolio-progress strong{font-size:11px;color:#31435f}
+.cbim-portfolio-progress-source{color:#8090a5;font-size:10px;display:block;margin-top:4px}
+.cbim-portfolio-number{font-weight:700;text-align:center}
+.cbim-portfolio-pending{display:inline-grid;place-items:center;min-width:30px;padding:5px 7px;background:#edf7f2;border-radius:6px;color:#07824a;font-weight:700}
+.cbim-portfolio-pending.has-pending{background:#ffeaf0;color:#c72e4a}
+.cbim-react-section .cbim-portfolio-open{background:#eff5ff;color:#1b59c9;border:1px solid #d8e6fa;padding:7px 9px;font-size:11px;white-space:nowrap}
+.cbim-portfolio-empty{padding:36px 15px!important;text-align:center;color:#64748b!important}
+.cbim-portfolio-pagination{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;padding:12px 16px;border-top:1px solid #e6edf7;color:#64748b;font-size:12px}
+.cbim-portfolio-pagination>div{display:flex;align-items:center;gap:8px}
+.cbim-react-section .cbim-portfolio-pagination button{padding:5px 10px;background:#f3f6fb}
+.cbim-portfolio-pagination label{display:flex!important;flex-direction:row!important;align-items:center;gap:6px!important}
+.cbim-react-section .cbim-portfolio-pagination select{width:64px;padding:6px}
+.cbim-portfolio-selection{background:#eaf2ff;border:1px solid #d5e5fc;border-radius:10px;padding:10px 14px;font-size:12px;color:#294a7e;margin-top:15px}
+.cbim-react-section .cbim-portfolio-selection button{padding:4px 7px;background:transparent;border:none;color:#155bef;font-weight:650}
+@media(max-width:1180px){.cbim-portfolio-kpis{grid-template-columns:repeat(2,minmax(0,1fr))}.cbim-contextbar label{flex-basis:110px}}
+@media(max-width:850px){
+.studio-shell.cbim-react-app{height:auto;min-height:100vh;grid-template-columns:minmax(0,1fr);grid-template-rows:66px auto auto minmax(0,1fr)}
+.cbim-react-app>.studio-topbar{grid-column:1;grid-row:1}
+.cbim-react-app>.cbim-contextbar{grid-column:1;grid-row:2}
+.cbim-react-app>.studio-sidebar{grid-column:1;grid-row:3;display:flex;gap:10px;overflow-x:auto;padding:8px}
+.cbim-react-app .studio-nav-group,.cbim-react-app .studio-nav-group+.studio-nav-group{display:flex;align-items:center;gap:6px;border:0;margin:0;padding:0}
+.cbim-react-app .studio-nav-group .studio-nav-label{display:none}
+.cbim-react-app .studio-sidebar .studio-nav-group button{white-space:nowrap}
+.studio-backup-tools{display:flex;border:0;margin:0;padding:0;gap:6px}
+.cbim-react-app>.studio-content{grid-column:1;grid-row:4;padding:16px}
+.cbim-portfolio-search{flex-wrap:wrap}.cbim-portfolio-heading h1{font-size:25px}
+}
+@media(max-width:560px){.cbim-portfolio-kpis{grid-template-columns:1fr 1fr;gap:8px}.cbim-portfolio-kpi{padding:10px;gap:6px;min-height:100px}.cbim-portfolio-kpi strong{font-size:23px}.cbim-portfolio-kpi-icon{width:30px;height:30px}.cbim-portfolio-heading{flex-direction:column}}

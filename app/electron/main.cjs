@@ -1,4 +1,4 @@
-const { app, BrowserWindow, ipcMain, shell } = require('electron');
+const { app, BrowserWindow, ipcMain, shell, dialog } = require('electron');
 const fs = require('node:fs'); const path = require('node:path'); const { spawn } = require('node:child_process');
 const { convertDwg, cancelConversion } = require('./cbimRunner.cjs');
 const { openStudioWindow, returnToMainWindow, listCbimWorkspaces, stopAllStudios } = require('./studioWindow.cjs');
@@ -16,6 +16,7 @@ const cbimApplication = createCbimApplication({
 // O Engenharia 360 continua funcional offline sem aceleração de hardware.
 let activeBimProcess = null;
 const { atomicSaveSqlite, readSqliteFile } = require('./databaseStore.cjs');
+const {saveCompleteArchive,inspectCompleteArchive,restoreCompleteArchive}=require('./engineeringArchive.cjs');
 const databasePath = () => { const root = path.join(app.getPath('documents'), 'Engenharia360'); fs.mkdirSync(root, { recursive: true }); return path.join(root, 'engenharia360.sqlite'); };
 ipcMain.on('engineering-db:load-sync', (event) => {
   try { const file = databasePath(); event.returnValue = fs.existsSync(file) ? readSqliteFile(file).toString('base64') : null; }
@@ -26,6 +27,29 @@ ipcMain.on('engineering-db:save-sync', (event, base64) => {
   catch (error) { event.returnValue = { ok: false, error: String(error.message || error) }; }
 });
 ipcMain.handle('engineering-db:path', () => databasePath());
+
+ipcMain.handle('engineering-backup:save',async()=>{
+ const choice=await dialog.showSaveDialog({title:'Exportar obra completa (SQLite + arquivos BIM/IFC/DWG)',defaultPath:path.join(app.getPath('documents'),'CompatibilizaBIM-completo-'+new Date().toISOString().slice(0,10)+'.cbim.gz'),filters:[{name:'Backup completo CompatibilizaBIM',extensions:['gz']}]});
+ if(choice.canceled||!choice.filePath)return {canceled:true};
+ return saveCompleteArchive(app.getPath('documents'),choice.filePath);
+});
+ipcMain.handle('engineering-backup:preview',async()=>{
+ const choice=await dialog.showOpenDialog({title:'Selecionar backup completo',properties:['openFile'],filters:[{name:'Backup completo CompatibilizaBIM',extensions:['gz']}]});
+ if(choice.canceled||!choice.filePaths?.length)return {canceled:true};
+ return inspectCompleteArchive(choice.filePaths[0]);
+});
+ipcMain.handle('engineering-backup:restore',async(_event,file)=>{
+ if(typeof file!=='string'||!path.isAbsolute(file)||!fs.existsSync(file))throw Error('Selecione um backup completo válido.');
+ const preview=inspectCompleteArchive(file);
+ const confirmation=await dialog.showMessageBox({type:'warning',buttons:['Cancelar','Restaurar e reiniciar'],defaultId:0,cancelId:0,noLink:true,
+   title:'Restaurar todos os dados locais?',message:'Restaurar '+preview.count+' arquivos do backup completo?',
+   detail:'O diretório atual Engenharia360 será preservado numa pasta before-restore. A aplicação será reiniciada.'});
+ if(confirmation.response!==1)return {canceled:true};
+ const result=restoreCompleteArchive(app.getPath('documents'),file);
+ app.relaunch();app.quit();
+ return result;
+});
+
 function runBimPython(args) {
   return new Promise((resolve, reject) => {
     const root = path.join(__dirname, '..');

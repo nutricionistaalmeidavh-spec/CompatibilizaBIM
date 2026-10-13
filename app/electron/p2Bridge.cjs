@@ -32,16 +32,28 @@ function validateP2Request(request){
  }
  return {projectId,action,params};
 }
+const activeStudies=new Set();
 async function p2Request(request,{documentsDir,runPython}){
  const {projectId,action,params}=validateP2Request(request);
  if(!documentsDir||typeof runPython!=='function')throw Error('Runtime BIM local indisponível');
- const root=path.resolve(documentsDir,'Engenharia360','BIM','studies',projectId);
- fs.mkdirSync(root,{recursive:true});
- const temp=fs.mkdtempSync(path.join(root,'.p2-request-'));
+ // One writer per study: never race a staged quantity revision against another P2 command.
+ if(activeStudies.has(projectId))throw Error('Estudo BIM em processamento. Aguarde a operação anterior.');
+ activeStudies.add(projectId);
+ const studiesDir=path.resolve(documentsDir,'Engenharia360','BIM','studies');
+ const root=path.join(studiesDir,projectId);
+ let executionRoot=root,stagedRoot=null,temp=null;
  try {
+   fs.mkdirSync(studiesDir,{recursive:true});
    let body={...params};
    if(action==='quantities'){
-     const dest=path.join(root,'sources');fs.mkdirSync(dest,{recursive:true});
+     // Stage the ENTIRE study outside the canonical directory. The IFC revision and
+     // derived QTO are committed together, only after the Python engine accepts them.
+     stagedRoot=path.join(studiesDir,'.'+projectId+'-staging-'+crypto.randomBytes(8).toString('hex'));
+     if(fs.existsSync(root))fs.cpSync(root,stagedRoot,{recursive:true,errorOnExist:true,force:false,
+       filter:(source)=>!fs.lstatSync(source).isSymbolicLink()});
+     else fs.mkdirSync(stagedRoot,{recursive:true});
+     executionRoot=stagedRoot;
+     const dest=path.join(stagedRoot,'sources');fs.mkdirSync(dest,{recursive:true});
      const filenames=[];
      for(const model of params.models){
        const bytes=Buffer.from(model.base64,'base64');
@@ -53,20 +65,41 @@ async function p2Request(request,{documentsDir,runPython}){
        if(fs.existsSync(target)){
          const oldHash=crypto.createHash('sha256').update(fs.readFileSync(target)).digest('hex');
          const newHash=crypto.createHash('sha256').update(bytes).digest('hex');
-         if(oldHash!==newHash){const backup=target+'.previous';fs.copyFileSync(target,backup);}
+         if(oldHash!==newHash)fs.copyFileSync(target,target+'.previous');
        }
-       const tempFile=path.join(temp,filename);fs.writeFileSync(tempFile,bytes,{flag:'wx'});
-       fs.renameSync(tempFile,target);
+       fs.writeFileSync(target,bytes);
        filenames.push(filename);
      }
      body={files:filenames,allowGeometryFallback:Boolean(params.allowGeometryFallback)};
+   }else{
+     fs.mkdirSync(root,{recursive:true});
    }
+   temp=fs.mkdtempSync(path.join(executionRoot,'.p2-request-'));
    const input=path.join(temp,'request.json');fs.writeFileSync(input,JSON.stringify(body),'utf8');
-   const result=await runPython(['-m','compatibilizabim.p2_workflow',root,action,'--request',input]);
+   const result=await runPython(['-m','compatibilizabim.p2_workflow',executionRoot,action,'--request',input]);
    let parsed;
    try{parsed=JSON.parse(String(result.stdout).trim());}catch{throw Error('O motor P2 não retornou contrato JSON válido');}
    if(!parsed?.ok)throw Error(parsed?.error||'O motor BIM recusou a operação');
+   fs.rmSync(temp,{recursive:true,force:true});temp=null;
+   if(stagedRoot){
+     const rollback=path.join(studiesDir,'.'+projectId+'-rollback-'+crypto.randomBytes(8).toString('hex'));
+     let movedOld=false;
+     try{
+       if(fs.existsSync(root)){fs.renameSync(root,rollback);movedOld=true;}
+       fs.renameSync(stagedRoot,root);
+       stagedRoot=null;
+     }catch(error){
+       // A failed rename must never strand the original study.
+       if(movedOld&&!fs.existsSync(root))fs.renameSync(rollback,root);
+       throw error;
+     }
+     if(movedOld)fs.rmSync(rollback,{recursive:true,force:true});
+   }
    return parsed.result;
- }finally{fs.rmSync(temp,{recursive:true,force:true});}
+ }finally{
+   if(temp)fs.rmSync(temp,{recursive:true,force:true});
+   if(stagedRoot)fs.rmSync(stagedRoot,{recursive:true,force:true});
+   activeStudies.delete(projectId);
+ }
 }
 module.exports={validateP2Request,p2Request};
