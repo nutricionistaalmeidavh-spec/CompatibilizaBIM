@@ -131,6 +131,16 @@
 .cbim-quality .ui-status{flex-shrink:0;white-space:nowrap}
 @media(max-width:620px){.cbim-quality-findings article{flex-wrap:wrap}.cbim-quality-findings article>div{min-width:100%;order:2}.cbim-quality-findings article>.ui-status{margin-left:auto}.cbim-quality-gates article{flex-wrap:wrap}.cbim-quality-gates article>div{min-width:100%}}
 
+/* Engineering source trace: a referenced item is highlighted, never added to scoped aggregates. */
+.cbim-journey-bar{display:flex;flex-wrap:wrap;align-items:center;gap:12px;padding:12px 15px;margin-bottom:14px;border:1px solid var(--cbim-line);background:#f7fafd;border-radius:var(--cbim-radius);color:var(--cbim-text)}
+.cbim-journey-bar button{padding:8px 12px;border:1px solid #a9bfd6;background:#fff;color:#174a84;border-radius:8px;font-weight:700;cursor:pointer}
+.cbim-journey-bar span{font-size:12px;color:var(--cbim-muted);overflow-wrap:anywhere}
+.cbim-journey-focus{border:2px solid #417aaa!important;border-left:5px solid #24558b!important;border-radius:9px;padding:12px;background:#f4f8fd}
+.cbim-journey-focus p{line-height:1.5}
+.cbim-journey-focus .cbim-react-toolbar{margin-top:9px}
+.cbim-journey-bar button:focus-visible,.cbim-journey-focus button:focus-visible{outline:3px solid #6fa8e3;outline-offset:2px}
+@media(max-width:700px){.cbim-journey-bar{align-items:stretch;flex-direction:column}.cbim-journey-bar button{text-align:left}}
+
 /* Engineering P0/P1: readable technical records and responsive SVG charts */
 .cbim-math-results{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:9px;margin:14px 0 20px}
 .cbim-math-result{display:flex;flex-direction:column;gap:5px;min-width:0;padding:12px;background:#f6f9fc;border:1px solid #d8e2ed;border-radius:9px}

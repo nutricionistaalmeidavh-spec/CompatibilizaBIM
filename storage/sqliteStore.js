@@ -2,6 +2,8 @@ import {prepararVinculoBim} from '../src/engineering/contextualStudies.js';
 import {validarCalculoIndependente} from '../src/validation/independentOracle.js';
 import {garantirRdoMutavel,garantirMedicaoTransicao,validarQuantidadeRecebida} from '../src/domain/approvalGuards.js';
 import {assertStudyWorkAssociation} from '../src/domain/p1Traceability.js';
+import {projectWorkProgress} from '../src/domain/workProgress.js';
+import {insertStudyAnalysis} from '../src/domain/bimAnalysisPersistence.js';
 import initSqlJs from 'sql.js';
 import schemaSql from './schema.sql?raw';
 import { migrarBancoCompatibilidade } from './schemaMigrations.js';
@@ -57,10 +59,11 @@ function linhas(db, sql, params = []) {
 }
 
 export function listarObras(db) {
-  return linhas(db, `SELECT o.*, COALESCE((SELECT COUNT(*) FROM rdos r WHERE r.obra_id=o.id),0) AS rdos_total,
-    COALESCE((SELECT COUNT(*) FROM pendencias p WHERE p.obra_id=o.id AND p.status <> 'resolvida'),0) AS pendencias_abertas,
-    COALESCE((SELECT AVG(e.percentual_concluido) FROM etapas e WHERE e.obra_id=o.id),0) AS percentual_concluido
+  const works=linhas(db, `SELECT o.*, COALESCE((SELECT COUNT(*) FROM rdos r WHERE r.obra_id=o.id),0) AS rdos_total,
+    COALESCE((SELECT COUNT(*) FROM pendencias p WHERE p.obra_id=o.id AND p.status <> 'resolvida'),0) AS pendencias_abertas
     FROM obras o ORDER BY o.atualizado_em DESC`);
+  const stages=linhas(db,'SELECT obra_id,percentual_concluido,percentual_peso FROM etapas');
+  return projectWorkProgress(works,stages);
 }
 
 export function lerWorkspaceContext(db) {
@@ -196,7 +199,6 @@ export function salvarCalculo(db, obraId, dados) {
 export function listarCalculos(db, obraId) {
   return linhas(db, 'SELECT * FROM calculos WHERE obra_id = ? ORDER BY criado_em DESC', [obraId]).map((item) => ({ ...item, entradas: JSON.parse(item.entradas_json), resultados: JSON.parse(item.resultados_json) }));
 }
-
 
 /**
  * Persist a new immutable preliminary mathematical study with a proven BIM context.
@@ -430,7 +432,7 @@ export function atualizarElementosModeloBimProjeto(db, modeloId, elementos = [])
 
 export function salvarAnaliseBimProjeto(db, projetoId, dados) {
   const id = dados.id ?? `bimanalisav_${Date.now().toString(36)}_${Math.random().toString(36).slice(2, 6)}`;
-  db.run('INSERT INTO bim_analises_avulsas (id,projeto_id,modelo_a_id,modelo_b_id,modo,tolerancia,afastamento,status,conflitos_json,criado_em) VALUES (?,?,?,?,?,?,?,?,?,?)', [id, projetoId, dados.modeloAId, dados.modeloBId, dados.modo ?? 'intersection', Number(dados.tolerancia ?? 0.002), Number(dados.afastamento ?? 0.05), dados.status ?? 'concluida', JSON.stringify(dados.conflitos ?? []), new Date().toISOString()]);
+  insertStudyAnalysis(db,projetoId,dados,id);
   salvarBanco(db); return id;
 }
 

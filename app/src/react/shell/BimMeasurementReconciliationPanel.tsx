@@ -1,10 +1,11 @@
 import React from 'react';
 import {listarMedicoes,listarModuleLinks,salvarModuleLink,registrarHistorico,salvarBanco} from '../../../../storage/sqliteStore.js';
 import {MEASUREMENT_LINK,parseTraceLink,prepareMeasurementLink,summarizeMeasurementReconciliation} from '../../../../src/domain/p1Traceability.js';
-type Props={db:any;project:any;onChange:()=>void};
+import {quantityVarianceMessage} from '../../../../src/domain/engineeringJourney.js';
+type Props={db:any;project:any;onChange:()=>void;target?:any;onNavigate?:(route:string,target?:any)=>void};
 const bridge=()=> (globalThis as any).engineeringStorage?.bim?.p2;
 const qty=(n:any)=>new Intl.NumberFormat('pt-BR',{maximumFractionDigits:5}).format(Number(n)||0);
-export function BimMeasurementReconciliationPanel({db,project,onChange}:Props){
+export function BimMeasurementReconciliationPanel({db,project,onChange,target,onNavigate}:Props){
  const [batches,setBatches]=React.useState<any[]>([]),[loading,setLoading]=React.useState(false);
  const [error,setError]=React.useState(''),[notice,setNotice]=React.useState(''),[actor,setActor]=React.useState('');
  const [choices,setChoices]=React.useState<Record<string,string>>({});
@@ -31,6 +32,7 @@ export function BimMeasurementReconciliationPanel({db,project,onChange}:Props){
  return <section className="cbim-react-panel" aria-label="Conciliação entre medições BIM e obra">
    <h2>Conferência BIM × medição operacional</h2>
    <p>As medições por GUID vêm do motor CBIM; as medições de serviço vêm do SQLite. Associação manual somente entre registros aprovados, da mesma competência e unidade. O confronto não gera outra medição, pagamento ou receita.</p>
+   {target?.kind==='bim-conciliacao'&&<p role="status">Retorno à conferência BIM {target.id}. Se o lote não aparecer, atualize as medições BIM ou confira a revisão do estudo.</p>}
    {!project?.obra_id?<p role="status">Este estudo é independente. Vincule a obra ao estudo para conferir medições; nenhuma associação automática foi presumida.</p>:<>
     <div className="cbim-react-toolbar"><button disabled={loading||!bridge()} type="button" onClick={()=>void refresh()}>{loading?'Carregando…':'Atualizar medições BIM'}</button></div>
     {!bridge()&&<p role="status">O motor local 4D/5D está disponível apenas no desktop. Registros operacionais não foram simulados.</p>}
@@ -39,10 +41,15 @@ export function BimMeasurementReconciliationPanel({db,project,onChange}:Props){
      const batch=batches.find((b:any)=>b.batch_id===item.batchId);
      const candidates=rows.filter((r:any)=>r.status==='aprovada'&&r.periodo===item.period&&r.unidade===item.unit);
      const linkedOps=links.map((r:any)=>parseTraceLink(r)).filter(Boolean).map((r:any)=>r.operationalId);
-     return <article key={item.batchId} className="p2-measure">
+     return <article key={item.batchId} className={'p2-measure'+(target?.kind==='bim-conciliacao'&&target.id===item.batchId?' cbim-journey-focus':'')}>
       <strong>{item.batchId} · {item.period} · {item.state==='conciliada'?'Conferida':item.state==='divergente'?'Divergência de quantidade':item.state==='referencia_invalida'?'Referência desatualizada':'Pendente de vínculo'}</strong>
       <p>BIM: {qty(item.bimQuantity)} {item.unit||'unidades diversas'} · {item.guids.length} GUID(s) · {item.operationalQuantity==null?'Sem medição operacional associada':'Operação: '+qty(item.operationalQuantity)+' '+item.unit+' · diferença: '+qty(item.delta)}</p>
-      {item.state==='divergente'&&<p role="status">A diferença exige conferência humana; os valores continuam separados.</p>}
+      {item.state==='divergente'&&<p role="status">{quantityVarianceMessage(item.delta,item.unit)} A diferença exige conferência humana; valores físicos e financeiros continuam separados.</p>}
+      {item.state==='referencia_invalida'&&<p role="alert">A medição vinculada não está mais válida neste contexto. Consulte o registro de origem; o vínculo não foi apagado.</p>}
+      {onNavigate&&<div className="cbim-react-toolbar">
+       {item.operationalId&&<button type="button" onClick={()=>onNavigate('Operação',{kind:'medicao',id:item.operationalId,obraId:project.obra_id,studyId:project.id,period:item.period,origin:{kind:'bim-conciliacao',id:item.batchId,studyId:project.id,obraId:project.obra_id}})}>Ver medição de origem</button>}
+       {item.period&&<button type="button" onClick={()=>onNavigate('RDO',{kind:'rdo-competencia',period:item.period,obraId:project.obra_id,studyId:project.id,origin:{kind:'bim-conciliacao',id:item.batchId,studyId:project.id,obraId:project.obra_id}})}>Consultar RDOs da competência</button>}
+      </div>}
       {item.state==='nao_vinculada'&&<div className="cbim-react-form-grid">
         <label>Medição operacional<select aria-label={'Medição operacional para '+item.batchId} value={choices[item.batchId]||''} onChange={e=>setChoices(v=>({...v,[item.batchId]:e.target.value}))}>
          <option value="">Selecione medição aprovada</option>{candidates.filter((r:any)=>!linkedOps.includes(r.id)).map((r:any)=><option value={r.id} key={r.id}>{r.descricao} · {r.periodo} · {qty(r.quantidade)} {r.unidade}</option>)}

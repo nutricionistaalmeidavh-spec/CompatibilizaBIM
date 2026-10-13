@@ -1,14 +1,11 @@
 // Read-only, provenance-labelled dashboard. No DRE, bank or certified closeout inference.
+import {calculateWorkProgress} from './workProgress.js';
 const records=(row,key)=>Array.isArray(row?.[key])?row[key]:[];
 const finite=(value,label)=>{const n=Number(value??0);if(!Number.isFinite(n)||n<0)throw Error('Dado inválido em '+label);return n;};
 const sum=(rows,f)=>rows.reduce((s,row)=>s+f(row),0);
 export function buildWorkCloseout(work={},links={}){
  const etapas=records(work,'etapas'),rdos=records(work,'rdos'),pendencias=records(work,'pendencias'),medicoes=records(work,'medicoes'),compras=records(work,'compras'),materiais=records(work,'materiais'),documentos=records(work,'documentos');
- const weights=etapas.map(e=>finite(e.percentual_peso,'peso da etapa'));
- const weighted=weights.length>0&&weights.every(x=>x>0);
- const basis=weighted?'média ponderada por peso das etapas':'média simples (pesos não definidos)';
- const denom=weighted?sum(etapas,e=>finite(e.percentual_peso,'peso')):etapas.length;
- const progress=etapas.length?Math.round(sum(etapas,e=>Math.max(0,Math.min(100,finite(e.percentual_concluido,'avanço da etapa')))*(weighted?finite(e.percentual_peso,'peso'):1))/denom*100)/100:null;
+ const {value:progress,method:basis}=calculateWorkProgress(etapas);
  const openIssues=pendencias.filter(p=>p.status!=='resolvida').length;
  const approvedRdoCount=rdos.filter(r=>r.status_aprovacao==='aprovado').length;
  const draftRdoCount=rdos.length-approvedRdoCount;

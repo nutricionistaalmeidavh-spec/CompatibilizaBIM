@@ -1,5 +1,8 @@
 import React from 'react';
 import {WorkCloseoutPanel} from './WorkCloseoutPanel';
+import {Metric} from '../components/ui';
+import {engineeringNumber} from '../../../../src/domain/engineeringPresentation.js';
+import {brlReais} from '../../../../src/factory/format.js';
 import {filterScopedRecords} from '../../../../src/domain/workspaceScope.js';
 import {
   buscarObra, criarObraPersistida, listarObras, salvarEtapa, salvarPendencia,
@@ -8,7 +11,7 @@ import {
 import { gerarPdfRelatorio } from '../../pdfTemplates.js';
 
 type Props={db:any;obraId:string|null;scope?:any;selectWork:(id:string|null)=>void;onChange:()=>void;onNavigate?:(section:string)=>void};
-const money=(n:any)=>new Intl.NumberFormat('pt-BR',{style:'currency',currency:'BRL'}).format(Number(n)||0);
+const money=brlReais;
 const escapeName=(s:string)=>s.replace(/[^a-z0-9-_]+/gi,'-').slice(0,90);
 const lines=(obj:any, prefix=''):string[]=>Object.entries(obj||{}).flatMap(([k,v])=>
   v&&typeof v==='object'?lines(v,prefix+k+'.'):[prefix+k+': '+String(v??'')]);
@@ -88,7 +91,7 @@ export function WorksPage({db,obraId,scope={},selectWork,onChange,onNavigate}:Pr
   return <section className="cbim-react-section">
     <h1>Carteira de obras</h1><p>Projetos, documentos, cálculos e histórico registrados no SQLite local canônico.</p>
     <p className="studio-muted">Indicadores da carteira mostram todas as obras, independentemente do filtro global de frente ou período. Na obra selecionada, a lista de RDO respeita o período; etapas, materiais e histórico continuam como registros completos da obra.</p>
-    <div className="cbim-react-metrics"><article>Obras: {works.length}</article><article>Avanço médio: {avgProgress.toFixed(0)}%</article><article>RDOs: {allRdos}</article><article>Pendências abertas: {allPending}</article></div>
+    <div className="cbim-closeout-metrics"><Metric label="Obras" value={String(works.length)} source="Carteira · todas as obras"/><Metric label="Avanço médio das obras" value={engineeringNumber(avgProgress)+'%'} source="Média dos avanços canônicos de cada obra"/><Metric label="RDOs" value={String(allRdos)} source="Todas as obras"/><Metric label="Pendências abertas" value={String(allPending)} source="Todas as obras"/></div>
     <div className="cbim-react-toolbar">
       <label>Obra atual<select aria-label="Obra selecionada" value={obraId||''} onChange={e=>selectWork(e.target.value||null)}><option value="">Todas as obras</option>{works.map((w:any)=><option value={w.id} key={w.id}>{w.codigo} · {w.nome}</option>)}</select></label>
       <button onClick={()=>setNewWork(v=>!v)}>{newWork?'Cancelar':'+ Nova obra'}</button>
@@ -98,7 +101,7 @@ export function WorksPage({db,obraId,scope={},selectWork,onChange,onNavigate}:Pr
     {newWork&&<form className="cbim-react-panel cbim-react-form-grid" onSubmit={create}>
       <label>Código<input name="codigo" required/></label><label>Nome<input name="nome" required/></label><label>Cliente<input name="cliente"/></label><label>Endereço<input name="endereco"/></label><label>Responsável técnico<input name="responsavel"/></label><button type="submit">Criar obra</button>
     </form>}
-    <div className="cbim-react-card-grid">{works.map((w:any)=><button key={w.id} className={obraId===w.id?'selected':''} onClick={()=>selectWork(w.id)}><b>{w.nome}</b><small>{w.codigo} · {w.status} · {Math.round(w.percentual_concluido||0)}% concluído</small><small>{w.rdos_total} RDO · {w.pendencias_abertas} pendências</small></button>)}</div>
+    <div className="cbim-react-card-grid">{works.map((w:any)=><button key={w.id} className={obraId===w.id?'selected':''} onClick={()=>selectWork(w.id)}><b>{w.nome}</b><small>{w.codigo} · {w.status} · {engineeringNumber(w.percentual_concluido)}% concluído · {w.progresso_metodo}</small><small>{w.rdos_total} RDO · {w.pendencias_abertas} pendências</small></button>)}</div>
     {work&&<>
       <WorkCloseoutPanel db={db} work={work} onNavigate={onNavigate}/>
       <div className="cbim-react-metrics"><article>Etapas: {work.etapas?.length||0}</article><article>RDO: {work.rdos?.length||0}</article><article>Pendências abertas: {work.pendencias?.filter((p:any)=>p.status!=='resolvida').length||0}</article><article>Custo dos materiais: {money(materialsCost)}</article></div>
