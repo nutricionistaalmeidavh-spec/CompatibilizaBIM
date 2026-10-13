@@ -1,6 +1,6 @@
 'use strict';
 const fs=require('node:fs'), path=require('node:path'), crypto=require('node:crypto');
-const allowed=new Set(['status','quantities','quantity_records','export_quantities','pricebook','budget','budget_report','export_budget','import_schedule','activity','link','progress','simulate','measurements','measure','approve','reject','finance','bcf']);
+const allowed=new Set(['status','quantities','quantity_records','export_quantities','pricebook','budget','budget_report','export_budget','import_schedule','activity','link','progress','simulate','measurements','measure','approve','reject','finance','bcf','ifc_query']);
 function validateP2Request(request){
  if(!request||typeof request!=='object')throw Error('Requisição BIM P2 inválida');
  const {projectId,action}=request;
@@ -8,6 +8,15 @@ function validateP2Request(request){
  if(!allowed.has(action))throw Error('Operação BIM P2 não autorizada');
  const params=request.params;
  if(!params||typeof params!=='object'||Array.isArray(params))throw Error('Parâmetros de operação inválidos');
+ if(action==='ifc_query'){
+   if(typeof params.file!=='string'||!/^[-A-Za-z0-9_.]{1,124}\.ifc$/i.test(params.file)||params.file.includes('..'))
+     throw Error('Fonte IFC de consulta inválida');
+   if(params.ifc_class!==undefined&&(typeof params.ifc_class!=='string'||!/^Ifc[A-Za-z0-9]{2,62}$/.test(params.ifc_class)))
+     throw Error('Classe IFC inválida');
+   if(params.text!==undefined&&(typeof params.text!=='string'||params.text.length>120))throw Error('Filtro IFC inválido');
+   if(params.limit!==undefined&&(!Number.isInteger(params.limit)||params.limit<1||params.limit>100))throw Error('Limite IFC inválido');
+   if(params.offset!==undefined&&(!Number.isInteger(params.offset)||params.offset<0||params.offset>5000))throw Error('Página IFC inválida');
+ }
  if(action==='quantities'){
    const models=params.models;
    if(!Array.isArray(models)||!models.length||models.length>12)throw Error('Selecione entre 1 e 12 modelos IFC para quantitativos');

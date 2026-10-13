@@ -22,6 +22,7 @@ from .simulation4d import Simulation4D
 from .measurements import MeasurementService, MeasurementStore
 from .measurement_financial import FinancialMeasurementEngine
 from .issues import IssueService, IssueStore
+from .ifc_query import query_ifc
 from .exports import ExportService
 
 
@@ -86,6 +87,8 @@ class P2Service:
                     'revision_sha256':q.get('revision_sha256',{})}
         if action=='budget_report':
             return _read(self.bpath)
+        if action=='ifc_query':
+            return query_ifc(self.root, self._quantities(), params)
         if action=='quantities':
             paths=[]
             for name in params.get('files',[]):

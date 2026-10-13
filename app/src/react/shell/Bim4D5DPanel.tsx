@@ -1,4 +1,6 @@
 import {CanonicalGantt} from './CanonicalGantt';
+import {SchedulePreview} from './SchedulePreview';
+import {IfcQueryPanel} from './IfcQueryPanel';
 import {QuantitiesGrid} from './QuantitiesGrid';
 import {measurementSelection} from '../../../../src/bim/visualizationAdapters.js';
 import React from 'react';
@@ -64,6 +66,7 @@ export function Bim4D5DPanel({project}:Props){
    {records.length>0&&<><div className="cbim-react-toolbar"><button disabled={busy} onClick={()=>void downloadReport('export_quantities','csv')}>Exportar QTO CSV</button><button disabled={busy} onClick={()=>void downloadReport('export_quantities','json')}>Exportar QTO JSON</button></div><QuantitiesGrid mode="qto" records={records} onPick={row=>{const picked=measurementSelection(row);if(!picked){setError('Seleção sem QTO IFC válido. Corrija a origem para usar em medição.');return;}setGuid(picked.guid);setQuantity(picked.quantity);setError('');setNotice('Grandeza IFC selecionada para medição. Abra a aba Medições para continuar.');}}/></>}
    {quant?.truncated&&<p role="status">Prévia limitada aos primeiros {records.length} de {quant.total} registros. Exporte QTO CSV/JSON para obter o conjunto completo sem perda de registros.</p>}
    {guid&&quantity&&<p role="status">Grandeza selecionada: {guid} · {quantity}. Continue na aba Medições, após confirmar a versão IFC.</p>}
+   <IfcQueryPanel key={project.id} revisions={overview?.quantities?.revision_sha256||{}} onQuery={params=>api('ifc_query',params)}/>
    <h3>2. Tabela de composições e custos locais</h3>
    <label>Catálogo JSON com fonte, competência, BDI, composições e mapeamentos IFC
     <input type="file" accept=".json" disabled={busy||!bridge()} onChange={e=>{const f=e.target.files?.[0];e.target.value='';if(f)void f.text().then(s=>run('pricebook',{book:JSON.parse(s)},'Tabela de preços validada com origem e competência.')).catch(err=>setError(err.message));}}/>
@@ -83,9 +86,7 @@ export function Bim4D5DPanel({project}:Props){
   </>}
   {tab==='4d'&&<>
    <h3>Cronograma de atividades</h3>
-   <label>Importar CSV (activity_id, name, start_date, end_date, predecessors)
-    <input type="file" accept=".csv" disabled={busy||!bridge()} onChange={e=>{const f=e.target.files?.[0];e.target.value='';if(f)void f.text().then(csv=>run('import_schedule',{csv},'Cronograma importado.')).catch(err=>setError(err.message));}}/>
-   </label>
+   <SchedulePreview busy={busy} existingIds={activities.map((a:any)=>a.activity_id)} onImport={async(csv)=>{const result=await run('import_schedule',{csv},'Cronograma importado após validação canônica.');if(!result)throw Error('Importação recusada; o cronograma anterior foi preservado.');}}/>
    <form className="cbim-react-form-grid" onSubmit={e=>{e.preventDefault();const f=new FormData(e.currentTarget);void run('activity',{activity_id:f.get('id'),name:f.get('name'),start_date:f.get('start'),end_date:f.get('end'),composition_code:f.get('composition')},'Atividade criada.');}}>
     <label>Código<input name="id" required/></label><label>Atividade<input name="name" required/></label><label>Início<input type="date" name="start" required/></label><label>Fim<input type="date" name="end" required/></label><label>Composição (opcional)<input name="composition"/></label><button disabled={busy||!bridge()}>Adicionar</button>
    </form>
