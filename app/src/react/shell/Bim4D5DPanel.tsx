@@ -1,4 +1,6 @@
 import {Schedule4DWorkspace} from './Schedule4DWorkspace';
+import {Measurement5DWorkspace} from './Measurement5DWorkspace';
+import {EngineeringFeedback} from '../components/EngineeringUI';
 import {SchedulePreview} from './SchedulePreview';
 import {IfcQueryPanel} from './IfcQueryPanel';
 import {QuantitiesGrid} from './QuantitiesGrid';
@@ -107,28 +109,10 @@ export function Bim4D5DPanel({project}:Props){
     <Schedule4DWorkspace projectId={project.id} activities={activities} busy={busy} desktop={!!bridge()}
       onAction={run} onQuery={api}/>
   </>}
-  {tab==='med'&&<>
-   <h3>Medição física cumulativa por GUID</h3>
-   <div className="cbim-react-form-grid">
-    <label>GUID IFC<select value={guid} onChange={e=>{setGuid(e.target.value);setQuantity('');}}><option value="">Selecione</option>{Array.from(new Map(records.map((r:any)=>[r.global_id,r])).values()).slice(0,300).map((r:any)=><option key={r.global_id} value={r.global_id}>{r.global_id}</option>)}</select></label>
-    <label>Grandeza<select value={quantity} onChange={e=>setQuantity(e.target.value)}><option value="">Selecione</option>{guidRecords.map((r:any,i:number)=><option key={i} value={r.kind+'|'+r.quantity_name}>{r.quantity_name} · {r.unit}</option>)}</select></label>
-    <label>Competência<input type="month" value={period} onChange={e=>setPeriod(e.target.value)}/></label>
-    <label>Avanço físico acumulado (%)<input type="number" min="0" max="100" value={percent} onChange={e=>setPercent(e.target.value)}/></label>
-    <label>Atividade<select value={activity} onChange={e=>setActivity(e.target.value)}><option value="">Sem atividade</option>{activities.map((a:any)=><option key={a.activity_id} value={a.activity_id}>{a.name}</option>)}</select></label>
-    <button disabled={busy||!selected} onClick={()=>void run('measure',{guids:[guid],kind:selected?.kind,quantity_name:selected?.quantity_name,period,percent:Number(percent),activity_id:activity||null},'Rascunho incremental salvo; só aprovações anteriores entram no desconto.')}>Criar medição</button>
-   </div>
-   <label>Responsável pela aprovação<input value={approver} onChange={e=>setApprover(e.target.value)} placeholder="Nome do responsável técnico"/></label>
-   {batches.map((b:any)=><article key={b.batch_id} className="p2-measure">
-    <strong>{b.batch_id} · {b.period} · {b.status}</strong>
-    {(b.lines||[]).map((l:any,i:number)=><small key={i}>{l.global_id}: +{l.delta_quantity} {l.unit} ({l.previous_percent}% → {l.cumulative_percent}%)</small>)}
-    {b.status==='draft'&&<div className="cbim-react-toolbar"><button disabled={busy||!approver.trim()} onClick={()=>void run('approve',{batch_id:b.batch_id,approved_by:approver},'Medição aprovada com autor e data.')}>Aprovar</button><button disabled={busy} onClick={()=>{const reason=window.prompt('Justificativa para rejeição');if(reason?.trim())void run('reject',{batch_id:b.batch_id,reason},'Medição rejeitada.');}}>Rejeitar</button></div>}
-   </article>)}
-   <h3>Conciliação orçamento × medido aprovado</h3>
-   <button disabled={busy||!overview?.budget} onClick={async()=>{setBusy(true);setError('');try{setFinancial(await api('finance'));}catch(e:any){setError(e.message);}finally{setBusy(false);}}}>Calcular confronto 5D/4D</button>
-   {financial&&<><div className="p2-kpis"><strong>{money(financial.budget_total)}<small>Orçado</small></strong><strong>{money(financial.total_measured)}<small>Medido aprovado</small></strong><strong>{money(financial.remaining_budget)}<small>Saldo orçamentário</small></strong></div>
-    {!!financial.unmatched_line_count&&<p>{financial.unmatched_line_count} linha(s) sem composição inequívoca; não receberam preço.</p>}
-    <p className="studio-muted">Valores pagos ou recebidos não são lançados por este módulo e não podem ser inferidos das medições.</p></>}
-  </>}
+  {tab==='med'&&<Measurement5DWorkspace projectId={project.id} batches={batches}
+    activities={activities} quantities={quant} budgetAvailable={!!overview?.budget}
+    busy={busy} desktop={!!bridge()} initialGuid={guid} initialQuantity={quantity}
+    onAction={run} onQuery={api}/>}
   {busy&&<EngineeringFeedback title="Processando operação BIM local" busy>Os dados serão confirmados apenas após resposta do motor Python.</EngineeringFeedback>}
   {error&&<EngineeringFeedback tone="danger" title="Operação BIM não concluída">{error} Nenhum valor foi preenchido automaticamente.</EngineeringFeedback>}
   {notice&&<EngineeringFeedback tone="success" title={notice}/>}

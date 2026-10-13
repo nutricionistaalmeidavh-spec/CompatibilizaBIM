@@ -159,7 +159,7 @@ export function Measurement5DWorkspace({projectId,batches,activities,quantities,
          <button type="button" disabled={!desktop||busy} onClick={()=>{setDecision({action:'reject',batchId:b.batch_id});setRejection('');}}>Rejeitar com justificativa</button></div>}
      </article>)}
      {!visible.length&&<p className="cbim-5d-empty">{batches.length?'Nenhuma medição corresponde aos filtros.':'Não há medições registradas. Os indicadores permanecem zerados até existir um lote real.'}</p>}
-     <div className="cbim-5d-pagination"><span>Exibindo {visible.length?offset===-1?0:page*8+1:0}–{Math.min((page+1)*8,filtered.length)} de {filtered.length} lotes</span>
+     <div className="cbim-5d-pagination"><span>Exibindo {visible.length?page*8+1:0}–{Math.min((page+1)*8,filtered.length)} de {filtered.length} lotes</span>
        <button type="button" disabled={page===0} onClick={()=>setPage(v=>Math.max(0,v-1))}>Anterior</button>
        <button type="button" disabled={(page+1)*8>=filtered.length} onClick={()=>setPage(v=>v+1)}>Próxima</button></div>
    </section>
