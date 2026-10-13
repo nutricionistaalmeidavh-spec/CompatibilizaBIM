@@ -21,3 +21,6 @@ Esta rodada parte da integração já aprovada no PR #17; não reinstala Forms K
 ### QA e pendências de ambiente externo
 - Node, Vite, Playwright e Python P2/IfcOpenShell testados pelo workflow `.github/workflows/cbim-p0-p3-gap-qa.yml`, disparado por mudança específica do próprio workflow ou manualmente.
 - O piloto com DWG/IFC reais, validação normativa, instalação Windows limpa, assinatura e licença são gates humanos/de distribuição separados. O CI não os marca como aprovados.
+
+- Novas importações IFC/CBIM pelo React recebem identidade criptográfica `sha256:` (arquivo completo, sem amostragem). Identificadores FNV históricos permanecem válidos nos snapshots antigos e são rotulados como legados; não se reescrevem dados persistidos.
+- A lista de conflitos da análise mais recente também aceita pesquisa textual (GUID, origem, responsável e classe), preservando filtros e status; lista grande informa o limite de 250 itens.

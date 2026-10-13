@@ -34,3 +34,13 @@ export function contentFingerprint(bytes) {
  for(let i=0;i<values.length;i++){a=Math.imul(a^values[i],16777619);b=Math.imul(b^(values[i]+i%251),16777619);}
  return 'fnv32x2:'+[(a>>>0).toString(16).padStart(8,'0'),(b>>>0).toString(16).padStart(8,'0')].join('')+':'+values.length;
 }
+
+
+// Cryptographic model identity for all NEW local imports. Historical FNV32x2
+// fingerprints remain readable; do not rewrite revision/audit snapshots.
+export async function sha256Identity(bytes) {
+ const source=bytes instanceof Uint8Array?bytes:new Uint8Array(bytes);
+ if(!globalThis.crypto?.subtle)throw Error('SHA-256 indisponível; importação bloqueada para preservar a identidade do modelo.');
+ const result=await globalThis.crypto.subtle.digest('SHA-256',source);
+ return 'sha256:'+Array.from(new Uint8Array(result),byte=>byte.toString(16).padStart(2,'0')).join('');
+}

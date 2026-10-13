@@ -1,4 +1,5 @@
 import React from 'react';
+import {filterBimIssues} from '../../../../src/bim/studioExplorer.js';
 import {clashDistance} from '../../../../src/domain/engineeringPresentation.js';
 import {federarModelos,reconciliarConflitos,validarDecisaoConflito,compararRevisoesConflitos} from '../../../../src/bim/p2Coordination.js';
 import {salvarAnaliseBimProjeto,registrarDecisaoConflitoBimProjeto,listarEventosConflitosBimProjeto,listarEstudosEngenhariaBim} from '../../../../storage/sqliteStore.js';
@@ -14,6 +15,7 @@ export function BimCoordinationPanel({db,project,onChange}:Props){
  const [chosen,setChosen]=React.useState<string[]>([]);
  const [mode,setMode]=React.useState('intersection'),[tolerance,setTolerance]=React.useState('0.002'),[clearance,setClearance]=React.useState('0.05');
  const [filter,setFilter]=React.useState('todos'),[busy,setBusy]=React.useState(false),[error,setError]=React.useState(''),[notice,setNotice]=React.useState('');
+ const [issueQuery,setIssueQuery]=React.useState('');
  const [editing,setEditing]=React.useState(''),[status,setStatus]=React.useState('em_revisao'),[assignee,setAssignee]=React.useState(''),[due,setDue]=React.useState(''),[reason,setReason]=React.useState(''),[comment,setComment]=React.useState('');
  const picked=chosen.filter(id=>models.some((m:any)=>m.id===id));
  const selectedModels=models.filter((m:any)=>picked.includes(m.id));
@@ -23,7 +25,7 @@ export function BimCoordinationPanel({db,project,onChange}:Props){
   catch{return null;}
  },[latest?.modelos_json]);
  const revisions=analyses[1]?compararRevisoesConflitos(analyses[1]?.conflitos||[],latest?.conflitos||[]):null;
- const issues=(latest?.conflitos||[]).filter((c:any)=>filter==='todos'||(c.status||'aberto')===filter);
+ const issues=filterBimIssues((latest?.conflitos||[]).filter((c:any)=>filter==='todos'||(c.status||'aberto')===filter),issueQuery);
  const events=latest?listarEventosConflitosBimProjeto(db,latest.id):[];
  const toggle=(id:string)=>setChosen(prev=>prev.includes(id)?prev.filter(x=>x!==id):[...prev,id]);
  const execute=async()=>{
@@ -73,6 +75,9 @@ export function BimCoordinationPanel({db,project,onChange}:Props){
    {latest&&<p className="studio-muted">Última execução: {latest.criado_em} · {latest.proveniencia||'motor não identificado'} · {(latest.conflitos||[]).length} pendências · {latestModels?latestModels.length+' modelos':'modelos participantes não registrados (análise legada)'}.</p>}
    {revisions&&<p role="status">Comparação com execução anterior: {revisions.novos.length} novos · {revisions.persistentes.length} persistentes · {revisions.reaparecidos.length} com evidência alterada · {revisions.naoObservados.length} não observados (sem resolução automática).</p>}
    <label>Filtrar conflitos<select value={filter} onChange={e=>setFilter(e.target.value)}><option value="todos">Todos</option><option value="aberto">Abertos</option><option value="em_revisao">Em revisão</option><option value="resolvido">Resolvidos por decisão</option><option value="ignorado">Ignorados</option></select></label>
+   <label>Buscar pendências (GUID, disciplina, arquivo, responsável)<input type="search" aria-label="Pesquisar conflitos BIM" value={issueQuery} onChange={e=>setIssueQuery(e.target.value)} placeholder="Buscar na última análise"/></label>
+   <p role="status">{issues.length} pendência(s) coincidem com os filtros de estado e pesquisa.</p>
+   {issues.length>250&&<p role="status">Exibindo apenas as primeiras 250 pendências. Refine a pesquisa para conferir outras.</p>}
    {!latest&&<p>Nenhuma federação executada. Selecione os modelos e execute para produzir evidência.</p>}
    {latest&&!issues.length&&<p>Nenhum conflito no filtro atual. Isso não equivale à aprovação de um projeto não revisado.</p>}
    <div className="p2-issues">{issues.slice(0,250).map((c:any,i:number)=><article key={c.chave||i} className="p2-issue">

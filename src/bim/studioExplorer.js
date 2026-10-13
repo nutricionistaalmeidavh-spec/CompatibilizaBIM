@@ -11,3 +11,11 @@ export function summarizeBimAlerts(issues){
  return {total:rows.length,pending:rows.filter(x=>!['resolvido','ignorado'].includes(x.status)).length,
   resolved:rows.filter(x=>x.status==='resolvido').length};
 }
+
+export function filterBimIssues(issues,query=''){
+ const q=str(query).trim();if(!q)return Array.isArray(issues)?[...issues]:[];
+ return (Array.isArray(issues)?issues:[]).filter(x=>[
+  x.aGlobalId,x.bGlobalId,x.aNome,x.bNome,x.aClasse,x.bClasse,x.status,
+  x.responsavel,x.chave,...(Array.isArray(x.origens)?x.origens:[])
+ ].some(value=>str(value).includes(q)));
+}
