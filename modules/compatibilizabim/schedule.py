@@ -224,15 +224,6 @@ class ScheduleService:
             raise ValueError("Predecessora inexistente; cronograma preservado.")
         updated = replace(current, start_date=start.isoformat(), end_date=end.isoformat(), predecessors=preds)
         by_id[current.activity_id] = updated
-        # Also evaluate successors: a new end date may invalidate another activity.
-        for row in by_id.values():
-            for pred in row.predecessors:
-                if pred not in by_id:
-                    raise ValueError("Predecessora inexistente no cronograma.")
-                if _date(row.start_date, "start_date") < _date(by_id[pred].end_date, "end_date"):
-                    # Legacy overlapping dependencies are tolerated unless this edit touches the relationship.
-                    if row.activity_id == current.activity_id or pred == current.activity_id:
-                        raise ValueError("Dependência violada: início anterior ao término da predecessora.")
         pending: set[str] = set()
         visited: set[str] = set()
         def walk(key: str) -> None:
@@ -247,6 +238,15 @@ class ScheduleService:
             visited.add(key)
         for key in by_id:
             walk(key)
+        # Also evaluate successors: a new end date may invalidate another activity.
+        for row in by_id.values():
+            for pred in row.predecessors:
+                if pred not in by_id:
+                    raise ValueError("Predecessora inexistente no cronograma.")
+                if _date(row.start_date, "start_date") < _date(by_id[pred].end_date, "end_date"):
+                    # Legacy overlapping dependencies are tolerated unless this edit touches the relationship.
+                    if row.activity_id == current.activity_id or pred == current.activity_id:
+                        raise ValueError("Dependência violada: início anterior ao término da predecessora.")
         self.store.save(Schedule(tuple(by_id[row.activity_id] for row in schedule.activities)))
         return updated
 

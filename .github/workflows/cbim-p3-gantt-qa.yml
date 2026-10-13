@@ -57,3 +57,5 @@ jobs:
         env:
           PYTHONPATH: modules
         run: python -m pytest -q modules/compatibilizabim/tests/test_p2_workflow.py modules/compatibilizabim/tests/test_p3_gantt.py modules/compatibilizabim/tests/test_ifc_query.py
+
+# QA checkpoint 2: align canonical component wiring checks and cycle-error validation order.

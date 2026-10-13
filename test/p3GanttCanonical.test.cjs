@@ -12,9 +12,9 @@ test('P3 IPC validates mutation and full IFC lookup selectors before Python',()=
  assert.throws(()=>validateP2Request({projectId:'study-a',action:'guid_lookup',params:{search:'GUID',limit:500}}),/Limite/);
 });
 test('P3 Gantt edits require confirmation and reuse the canonical schedule engine',()=>{
- const panel=fs.readFileSync(new URL('../app/src/react/shell/Bim4D5DPanel.tsx',import.meta.url),'utf8');
- const gantt=fs.readFileSync(new URL('../app/src/react/shell/CanonicalGantt.tsx',import.meta.url),'utf8');
- const workspace=fs.readFileSync(new URL('../app/src/react/shell/Schedule4DWorkspace.tsx',import.meta.url),'utf8');
+ const panel=fs.readFileSync(require('node:path').join(__dirname,'../app/src/react/shell/Bim4D5DPanel.tsx'),'utf8');
+ const gantt=fs.readFileSync(require('node:path').join(__dirname,'../app/src/react/shell/CanonicalGantt.tsx'),'utf8');
+ const workspace=fs.readFileSync(require('node:path').join(__dirname,'../app/src/react/shell/Schedule4DWorkspace.tsx'),'utf8');
  assert.match(panel,/<SchedulePreview/);
  assert.match(panel,/<Schedule4DWorkspace/);
  assert.match(workspace,/onAction\('reschedule'/);
