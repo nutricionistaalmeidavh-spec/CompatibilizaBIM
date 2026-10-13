@@ -61,3 +61,5 @@ jobs:
 # QA checkpoint 2: align canonical component wiring checks and cycle-error validation order.
 
 # QA checkpoint 3: preview Gantt is drawn from the actual validated CSV before any write.
+
+# QA visual checkpoint 4: capture actual Frappe Gantt bars, not only outer scroll area.
