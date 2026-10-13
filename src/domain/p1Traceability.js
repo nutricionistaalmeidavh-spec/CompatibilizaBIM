@@ -58,7 +58,7 @@ export function summarizeMeasurementReconciliation(project,batches=[],operations
   const operationalQuantity=valid?numeric(op.quantidade,'Quantidade operacional'):null;
   const delta=valid?Math.round((bimQuantity-operationalQuantity)*1e9)/1e9:null;
   return {batchId:batch.batch_id,period:batch.period,unit,guids:(batch.lines||[]).map(x=>x.global_id),
-    bimQuantity,operationalId:op?.id||null,operationalQuantity,delta,
+    bimQuantity,operationalId:entry?.detail.operationalId||null,operationalQuantity,delta,
     operationalValue:valid?operationalQuantity*numeric(op.preco_unitario,'Preço operacional'):null,
     responsible:entry?.detail.responsible||null,
     state:!entry?'nao_vinculada':!valid?'referencia_invalida':Math.abs(delta)<=1e-7?'conciliada':'divergente'};

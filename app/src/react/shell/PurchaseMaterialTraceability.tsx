@@ -1,9 +1,9 @@
 import React from 'react';
 import {listarMateriais,listarLancamentosFinanceiros,listarModuleLinks,salvarModuleLink,registrarHistorico,salvarBanco} from '../../../../storage/sqliteStore.js';
 import {MATERIAL_LINK,FINANCE_LINK,parseTraceLink,prepareMaterialLink,preparePurchaseFinanceLink,summarizePurchaseMaterialTrace,summarizePurchaseFinanceTrace} from '../../../../src/domain/p1Traceability.js';
-type Props={db:any;obraId:string;purchases:any[];onChange:()=>void};
+type Props={db:any;obraId:string;purchases:any[];onChange:()=>void;onNavigate?:(route:string,target?:any)=>void};
 const number=(x:any)=>new Intl.NumberFormat('pt-BR',{maximumFractionDigits:3}).format(Number(x)||0);
-export function PurchaseMaterialTraceability({db,obraId,purchases,onChange}:Props){
+export function PurchaseMaterialTraceability({db,obraId,purchases,onChange,onNavigate}:Props){
  const [actor,setActor]=React.useState(''),[selected,setSelected]=React.useState<Record<string,string>>({}),[selectedCost,setSelectedCost]=React.useState<Record<string,string>>({});
  const [error,setError]=React.useState(''),[notice,setNotice]=React.useState('');
  const materials=listarMateriais(db,obraId),links=listarModuleLinks(db,obraId).filter((r:any)=>r.module_id===MATERIAL_LINK);
@@ -60,6 +60,7 @@ export function PurchaseMaterialTraceability({db,obraId,purchases,onChange}:Prop
     return <article key={'finance-'+trace.purchaseId}><b>{purchase.descricao} · {trace.state==='conferida'?'Referência conferida':trace.state==='divergente'?'Divergência a revisar':trace.state==='referencia_invalida'?'Referência ausente':'Sem despesa vinculada'}</b>
       <p>Valor da compra: R$ {number(trace.purchaseAmount)} · despesa vinculada: {trace.recordedExpenseAmount==null?'—':'R$ '+number(trace.recordedExpenseAmount)} · pagamento no pedido: {trace.paymentStatus} · status no financeiro: {trace.ledgerStatus||'—'}</p>
       {trace.state==='divergente'&&<p role="status">Diferença de valor R$ {number(trace.delta)} ou situação de pagamento incompatível. Confira os registros originais antes de considerar o custo conciliado.</p>}
+      {trace.entryId&&onNavigate&&<button type="button" onClick={()=>onNavigate('Financeiro',{kind:'lancamento',id:trace.entryId,obraId})}>Conferir lançamento de origem</button>}
       {trace.state==='nao_vinculada'&&<div className="cbim-react-form-grid">
        <label>Despesa da obra<select aria-label={'Despesa para '+purchase.descricao} value={selectedCost[purchase.id]||''} onChange={e=>setSelectedCost(v=>({...v,[purchase.id]:e.target.value}))}>
         <option value="">Selecionar lançamento existente</option>

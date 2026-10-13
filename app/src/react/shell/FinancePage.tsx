@@ -2,17 +2,24 @@ import React from 'react';
 import {brlReais} from '../../../../src/factory/format.js';
 import {reconciliarFinanceiroObra} from '../../../../src/domain/financialReconciliation.js';
 import {filterScopedRecords,financialScopeRows} from '../../../../src/domain/workspaceScope.js';
+import {filterEntriesByDueCompetence,resolveSourceRecord} from '../../../../src/domain/engineeringJourney.js';
 import { listarLancamentosFinanceiros, salvarLancamentoFinanceiro, listarFolhaPagamentos, salvarFolhaPagamento, listarContratos, listarMedicoes, listarCompras, listarFrentes } from '../../../../storage/sqliteStore.js';
 
 const money=brlReais;
 const safe=(d:FormData,k:string)=>String(d.get(k)||'').trim();
 
-export function FinancePage({db,obraId,scope={},onChange}:{db:any;obraId:string|null;scope?:any;onChange:()=>void}){
+export function FinancePage({db,obraId,scope={},onChange,target,onNavigate}:{db:any;obraId:string|null;scope?:any;onChange:()=>void;target?:any;onNavigate?:(route:string,target?:any)=>void}){
   const [active,setActive]=React.useState<'DRE'|'Contas'|'Folha'>('DRE');
+  React.useEffect(()=>{if(target?.kind==='contas-competencia'||target?.kind==='lancamento')setActive('Contas');},[target?.kind,target?.id,target?.period]);
   const [error,setError]=React.useState('');
   const frontScoped=!!scope.frenteId;
   const scoped={obraId,frenteId:scope.frenteId||null,periodo:scope.periodo||{}};
-  const {rows:entries,unallocated}=financialScopeRows(listarLancamentosFinanceiros(db,obraId),scoped);
+  const allEntries=listarLancamentosFinanceiros(db,obraId);
+  const {rows:entries,unallocated}=financialScopeRows(allEntries,scoped);
+  const relevantEntries=allEntries.filter((entry:any)=>obraId?entry.obra_id===obraId:true);
+  const dueEntries=target?.kind==='contas-competencia'?filterEntriesByDueCompetence(relevantEntries,target.period):[];
+  const sourceEntry=target?.kind==='lancamento'?resolveSourceRecord(relevantEntries,entries,target.id):{record:null,outsideScope:false};
+  const visibleEntries=sourceEntry.outsideScope?[sourceEntry.record,...entries]:entries;
   const payroll=frontScoped?[]:filterScopedRecords(
     listarFolhaPagamentos(db,obraId).filter((p:any)=>!obraId||p.obra_id===obraId),
     scoped,{dateField:'periodo'}
@@ -33,6 +40,16 @@ export function FinancePage({db,obraId,scope={},onChange}:{db:any;obraId:string|
     <p>{obraId?'Visão da obra selecionada':'Visão consolidada de lançamentos da empresa'} · valores registrados localmente, sem conciliação bancária ou DRE contábil homologada.</p>
     <nav className="cbim-react-toolbar" aria-label="Financeiro">{(['DRE','Contas','Folha'] as const).map(tab=><button key={tab} className={active===tab?'selected':''} onClick={()=>setActive(tab)}>{tab}</button>)}</nav>
     {error&&<p role="alert" className="cbim-react-error">{error}</p>}
+    {target?.kind==='contas-competencia'&&<section className="cbim-react-panel cbim-journey-focus" aria-label="Conferência de contas por vencimento">
+      <h2>Lançamentos com vencimento em {target.period}</h2>
+      <p>Vinculado à obra, não à medição BIM. O vínculo com RDO ou medição é somente por competência temporal. Esta consulta de origem pode mostrar itens fora dos filtros, sem incluí-los nos totais filtrados. Os valores são lançamentos registrados; não comprovam recebimento ou pagamento bancário.</p>
+      {dueEntries.map((entry:any)=><article key={entry.id}><b>{entry.descricao}</b> · {entry.categoria} · {entry.tipo} · {money(entry.valor)} · {entry.status} · vencimento {entry.vencimento}
+       {onNavigate&&<button type="button" onClick={()=>onNavigate('Financeiro',{kind:'lancamento',id:entry.id,obraId,period:target.period,studyId:target.studyId})}>Inspecionar lançamento original</button>}
+      </article>)}
+      {!dueEntries.length&&<p>Nenhum lançamento registrado com vencimento nesta competência. Isso não comprova ausência de custos ou pagamentos.</p>}
+    </section>}
+    {target?.kind==='lancamento'&&!sourceEntry.record&&<p role="alert">Lançamento de origem {target.id} não encontrado nesta obra. A referência não foi alterada.</p>}
+    {sourceEntry.outsideScope&&<p role="status">O lançamento de origem está fora dos filtros. Está visível para consulta individual, sem alterar os indicadores agregados.</p>}
     {scope.periodo?.inicio||scope.periodo?.fim?<p className="studio-muted">Filtro de período: vencimento dos lançamentos, competência da folha, período das medições e data dos pedidos. Lançamentos sem vencimento não entram nos totais filtrados.</p>:null}
     {frontScoped&&<p role="status" className="cbim-react-panel">Frente selecionada: apenas compras e medições com vínculo à frente são exibidas. Contas, folha e contratos não têm frente de serviço em seus registros; seus totais não serão apresentados como se fossem desta frente. Limpe a frente no cabeçalho para consultar os totais da obra.</p>}
     {!frontScoped&&obraId&&unallocated.length>0&&<p className="studio-muted">{unallocated.length} lançamento(s) sem obra vinculada ficam fora dos totais da obra. Estão disponíveis na visão consolidada sem obra selecionada.</p>}
@@ -55,6 +72,9 @@ export function FinancePage({db,obraId,scope={},onChange}:{db:any;obraId:string|
       </>}
       {frontScoped&&<div className="cbim-react-metrics"><article>Medições aprovadas da frente: {money(audit.medicoesAprovadas)}</article><article>Compromissos de compra pendentes da frente: {money(audit.comprasPendentesPagamento)}</article></div>}
       {obraId&&<div className="cbim-react-panel"><h2>Fluxo de medições por frente</h2>
+        <p className="studio-muted">Medições aprovadas são direitos a conferir; nenhuma medição gera recebimento financeiro automaticamente.</p>
+        {onNavigate&&measures.filter((m:any)=>m.status==='aprovada').map((m:any)=><div className="cbim-react-toolbar" key={m.id}><span>{m.descricao} · {m.periodo} · {money(Number(m.quantidade)*Number(m.preco_unitario))} aprovado (não recebido)</span>
+         <button type="button" onClick={()=>onNavigate('Operação',{kind:'medicao',id:m.id,obraId,period:m.periodo})}>Ver medição de origem</button></div>)}
         {fronts.map((f:any)=><article key={f.id}><b>{f.nome}</b> · {money(measures.filter((m:any)=>m.frente_id===f.id&&m.status==='aprovada').reduce((sum:number,m:any)=>sum+Number(m.quantidade)*Number(m.preco_unitario),0))} aprovado · {measures.filter((m:any)=>m.frente_id===f.id).length} registro(s)</article>)}
         {!fronts.length&&<p>Nenhuma frente vinculada ao contexto selecionado.</p>}
       </div>}
@@ -75,8 +95,8 @@ export function FinancePage({db,obraId,scope={},onChange}:{db:any;obraId:string|
         </div><button type="submit">Salvar lançamento</button>
       </form>
       <div className="cbim-react-panel"><h2>Contas a pagar e receber</h2>
-        {entries.map((e:any)=><article key={e.id}><b>{e.descricao}</b> · {e.categoria}<p>{e.tipo} · {money(e.valor)} · {e.status} · {e.vencimento||'Sem vencimento'}</p></article>)}
-        {!entries.length&&<p>Nenhum lançamento para o período/obra selecionados.</p>}
+        {visibleEntries.map((e:any)=><article key={e.id} className={target?.kind==='lancamento'&&target.id===e.id?'cbim-journey-focus':''}><b>{e.descricao}</b> · {e.categoria}<p>{e.tipo} · {money(e.valor)} · {e.status} · {e.vencimento||'Sem vencimento'}</p></article>)}
+        {!visibleEntries.length&&<p>Nenhum lançamento para o período/obra selecionados.</p>}
       </div>
     </>)}
     {active==='Folha'&&(frontScoped?<p className="cbim-react-panel">Folha possui vínculo de obra, mas não de frente. Limpe o filtro para consultar os registros da obra.</p>:<>
