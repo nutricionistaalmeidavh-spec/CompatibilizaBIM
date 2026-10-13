@@ -30,6 +30,8 @@ const {chromium}=require('../../app/node_modules/playwright');
   await page.getByRole('heading',{name:/Conferir antes de importar/}).waitFor();
   const table=page.getByRole('table',{name:'Prévia das atividades'});
   assert.equal(await table.locator('tbody tr').count(),2);
+  await page.getByRole('heading',{name:'Gantt de prévia — não salvo'}).waitFor();
+  await page.locator('.cbim-4d-csv-gantt-preview svg').first().waitFor({timeout:12000});
   await page.screenshot({path:path.join(target,'p3-cronograma-4d-preview-csv.png'),fullPage:true});
   await page.getByRole('button',{name:'Descartar prévia'}).click();
   assert.equal(await workbench.getByRole('button',{name:'Registrar avanço com data'}).count(),0,'No activity: no fake progress');
