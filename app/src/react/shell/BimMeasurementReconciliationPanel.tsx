@@ -42,7 +42,7 @@ export function BimMeasurementReconciliationPanel({db,project,onChange,target,on
   }catch(e:any){setError(e.message||String(e));}
  };
  return <section className="cbim-react-panel cbim-5d-conciliation" data-testid="cbim-5d-reconciliation" aria-label="Conciliação entre medições BIM e obra">
-   <div className="cbim-5d-recon-hero"><div><span>CONFERÊNCIA / BIM × OPERAÇÃO</span><h2>Conferência de medições</h2>
+   <div className="cbim-5d-recon-hero"><div><span>CONFERÊNCIA / BIM × OPERAÇÃO</span><h2>Conferência BIM × medição operacional</h2>
     <p>Associe registros aprovados da mesma obra, competência e unidade. A diferença requer julgamento humano; não duplica medições, pagamentos ou receita.</p></div></div>
    <div className="cbim-5d-recon-kpis" aria-label="Situação da conferência canônica">
       <article><span>Aguardando vínculo</span><strong>{pending}</strong><small>Sem associação operacional</small></article>
