@@ -128,7 +128,7 @@ const {chromium}=require('../../app/node_modules/playwright');
     const memoryFailure=page.locator('.cbim-p4-panel [role="alert"]').first();
     const memoryExport=await Promise.race([memoryPdf,
       memoryFailure.waitFor({timeout:15000}).then(async()=>{throw Error('Falha P4 export PDF: '+await memoryFailure.innerText());})]);
-    assert.match(memoryExport.suggestedFilename(),/^memoria-bim-.*\\.pdf$/);
+    assert.match(memoryExport.suggestedFilename(),/^memoria-bim-.*\.pdf$/);
     const memoryPdfContent=fs.readFileSync(await memoryExport.path()).toString('latin1');
     assert.ok(memoryPdfContent.startsWith('%PDF-1.4'),'P4 must emit a real local PDF');
     assert.match(memoryPdfContent,/Viga|vigaBiapoiada/);
