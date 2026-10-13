@@ -37,11 +37,12 @@ export function gerarMemoriaBimPdf({estudo,projeto,impactos=[]}={}){
    ],
  };
  const list=Array.isArray(impactos)?impactos:[];
+
  if(list.length){
-   sections['Quantitativos e impacto 5D - preliminar']=list.slice(0,6).flatMap((entry,index)=>{
+   list.slice(0,20).forEach((entry,index)=>{
      const imp=entry.snapshot||entry;
-     return [
-      kv('Simulação '+(index+1),entry.id||'sem ID'),
+     sections['Simulação 5D '+(index+1)]=[
+      kv('Registro de impacto',entry.id||'sem ID'),
       kv('GUID QTO',imp.qtoFonte?.guid),kv('Fonte QTO',imp.qtoFonte?.arquivo),
       kv('Grandeza',imp.qtoFonte?.quantidade),
       kv('Quantidade anterior',formatarValorTecnico(imp.quantidadeOriginal)+' '+text(imp.unidade)),
@@ -53,6 +54,7 @@ export function gerarMemoriaBimPdf({estudo,projeto,impactos=[]}={}){
       kv('Hipótese',imp.hipotese||'Não informada')
      ];
    });
+   if(list.length>20)sections['Limite do documento']=[list.length+' simulações registradas; PDF contém as 20 mais recentes. Consulte o SQLite para o histórico completo.'];
  }else sections['Quantitativos 5D']=['Nenhuma simulação 5D registrada neste estudo. Custo não presumido.'];
  sections['Responsabilidade técnica']=[
   'Documento preliminar e rastreável. Não constitui projeto executivo ou aprovação normativa.',

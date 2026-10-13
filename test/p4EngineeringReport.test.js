@@ -56,3 +56,13 @@ test('P4 PDF offline lista contexto, IFC, oráculo e delta precificado sem aprov
  const raw=Buffer.from(await pdf.arrayBuffer()).toString('latin1');
  for(const piece of ['%PDF-1.4','GUID-BEAM','structure.ifc','CONC-01','175','s1','preliminar'])assert.ok(raw.includes(piece),piece);
 });
+
+test('P4 PDF de várias simulações gera seções distintas, sem truncar os impactos anteriores',async()=>{
+ const impact=simularImpacto5D({estudo:study,projeto:project,quantidades:quantity,orcamento:budget,
+ itemKey:calc().itens[0].itemKey,quantidadeProposta:3,confirmacaoRevisao:true});
+ const rows=Array.from({length:8},(_,i)=>({id:'qto-impact-'+(i+1),snapshot:{...impact,hipotese:'Hipotese registral numero '+(i+1)},criado_em:'2026-10-12'}));
+ const pdf=gerarMemoriaBimPdf({estudo:study,projeto:project,impactos:rows});
+ const raw=Buffer.from(await pdf.arrayBuffer()).toString('latin1');
+ assert.match(raw,/qto-impact-1/);assert.match(raw,/qto-impact-8/);
+ assert.match(raw,/Hipotese registral numero 8/);
+});
