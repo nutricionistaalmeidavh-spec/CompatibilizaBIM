@@ -9,7 +9,8 @@ const project={id:'p1',modelos:[model],analises:[]};
 const study={id:'s1',projeto_id:'p1',titulo:'Viga testada',calculadora_tipo:'vigaBiapoiada',criado_em:'2026-10-12T16:00:00Z',
  contexto:{projetoId:'p1',modeloId:'modelo1',revisao:2,arquivoHash:'hash-a',elementosAssinatura:prepararVinculoBim({project,modeloId:'modelo1',elementoRef:'GUID-BEAM'}).elementosAssinatura,elementoRef:'GUID-BEAM',analiseId:null,conflitoChave:null},
  entradas:{vaoM:5},resultados:{esforcos:{momento:80}},validacao:{ok:true,metodo:'oraculo',verificacoes:[{campo:'esforcos.momento'}],avisos:[]},alternativas:[],nota:'Hipotese inicial'};
-const quantity={models:['structure.ifc'],generated_at:'2026-10-12T17:00:00Z',
+const sha='a'.repeat(64);
+const quantity={revision_sha256:{'structure.ifc':sha},modelo_sha256_calculado:sha,models:['structure.ifc'],generated_at:'2026-10-12T17:00:00Z',
  records:[{global_id:'GUID-BEAM',source_file:'structure.ifc',source:'ifc_qto',discipline:'Estrutura',storey:'Térreo',ifc_class:'IfcBeam',type_name:'Viga',quantity_name:'NetVolume',kind:'volume',unit:'m3',value:2.5},
  {global_id:'GUID-OTHER',source_file:'structure.ifc',source:'ifc_qto',discipline:'Estrutura',storey:'Térreo',ifc_class:'IfcBeam',type_name:'Viga',quantity_name:'NetVolume',kind:'volume',unit:'m3',value:9},
  {global_id:'GUID-BEAM',source_file:'other.ifc',source:'ifc_qto',discipline:'Estrutura',storey:'Térreo',ifc_class:'IfcBeam',type_name:'Viga',quantity_name:'NetVolume',kind:'volume',unit:'m3',value:99},
@@ -20,7 +21,7 @@ const calc=()=>listarQuantitativosDaMemoria({estudo:study,projeto:project,quanti
 test('P4 dados reais: apenas QTO IFC do GUID e arquivo registrados, sem fallback de bbox',()=>{
  const r=calc();assert.equal(r.itens.length,1);assert.equal(r.itens[0].value,2.5);
  assert.equal(r.itens[0].source_file,'structure.ifc');
- assert.equal(r.revisaoConferidaAutomaticamente,false);
+ assert.equal(r.revisaoConferidaAutomaticamente,true);
 });
 test('P4 compara quantidade proposta com preço unitário 5D existente, sem tratar preço do grupo como custo do elemento',()=>{
  const r=simularImpacto5D({estudo:study,projeto:project,quantidades:quantity,orcamento:budget,
@@ -46,6 +47,7 @@ test('P4 impede revisão não confirmada, valor inválido, QTO inventado e estud
  assert.throws(()=>simularImpacto5D({...base,confirmacaoRevisao:false}),/revisão/i);
  assert.throws(()=>simularImpacto5D({...base,quantidadeProposta:-1}),/quantidade/i);
  assert.throws(()=>simularImpacto5D({...base,itemKey:'forged'}),/quantitativo/i);
+ assert.throws(()=>simularImpacto5D({...base,quantidades:{...quantity,modelo_sha256_calculado:'b'.repeat(64)}}),/SHA-256|Revisão/i);
  assert.throws(()=>simularImpacto5D({...base,projeto:{...project,modelos:[{...model,revisao:3}]}}),/revisão|alterada/i);
 });
 test('P4 PDF offline lista contexto, IFC, oráculo e delta precificado sem aprovar ART',async()=>{

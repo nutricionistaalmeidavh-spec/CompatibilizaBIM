@@ -19,7 +19,11 @@ export function listarQuantitativosDaMemoria({estudo,projeto,quantidades}={}){
  if(!quantidades||!Array.isArray(quantidades.records))return {itens:[],revisaoConferidaAutomaticamente:false,motivo:'Relatório QTO IFC não disponível.'};
  const filename=model.arquivo_nome||model.nome;
  if(!String(filename||'').toLowerCase().endsWith('.ifc'))return {itens:[],revisaoConferidaAutomaticamente:false,motivo:'Quantitativos IFC requerem arquivo IFC original, não manifesto JSON.'};
- if(!Array.isArray(quantidades.models)||!quantidades.models.some(m=>eq(m,filename)))return {itens:[],revisaoConferidaAutomaticamente:false,motivo:'O arquivo de origem não está listado no QTO do motor.'};
+ const expected=String(quantidades.revision_sha256?.[filename]||'').toLowerCase();
+ const actual=String(quantidades.modelo_sha256_calculado||'').toLowerCase();
+ if(!/^[0-9a-f]{64}$/.test(expected)||!actual)
+    throw Error('SHA-256 do QTO IFC ou do original salvo não disponível. Reextraia QTO e use o IFC original.');
+ if(actual!==expected)throw Error('Revisão IFC alterada: SHA-256 do QTO difere do arquivo IFC preservado no SQLite.');
  const matching=quantidades.records.filter(r=>r&&r.source==='ifc_qto'&&
     r.global_id===estudo.contexto.elementoRef&&eq(r.source_file,filename)&&
     finite(r.value)&&r.value>=0&&String(r.unit||'').trim()&&String(r.quantity_name||'').trim());
@@ -27,9 +31,9 @@ export function listarQuantitativosDaMemoria({estudo,projeto,quantidades}={}){
  const itens=matching.filter(row=>{
    const k=quantKey(row);if(keys.has(k))return false;keys.add(k);return true;
  }).map(row=>({...row,itemKey:quantKey(row)}));
- return {itens,revisaoConferidaAutomaticamente:false,
-   motivo:'O QTO confirma arquivo e GUID, mas não inclui hash da revisão; confirme explicitamente a revisão antes de simular.',
-   arquivoNome:filename,hashOriginal:estudo.contexto.arquivoHash||null};
+ return {itens,revisaoConferidaAutomaticamente:true,
+   motivo:'Conferência SHA-256: QTO e IFC original do modelo são idênticos. Revise as hipóteses antes de simular.',
+   arquivoNome:filename,hashOriginal:estudo.contexto.arquivoHash||null,sha256:expected};
 }
 const priceMatch=(q,line)=>[
  ['unit','unit'],['discipline','discipline'],['storey','storey'],
@@ -57,7 +61,7 @@ export function simularImpacto5D({estudo,projeto,quantidades,orcamento,itemKey,q
     conflitoChave:estudo.contexto.conflitoChave||null},
   qtoFonte:{arquivo:q.source_file,guid:q.global_id,classe:q.ifc_class,disciplina:q.discipline,
     pavimento:q.storey||null,quantidade:q.quantity_name,tipo:q.kind,fonte:q.source,
-    geradoEm:quantidades.generated_at||null},
+    geradoEm:quantidades.generated_at||null,sha256:quantidades.revision_sha256?.[q.source_file]||null},
   itemKey:q.itemKey,quantidadeOriginal:q.value,quantidadeProposta,diferencaQuantidade:delta,unidade:q.unit,
   precoUnitario:priced?line.final_unit_cost:null,custoDelta,
   precoReferencia:priced?{composicao:line.composition_code,descricao:line.description,
@@ -66,7 +70,7 @@ export function simularImpacto5D({estudo,projeto,quantidades,orcamento,itemKey,q
   orcamentoParcial:Boolean(orcamento?.unmatched_group_count>0),
   hipotese:String(hipotese??'').trim().slice(0,2000),
   confirmacaoRevisao:true,geradoEm:new Date().toISOString(),
-  advertencias:[WARNING,'QTO com identidade GUID+arquivo; hash da revisão não é transmitido pelo motor de quantitativos.',
+  advertencias:[WARNING,'QTO com identidade GUID+arquivo e SHA-256 do IFC original conferido com o motor 5D.',
    priced?'Custo diferencial = variação de quantidade × preço unitário final do grupo 5D; não é orçamento executado.':
    status==='mapeamento_ambiguo'?'Várias composições compatíveis; nenhum custo calculado.':
    'Não existe composição local rastreável para este quantitativo; nenhum custo foi presumido.']

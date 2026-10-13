@@ -104,3 +104,18 @@ def test_p2_exports_only_actual_quantity_and_budget_reports(tmp_path):
     parsed=json.loads(base64.b64decode(report['base64']))
     assert parsed['total_cost']==pytest.approx(55)
     assert parsed['source']==book['source']
+
+def test_p4_qto_guid_filter_is_not_limited_by_first_800_rows(tmp_path):
+    svc=P2Service(tmp_path)
+    report=quantity_fixture()
+    report['records']=[{**report['records'][0],'global_id':'OTHER-'+str(i)} for i in range(850)]
+    report['records'].append({**quantity_fixture()['records'][0],'global_id':'GUID-TARGET'})
+    report['revision_sha256']={'HID.ifc':'a'*64}
+    svc.put_fixture_quantities(report)
+    output=svc.execute('quantity_records',{'globalId':'GUID-TARGET'})
+    assert output['total']==1
+    assert output['truncated'] is False
+    assert output['records'][0]['global_id']=='GUID-TARGET'
+    assert output['revision_sha256']['HID.ifc']=='a'*64
+    with pytest.raises(ValueError,match='GUID'):
+        svc.execute('quantity_records',{'globalId':''})
