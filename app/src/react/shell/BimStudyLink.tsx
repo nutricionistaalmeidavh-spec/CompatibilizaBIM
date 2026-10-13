@@ -23,7 +23,7 @@ export function BimStudyLink({db,obraId,project,calculator,entry,result,alternat
     try{
       if(project.obra_id&&obraId&&project.obra_id!==obraId)throw Error('Selecione a obra de origem ou limpe o contexto de obra.');
       const id=salvarEstudoEngenhariaBim(db,{
-        projetoId:project.id,obraId,modeloId:modelId,analiseId:analysisId,conflitoChave:conflictKey,elementoRef,
+        projetoId:project.id,obraId,modeloId:modelId,analiseId:analysisId,conflitoChave:conflictKey,elementoRef:elementRef,
         calculadoraTipo:calculator,titulo:entry.label,entradas:result.inputs,resultados:result.output,
         alternativas,nota:note
       });
