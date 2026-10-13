@@ -42,8 +42,8 @@ def test_ifc_query_reads_authentic_ifc_and_never_modifies_qto(tmp_path,monkeypat
         def by_type(self,name):
             assert name in ('IfcElement','IfcPipeSegment')
             return [Element()]
-    import ifcopenshell
-    monkeypatch.setattr(ifcopenshell,'open',lambda path:Model())
+    import sys,types
+    monkeypatch.setitem(sys.modules,'ifcopenshell',types.SimpleNamespace(open=lambda path:Model()))
     before=(tmp_path/'quantities.json').read_bytes()
     result=svc.execute('ifc_query',{'file':file.name,'ifc_class':'IfcPipeSegment','text':'tubo','limit':25})
     assert result['source']=='ifcopenshell_real'

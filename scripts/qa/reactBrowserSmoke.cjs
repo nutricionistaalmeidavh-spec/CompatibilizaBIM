@@ -68,6 +68,12 @@ const {chromium}=require('../../app/node_modules/playwright');
     });
     await page.getByText(/Modelo CBIM JSON incorporado/).waitFor();
     await page.getByRole('heading',{name:/Estudo P2 QA · 1 modelos/}).waitFor();
+    await page.getByLabel('Buscar modelos do estudo').fill('qa-struct');
+    await page.getByText('1 de 1 arquivo(s) encontrados no estudo.').waitFor();
+    await page.getByLabel('Buscar modelos do estudo').fill('inexistente');
+    await page.getByText('Nenhum modelo encontrado. Limpe o filtro para visualizar os demais.').waitFor();
+    await page.getByLabel('Buscar modelos do estudo').fill('');
+
 
     await page.getByRole('button',{name:'Coordenação',exact:true}).click();
     await page.getByRole('heading',{name:/Coordenação.*Federação e conflitos/}).waitFor();
@@ -77,9 +83,20 @@ const {chromium}=require('../../app/node_modules/playwright');
     await page.getByRole('heading',{name:/Revisão CBIM.*origem e proveniência/}).waitFor();
     await page.getByRole('button',{name:'4D/5D',exact:true}).click();
     await page.getByRole('heading',{name:/Quantitativos 5D, cronograma 4D e medições/}).waitFor();
+    await page.getByRole('heading',{name:/Consulta IFC \(P3\)/}).waitFor();
+    await page.getByText(/Extraia QTO de um IFC original antes de consultar elementos/).waitFor();
+
     await page.getByRole('heading',{name:/Conferência BIM.*medição operacional/}).waitFor();
     await page.getByRole('button',{name:'Cronograma 4D'}).click();
     await page.getByRole('heading',{name:'Cronograma de atividades'}).waitFor();
+    await page.getByRole('region',{name:'Prévia da importação 4D'}).locator('input[type=file]').setInputFiles({
+      name:'qa-schedule.csv',mimeType:'text/csv',
+      buffer:Buffer.from('activity_id,name,start_date,end_date,predecessors\nA,Instalação,2026-10-01,2026-10-10,\n')
+    });
+    await page.getByRole('heading',{name:/Conferir antes de importar/}).waitFor();
+    await page.getByRole('table',{name:'Prévia das atividades'}).waitFor();
+    await page.getByRole('button',{name:'Descartar prévia'}).click();
+
     await screenshots('p2-cronograma');
     await page.getByRole('button',{name:'Medições',exact:true}).click();
     await page.getByRole('heading',{name:/Medição física cumulativa/}).waitFor();
