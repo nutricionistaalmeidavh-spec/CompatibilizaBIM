@@ -12,7 +12,7 @@ import { RdoPage } from './RdoPage';
 import { StructuralPage } from './StructuralPage';
 import { Status } from '../components/ui';
 import {validateWorkspacePeriod} from '../../../../src/domain/workspaceScope.js';
-import {createEngineeringTarget} from '../../../../src/domain/engineeringJourney.js';
+import {createEngineeringTarget,resolveJourneyStudy} from '../../../../src/domain/engineeringJourney.js';
 import { validarContratoBackup } from '../../../../src/storage/backupContract.js';
 import { listarProjetosBim, listarFrentes } from '../../../../storage/sqliteStore.js';
 import { carregarDemo, carregarDemoOperacional, carregarDemoBimIndependente } from '../../demoData.js';
@@ -102,11 +102,8 @@ export function AppShell(){
     try{
       const nextTarget=createEngineeringTarget(route,target);
       const targetWork=nextTarget.obraId||workId;
-      const targetStudy=nextTarget.studyId||context.projetoBimId||null;
       if(targetWork&&!works.some((w:any)=>w.id===targetWork))throw Error('Obra de origem não encontrada. Selecione uma obra válida antes de continuar.');
-      const study=targetStudy?studies.find((row:any)=>row.id===targetStudy):null;
-      if(targetStudy&&!study)throw Error('Estudo BIM de origem não encontrado.');
-      if(study?.obra_id&&targetWork&&study.obra_id!==targetWork)throw Error('Estudo de origem vinculado a outra obra. Confira o contexto selecionado.');
+      const targetStudy=resolveJourneyStudy(studies,context.projetoBimId,nextTarget.studyId,targetWork);
       if(targetWork!==workId||targetStudy!==context.projetoBimId){
         salvarWorkspaceContext(db,{...context,obraId:targetWork,frenteId:targetWork!==workId?null:context.frenteId,projetoBimId:targetStudy});
         setWorkId(targetWork);refresh();
