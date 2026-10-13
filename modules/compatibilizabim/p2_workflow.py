@@ -73,8 +73,16 @@ class P2Service:
                     'measurements':self.measure.list_batches()}
         if action=='quantity_records':
             q=self._quantities()
-            return {'records':q.get('records',[])[:800],'groups':q.get('groups',[])[:800],
-                    'total':len(q.get('records',[])),'truncated':len(q.get('records',[]))>800,
+            rows=q.get('records',[])
+            guid=params.get('globalId')
+            if guid is not None:
+                if not isinstance(guid,str) or not guid.strip() or len(guid)>128:
+                    raise ValueError('GUID de consulta inválido')
+                rows=[row for row in rows if row.get('global_id')==guid]
+            return {'records':rows[:800],'groups':q.get('groups',[])[:800],
+                    'total':len(rows),'truncated':len(rows)>800,
+                    'generated_at':q.get('generated_at'),
+                    'models':q.get('models',[]),
                     'revision_sha256':q.get('revision_sha256',{})}
         if action=='budget_report':
             return _read(self.bpath)

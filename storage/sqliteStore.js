@@ -1,4 +1,5 @@
 import {prepararVinculoBim} from '../src/engineering/contextualStudies.js';
+import {simularImpacto5D} from '../src/engineering/p4Impact.js';
 import {validarCalculoIndependente} from '../src/validation/independentOracle.js';
 import {garantirRdoMutavel,garantirMedicaoTransicao,validarQuantidadeRecebida} from '../src/domain/approvalGuards.js';
 import {assertStudyWorkAssociation} from '../src/domain/p1Traceability.js';
@@ -257,6 +258,36 @@ export function listarEstudosEngenhariaBim(db,projetoId) {
       entradas:JSON.parse(row.entradas_json),resultados:JSON.parse(row.resultados_json),
       validacao:JSON.parse(row.validacao_json),alternativas:JSON.parse(row.alternativas_json)
     }));
+}
+
+
+/** Immutable P4 quantity reference: the source 5D project and operational balances are never modified. */
+export function salvarImpactoEngenhariaBim(db, dados = {}) {
+  const idEstudo=String(dados.estudoId||'');
+  const row=linhas(db,'SELECT * FROM estudos_engenharia_bim WHERE id = ?',[idEstudo])[0];
+  if(!row)throw Error('Memória BIM inexistente: nenhum quantitativo foi registrado.');
+  const estudo={...row,contexto:JSON.parse(row.contexto_json),entradas:JSON.parse(row.entradas_json),
+    resultados:JSON.parse(row.resultados_json),validacao:JSON.parse(row.validacao_json),
+    alternativas:JSON.parse(row.alternativas_json)};
+  const projeto=buscarProjetoBim(db,row.projeto_id);
+  if(!projeto)throw Error('Projeto de origem não localizado.');
+  if(dados.projetoId&&dados.projetoId!==projeto.id)throw Error('Projeto BIM diferente do registrado na memória.');
+  const snapshot=simularImpacto5D({
+    estudo,projeto,quantidades:dados.quantidades,orcamento:dados.orcamento,
+    itemKey:dados.itemKey,quantidadeProposta:dados.quantidadeProposta,
+    confirmacaoRevisao:dados.confirmacaoRevisao===true,hipotese:dados.hipotese
+  });
+  if(JSON.stringify(snapshot).length>18000)throw Error('Impacto excede limite local de registro.');
+  const id='impactobim_'+Date.now().toString(36)+'_'+Math.random().toString(36).slice(2,10);
+  db.run('INSERT INTO impactos_engenharia_bim (id,estudo_id,projeto_id,snapshot_json,status,criado_em) VALUES (?,?,?,?,?,?)',
+    [id,idEstudo,projeto.id,JSON.stringify(snapshot),'preliminar',new Date().toISOString()]);
+  salvarBanco(db);
+  return id;
+}
+export function listarImpactosEngenhariaBim(db,estudoId) {
+  if(!estudoId)return [];
+  return linhas(db,'SELECT * FROM impactos_engenharia_bim WHERE estudo_id = ? ORDER BY criado_em DESC,id DESC',[estudoId])
+   .map(row=>({...row,snapshot:JSON.parse(row.snapshot_json)}));
 }
 
 export function salvarMaterial(db, obraId, dados) {

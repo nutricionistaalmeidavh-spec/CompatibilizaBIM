@@ -122,6 +122,17 @@ const {chromium}=require('../../app/node_modules/playwright');
     assert.match(outcomeText,/Estudo preliminar registrado no projeto BIM/,'P2 linked-save failed: '+outcomeText);
     await page.getByRole('heading',{name:/Memórias de engenharia vinculadas/}).waitFor();
     await page.getByRole('button',{name:'Ver memória'}).first().click();
+    await page.getByRole('heading',{name:'Memória rastreável e impacto 5D'}).waitFor();
+    const memoryPdf=page.waitForEvent('download',{timeout:15000});
+    await page.getByRole('button',{name:'Exportar memória BIM PDF'}).click();
+    const memoryFailure=page.locator('.cbim-p4-panel [role="alert"]').first();
+    const memoryExport=await Promise.race([memoryPdf,
+      memoryFailure.waitFor({timeout:15000}).then(async()=>{throw Error('Falha P4 export PDF: '+await memoryFailure.innerText());})]);
+    assert.match(memoryExport.suggestedFilename(),/^memoria-bim-.*\.pdf$/);
+    const memoryPdfContent=fs.readFileSync(await memoryExport.path()).toString('latin1');
+    assert.ok(memoryPdfContent.startsWith('%PDF-1.4'),'P4 must emit a real local PDF');
+    assert.match(memoryPdfContent,/Viga|vigaBiapoiada/);
+    assert.match(memoryPdfContent,/G-QA-001/);
     await page.getByText(/Oráculo matemático parcial aprovado/).last().waitFor();
     await screenshots('p2-p3-engenharia-assistida');
     await section('Estruturas','Estruturas · modelos globais');

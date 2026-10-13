@@ -16,7 +16,7 @@ const additions = [
   ['bim_analises_avulsas','modelos_json',"TEXT NOT NULL DEFAULT '[]'"],
   ['bim_analises_avulsas','proveniencia',"TEXT NOT NULL DEFAULT 'desconhecida'"]
 ];
-export const CURRENT_SCHEMA_VERSION = 4;
+export const CURRENT_SCHEMA_VERSION = 5;
 export function migrarBancoCompatibilidade(db, schemaSql) {
   const version = db.exec('PRAGMA user_version')?.[0]?.values?.[0]?.[0] ?? 0;
   if (version > CURRENT_SCHEMA_VERSION) throw new Error('Este banco foi criado por uma versão mais recente do CompatibilizaBIM. Nenhuma alteração foi feita.');
