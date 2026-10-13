@@ -116,7 +116,7 @@ export function AppShell(){
       {backupError&&<p role="alert" className="cbim-react-error">Importação não realizada: {backupError} O banco e a sessão atual foram preservados. Confira o arquivo e tente novamente.</p>}
       {active==='Obras'&&<WorksPage db={db} obraId={workId} scope={scope} selectWork={selectWork} onChange={refresh} onNavigate={setActive}/>}
       {active==='BIM'&&<BimPage db={db} obraId={workId} version={version} onChange={refresh} studyId={context.projetoBimId||''} onSelectStudy={id=>updateContext({projetoBimId:id||null})}/>}
-      {active==='Cálculos'&&<CalculatorsPage db={db} obraId={workId} onSaved={refresh}/>}
+      {active==='Cálculos'&&<CalculatorsPage db={db} obraId={workId} studyId={context.projetoBimId||''} onSelectStudy={id=>updateContext({projetoBimId:id||null})} onSaved={refresh}/>}
       {active==='Qualidade'&&<QualityPage db={db} version={version} onNavigate={setActive}/>}
       {active==='Estruturas'&&<StructuralPage db={db} obraId={workId} onChange={refresh}/>}
       {active==='RDO'&&<RdoPage db={db} obraId={workId} scope={scope} onChange={refresh}/>}
