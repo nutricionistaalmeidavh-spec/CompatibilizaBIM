@@ -56,3 +56,5 @@ jobs:
         run: python -m pytest -q modules/compatibilizabim/tests/test_p2_workflow.py modules/compatibilizabim/tests/test_ifc_query.py
 
 # Rerun after fixing static reusable-component test location.
+
+# Final regression: check presentation components at their own source locations.

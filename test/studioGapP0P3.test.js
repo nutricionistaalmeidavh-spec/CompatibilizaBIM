@@ -57,5 +57,7 @@ test('P3 query IPC must be read-only and validate selectors',()=>{
  assert.match(panel,/<IfcQueryPanel/);
  const queryComponent=readFileSync(new URL('../app/src/react/shell/IfcQueryPanel.tsx',import.meta.url),'utf8');
  assert.match(queryComponent,/Consultar IFC/);
- assert.match(panel,/previewScheduleImport/);
+ assert.match(panel,/<SchedulePreview/);
+ const previewComponent=readFileSync(new URL('../app/src/react/shell/SchedulePreview.tsx',import.meta.url),'utf8');
+ assert.match(previewComponent,/previewScheduleImport/);
 });
