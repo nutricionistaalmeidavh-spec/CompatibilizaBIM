@@ -54,6 +54,8 @@ test('P3 query IPC must be read-only and validate selectors',()=>{
  assert.match(python,/if action=='ifc_query'/);
  assert.match(python,/hashlib\.sha256/);
  const panel=readFileSync(new URL('../app/src/react/shell/Bim4D5DPanel.tsx',import.meta.url),'utf8');
- assert.match(panel,/Consultar IFC/);
+ assert.match(panel,/<IfcQueryPanel/);
+ const queryComponent=readFileSync(new URL('../app/src/react/shell/IfcQueryPanel.tsx',import.meta.url),'utf8');
+ assert.match(queryComponent,/Consultar IFC/);
  assert.match(panel,/previewScheduleImport/);
 });
