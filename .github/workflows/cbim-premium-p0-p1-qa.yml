@@ -57,3 +57,5 @@ jobs:
         run: python -m pytest -q modules/compatibilizabim/tests/test_p2_workflow.py modules/compatibilizabim/tests/test_ifc_query.py
 
 # QA checkpoint 2: corrected ARIA searchbox selector; capture populated real-data table.
+
+# QA checkpoint 3: ensure study-link status remains visible in the React context toolbar.
