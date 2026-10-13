@@ -30,6 +30,22 @@ jobs:
         run: npm test
       - name: Build canonical React renderer (including Frappe package style alias)
         run: npm run build --prefix app
+      - name: Install free Chromium QA runtime
+        run: |
+          npm install --no-save --prefix app playwright@1.56.0
+          ./app/node_modules/.bin/playwright install --with-deps chromium
+      - name: React end-to-end smoke (breadcrumbs, RDO approval and review split)
+        run: |
+          npm run preview --prefix app -- --host 127.0.0.1 --port 5173 > /tmp/cbim-vite.log 2>&1 &
+          node scripts/qa/reactBrowserSmoke.cjs || { cat /tmp/cbim-vite.log; exit 1; }
+      - name: Save React UI screenshots
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: CBIM-canonical-UI-browser-screenshots
+          path: test/react-qa-artifacts/*.png
+          if-no-files-found: warn
+          retention-days: 7
       - name: Save lockfile for branch synchronization
         if: always()
         uses: actions/upload-artifact@v4
