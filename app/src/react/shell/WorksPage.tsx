@@ -2,6 +2,7 @@ import React from 'react';
 import {SchemaFields,EngineeringTable,EngineeringFeedback} from '../components/EngineeringUI';
 import {WORK_FIELDS} from '../../../../src/ui/studioPresentation.js';
 import {WorkCloseoutPanel} from './WorkCloseoutPanel';
+import {WorkPortfolio} from './WorkPortfolio';
 import {Metric} from '../components/ui';
 import {engineeringNumber} from '../../../../src/domain/engineeringPresentation.js';
 import {brlReais} from '../../../../src/factory/format.js';
@@ -92,21 +93,13 @@ export function WorksPage({db,obraId,scope={},selectWork,onChange,onNavigate}:Pr
     }catch(e:any){setError(e.message);}
   };
   return <section className="cbim-react-section">
-    <h1>Carteira de obras</h1><p>Projetos, documentos, cálculos e histórico registrados no SQLite local canônico.</p>
-    <p className="studio-muted">Indicadores da carteira mostram todas as obras, independentemente do filtro global de frente ou período. Na obra selecionada, a lista de RDO respeita o período; etapas, materiais e histórico continuam como registros completos da obra.</p>
-    <div className="cbim-closeout-metrics"><Metric label="Obras" value={String(works.length)} source="Carteira · todas as obras"/><Metric label="Avanço médio das obras" value={engineeringNumber(avgProgress)+'%'} source="Média dos avanços canônicos de cada obra"/><Metric label="RDOs" value={String(allRdos)} source="Todas as obras"/><Metric label="Pendências abertas" value={String(allPending)} source="Todas as obras"/></div>
-    <div className="cbim-react-toolbar">
-      <label>Obra atual<select aria-label="Obra selecionada" value={obraId||''} onChange={e=>selectWork(e.target.value||null)}><option value="">Todas as obras</option>{works.map((w:any)=><option value={w.id} key={w.id}>{w.codigo} · {w.nome}</option>)}</select></label>
-      <button onClick={()=>setNewWork(v=>!v)}>{newWork?'Cancelar':'+ Nova obra'}</button>
-      {onNavigate&&<><button onClick={()=>onNavigate('Operação')}>Operação</button><button onClick={()=>onNavigate('RDO')}>Diário de obra</button><button onClick={()=>onNavigate('Cálculos')}>Calculadoras</button><button onClick={()=>onNavigate('BIM')}>Compatibilização</button></>}
-    </div>
+    <WorkPortfolio works={works} obraId={obraId} selectWork={selectWork} onNewWork={()=>setNewWork(v=>!v)} newWork={newWork} onNavigate={onNavigate}/>
     {error&&<EngineeringFeedback tone="danger" title="Não foi possível concluir">{error}</EngineeringFeedback>}
     {notice&&!error&&<EngineeringFeedback tone="success" title={notice}/>}
     {saving&&<EngineeringFeedback title="Salvando registro" busy>Validando os dados e anexos locais.</EngineeringFeedback>}
     {newWork&&<form className="cbim-react-panel" onSubmit={create}>
       <h2>Nova obra</h2><SchemaFields fields={WORK_FIELDS}/><button type="submit">Criar obra</button>
     </form>}
-    <div className="cbim-react-card-grid">{works.map((w:any)=><button key={w.id} className={obraId===w.id?'selected':''} onClick={()=>selectWork(w.id)}><b>{w.nome}</b><small>{w.codigo} · {w.status} · {engineeringNumber(w.percentual_concluido)}% concluído · {w.progresso_metodo}</small><small>{w.rdos_total} RDO · {w.pendencias_abertas} pendências</small></button>)}</div>
     {work&&<>
       <WorkCloseoutPanel db={db} work={work} onNavigate={onNavigate}/>
       <div className="cbim-react-metrics"><article>Etapas: {work.etapas?.length||0}</article><article>RDO: {work.rdos?.length||0}</article><article>Pendências abertas: {work.pendencias?.filter((p:any)=>p.status!=='resolvida').length||0}</article><article>Custo dos materiais: {money(materialsCost)}</article></div>
