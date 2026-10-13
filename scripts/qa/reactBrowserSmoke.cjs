@@ -51,6 +51,14 @@ const {chromium}=require('../../app/node_modules/playwright');
     await page.getByRole('button',{name:'Criar estudo'}).click();
     await page.getByRole('button',{name:'Vincular estudo à obra atual'}).click();
     await page.getByText(/Estudo vinculado à obra/).first().waitFor();
+    // P2: import an actual CBIM JSON fixture into the selected study, preserving the original geometry.
+    await page.locator('label').filter({hasText:'Importar IFC / CBIM JSON'}).locator('input[type=file]').setInputFiles({
+      name:'qa-struct.cbim.json',mimeType:'application/json',
+      buffer:Buffer.from(JSON.stringify({schema:'CBIM',schema_version:'0.2.0',
+        elements:[{id:'qa-viga',globalId:'G-QA-001',name:'Viga de regressão',
+          bbox:{min:[0,0,0],max:[2,1,1]}}]}))
+    });
+    await page.getByText(/Modelo CBIM JSON incorporado/).waitFor();
     await page.getByRole('button',{name:'Coordenação',exact:true}).click();
     await page.getByRole('heading',{name:/Coordenação.*Federação e conflitos/}).waitFor();
     assert.equal(await page.getByRole('heading',{name:/Quantitativos 5D, cronograma 4D e medições/}).count(),0,'No duplicate 4D panel in coordination step');
@@ -95,7 +103,13 @@ const {chromium}=require('../../app/node_modules/playwright');
     await page.getByText('Situação inicial',{exact:true}).waitFor();
     await page.getByText('Alternativa manual',{exact:true}).waitFor();
     await page.getByRole('heading',{name:'Registrar memória no estudo BIM'}).waitFor();
-    await page.getByText('Importe primeiro um modelo no módulo BIM').waitFor();
+    await page.getByLabel('Modelo de origem').selectOption({label:'qa-struct.cbim.json · rev. 1 · hydraulic'});
+    await page.getByLabel('Elemento do modelo (opcional)').selectOption('G-QA-001');
+    await page.getByRole('button',{name:'Salvar estudo preliminar vinculado'}).click();
+    await page.getByText(/Estudo preliminar registrado no projeto BIM/).waitFor();
+    await page.getByRole('heading',{name:/Memórias de engenharia vinculadas/}).waitFor();
+    await page.getByRole('button',{name:'Ver memória'}).first().click();
+    await page.getByText(/Oráculo matemático parcial aprovado/).last().waitFor();
     await screenshots('p2-p3-engenharia-assistida');
     await section('Estruturas','Estruturas · modelos globais');
     await section('Operação','Operação de obra');
