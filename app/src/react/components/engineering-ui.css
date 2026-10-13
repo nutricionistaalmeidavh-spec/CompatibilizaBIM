@@ -1,0 +1,49 @@
+/* Adapted from frontEnds forms/tables/dialogs/feedback/navigation/motion patterns.
+   Uses Studio design tokens; no Tailwind/runtime CSS dependency. */
+.cbim-sr-only{position:absolute!important;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
+.cbim-schema-fields{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px}
+.cbim-field{display:flex;flex-direction:column;gap:6px;min-width:0;font-size:14px}
+.cbim-field-label{font-weight:650;color:#213a55}
+.cbim-field-required,.cbim-field-error{color:#ac2435}
+.cbim-field-help{font-size:12px;color:#54657a;line-height:1.45}
+.cbim-field input,.cbim-field select,.cbim-field textarea{min-width:0;width:100%;border:1px solid #99abbe;background:white;border-radius:7px;font:inherit;padding:9px;color:#172c43}
+.cbim-field textarea{resize:vertical;min-height:90px}
+.cbim-field :is(input,select,textarea):focus-visible,.cbim-table-scroll:focus-visible{outline:3px solid #2563eb;outline-offset:2px}
+.cbim-table-scroll{max-width:100%;overflow-x:auto;border:1px solid #d4dfeb;border-radius:10px;background:white}
+.cbim-data-table{width:100%;min-width:760px;border-collapse:collapse;font-size:13px;text-align:left}
+.cbim-data-table th{padding:11px 13px;color:#31445d;background:#f2f6fb;border-bottom:1px solid #d1deeb;font-weight:750;white-space:nowrap}
+.cbim-data-table td{padding:11px 13px;border-bottom:1px solid #e7eef5;vertical-align:middle;color:#23344a}
+.cbim-data-table tr:last-child td{border-bottom:0}
+.cbim-data-table tbody tr:hover{background:#f8fbff}
+.cbim-data-table button,.cbim-data-table select{max-width:100%}
+.cbim-align-right{text-align:right}
+.cbim-table-empty{text-align:center;padding:28px!important;color:#65758a!important}
+.cbim-breadcrumbs{font-size:13px;color:#58708b;margin-bottom:14px}
+.cbim-breadcrumbs ol{padding:0;margin:0;display:flex;list-style:none;flex-wrap:wrap;gap:4px;align-items:center}
+.cbim-breadcrumbs li{display:flex;gap:8px;align-items:center;min-width:0}
+.cbim-breadcrumbs button{border:0;background:transparent;padding:5px;color:#1d4ed8;text-decoration:underline;text-underline-offset:3px;cursor:pointer;font:inherit}
+.cbim-breadcrumbs [aria-current=page]{font-weight:750;color:#1c3047}
+.cbim-breadcrumb-separator{color:#95a4b8}
+.cbim-feedback{display:flex;gap:10px;align-items:center;line-height:1.5;border:1px solid;padding:11px 14px;border-radius:9px;margin:12px 0;font-size:13px}
+.cbim-feedback-info{background:#eff6ff;border-color:#bdd3f1;color:#173e67}
+.cbim-feedback-success{background:#ebf8f1;border-color:#b6dbc5;color:#145536}
+.cbim-feedback-warning{background:#fff9e9;border-color:#e6d19e;color:#755000}
+.cbim-feedback-danger{background:#fff0f1;border-color:#eab5bf;color:#8f1a34}
+.cbim-feedback-details{margin-top:3px;font-weight:400}
+.cbim-busy-indicator{height:17px;width:17px;flex:0 0 17px;border:2px solid currentColor;border-right-color:transparent;border-radius:50%;animation:cbim-spin .8s linear infinite}
+@keyframes cbim-spin{to{transform:rotate(360deg)}}
+.cbim-modal-overlay{position:fixed;z-index:3000;inset:0;display:grid;place-items:center;background:rgba(13,27,44,.72);padding:20px}
+.cbim-modal{width:min(100%,530px);max-height:90vh;overflow:auto;background:white;color:#203850;border-radius:14px;border:1px solid #c5d5e6;box-shadow:0 24px 80px rgba(0,0,0,.23);padding:22px}
+.cbim-modal header h2{font-size:19px;line-height:1.3;margin:0 0 14px}
+.cbim-modal-description{line-height:1.5;font-size:14px}
+.cbim-modal footer{margin-top:24px;display:flex;justify-content:flex-end;gap:10px;flex-wrap:wrap}
+.cbim-modal footer button{font:inherit;border:1px solid #b1c2d4;background:#fff;padding:9px 13px;border-radius:8px;cursor:pointer}
+.cbim-modal footer .cbim-button-primary{background:#164a83;color:#fff;border-color:#164a83}
+.cbim-modal footer .cbim-button-danger{background:#9c2835;color:#fff;border-color:#9c2835}
+.cbim-modal footer button:disabled{opacity:.5;cursor:not-allowed}
+.cbim-modal .cbim-field{margin-top:16px}
+.cbim-modal input{max-width:100%}
+.cbim-route-appear{animation:cbim-route-in .18s ease-out both}
+@keyframes cbim-route-in{from{opacity:.7;transform:translateY(4px)}to{opacity:1;transform:translateY(0)}}
+@media(max-width:760px){.cbim-modal{padding:17px}.cbim-schema-fields{grid-template-columns:1fr}.cbim-data-table{min-width:640px}}
+@media(prefers-reduced-motion:reduce){.cbim-busy-indicator,.cbim-route-appear{animation:none!important}}
