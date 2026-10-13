@@ -1,4 +1,5 @@
 import React from 'react';
+import { P4EngineeringPanel } from './P4EngineeringPanel';
 import { salvarEstudoEngenhariaBim, listarEstudosEngenhariaBim } from '../../../../storage/sqliteStore.js';
 import { opcoesElementosBim, estadoVinculoBim } from '../../../../src/engineering/contextualStudies.js';
 import { listarResultadosTecnicos, formatarValorTecnico } from '../../../../src/engineering/mathPresentation.js';
@@ -63,7 +64,7 @@ export function BimStudyLink({db,obraId,project,calculator,entry,result,alternat
   </section>;
 }
 
-export function BimStudiesHistory({db,project}:{db:any;project:any}) {
+export function BimStudiesHistory({db,project,onSaved}:{db:any;project:any;onSaved?:()=>void}) {
  const [expanded,setExpanded]=React.useState('');
  const items=listarEstudosEngenhariaBim(db,project.id);
  return <section className="cbim-react-panel" aria-label="Histórico de estudos vinculados">
@@ -85,6 +86,7 @@ export function BimStudiesHistory({db,project}:{db:any;project:any}) {
          <div className="cbim-math-results">{listarResultadosTecnicos(record.resultados).slice(0,40).map((r:any)=><div className="cbim-math-result" key={r.path}>
            <span>{r.label}</span><strong>{formatarValorTecnico(r.value)} {r.unit}</strong></div>)}</div>
          <p>{record.validacao.ok?'Oráculo matemático parcial aprovado':'Oráculo rejeitado'} · {record.alternativas.length} alternativa(s) registradas. Nenhuma aprovação normativa automática.</p>
+         <P4EngineeringPanel key={record.id} db={db} estudo={record} projeto={project} onSaved={onSaved}/>
        </div>}
      </article>;
    })}</div>

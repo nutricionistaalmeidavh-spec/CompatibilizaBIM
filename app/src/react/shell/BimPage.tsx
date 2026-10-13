@@ -1,5 +1,6 @@
 
 import React from 'react';
+import { BimStudiesHistory } from './BimStudyLink';
 import {checkImportFile,readCbimElements,contentFingerprint} from './importContract.js';
 import { LinkedBimPanel } from './LinkedBimPanel';
 import { BimCoordinationPanel } from './BimCoordinationPanel';
@@ -116,7 +117,7 @@ export function BimPage({db,obraId,version,onChange,studyId='',onSelectStudy,tar
       <div className="cbim-react-toolbar"><button disabled={busy||!models.length} onClick={view}>Gerar visualizador geométrico</button></div>
     </div>}
     {project&&step==='Coordenação'&&<BimCoordinationPanel db={db} project={project} onChange={onChange}/>}
-    {project&&step==='4D/5D'&&<><Bim4D5DPanel key={project.id} project={project}/><BimMeasurementReconciliationPanel key={project.id} db={db} project={project} onChange={onChange} target={target} onNavigate={onNavigate}/></>}
+    {project&&step==='4D/5D'&&<><Bim4D5DPanel key={project.id} project={project}/><BimMeasurementReconciliationPanel key={project.id} db={db} project={project} onChange={onChange} target={target} onNavigate={onNavigate}/><BimStudiesHistory key={project.id+'-memorias'} db={db} project={project} onSaved={onChange}/></>}
     {!project&&['Coordenação','4D/5D'].includes(step)&&<div className="cbim-react-panel">Selecione um estudo para acessar suas análises e quantitativos.</div>}
     {step==='Revisão CBIM'&&<ReviewTraceabilityPanel db={db} project={project} workspaces={workspaces} busy={busy} onReview={review} onRefresh={()=>{void runtime()?.listWorkspaces?.().then(setWorkspaces).catch(()=>setWorkspaces([]));}} onChange={onChange}/>}
     {step==='Legado da obra'&&<><p className="studio-muted">Modelos e conflitos gravados diretamente na obra, mantidos no SQLite original. Não são somados às análises dos estudos BIM e não serão migrados automaticamente.</p><LinkedBimPanel db={db} obraId={obraId} onChange={onChange}/></>}
