@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {createEngineeringTarget,resolveSourceRecord,filterRdosByCompetence,filterEntriesByDueCompetence,quantityVarianceMessage} from '../src/domain/engineeringJourney.js';
+import {createEngineeringTarget,resolveSourceRecord,filterRdosByCompetence,filterEntriesByDueCompetence,quantityVarianceMessage,resolveJourneyStudy} from '../src/domain/engineeringJourney.js';
 test('Navegação mantém estudo, obra, medição e competência com referências sem valores copiados',()=>{
  const target=createEngineeringTarget('Operação',{kind:'medicao',id:'MED-1',obraId:'W1',studyId:'S1',period:'2026-10'});
  assert.deepEqual(target,{kind:'medicao',obraId:'W1',studyId:'S1',id:'MED-1',period:'2026-10'});
@@ -40,4 +40,12 @@ test('Fluxo React declara destino contextual, retorno e estados de referência e
  assert.match(op,/RDOs da competência/);
  assert.match(rdo,/Contas da competência/);
  assert.match(finance,/Vinculado à obra, não à medição BIM/);
+});
+
+test('Mudança para financeiro não bloqueia a obra por um estudo BIM antigo de outra obra',()=>{
+ const studies=[{id:'S1',obra_id:'W1'},{id:'S2',obra_id:'W2'}];
+ assert.equal(resolveJourneyStudy(studies,'S1','','W2'),null);
+ assert.equal(resolveJourneyStudy(studies,'S1','S2','W2'),'S2');
+ assert.throws(()=>resolveJourneyStudy(studies,'S1','S1','W2'),/outra obra/);
+ assert.throws(()=>resolveJourneyStudy(studies,null,'MISS','W1'),/não encontrado/);
 });
