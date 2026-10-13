@@ -2,7 +2,7 @@ import {prepararVinculoBim} from '../src/engineering/contextualStudies.js';
 import {simularImpacto5D} from '../src/engineering/p4Impact.js';
 import {validarCalculoIndependente} from '../src/validation/independentOracle.js';
 import {garantirRdoMutavel,garantirMedicaoTransicao,validarQuantidadeRecebida} from '../src/domain/approvalGuards.js';
-import {assertStudyWorkAssociation} from '../src/domain/p1Traceability.js';
+import {assertStudyWorkAssociation,MEASUREMENT_LINK,parseTraceLink} from '../src/domain/p1Traceability.js';
 import {projectWorkProgress} from '../src/domain/workProgress.js';
 import {insertStudyAnalysis} from '../src/domain/bimAnalysisPersistence.js';
 import initSqlJs from 'sql.js';
@@ -312,6 +312,32 @@ export function listarDocumentos(db, obraId) { return linhas(db, 'SELECT id,nome
 
 export function registrarHistorico(db, obraId, entidade, entidadeId, acao, detalhes = {}) {
   db.run('INSERT INTO historico_obra (id,obra_id,entidade,entidade_id,acao,detalhes_json,criado_em) VALUES (?,?,?,?,?,?,?)', [`hist_${Date.now().toString(36)}_${Math.random().toString(36).slice(2, 6)}`, obraId, entidade, entidadeId ?? null, acao, JSON.stringify(detalhes), new Date().toISOString()]);
+}
+
+// Single SQLite transaction for the reconciliation reference AND the work history.
+// Does not duplicate operational/BIM quantities or create a financial entry.
+export function registrarConferenciaMedicaoAtomica(db,dados,detalhes={}) {
+ if(dados?.moduleId!==MEASUREMENT_LINK||!dados?.obraId||!dados?.entityId)throw Error('Contrato de conferência BIM inválido.');
+ const current=JSON.parse(dados.source||'null');
+ if(current?.kind!==MEASUREMENT_LINK||current.batchId!==dados.entityId||!current.operationalId||
+    current.projectId!==detalhes.estudo||current.period!==detalhes.periodo)throw Error('Referência BIM não corresponde ao histórico solicitado.');
+ const repeated=listarModuleLinks(db,dados.obraId).map(parseTraceLink).filter(Boolean).some(link=>
+    link.kind===MEASUREMENT_LINK&&(link.batchId===current.batchId||link.operationalId===current.operationalId));
+ if(repeated)throw Error('Medição BIM ou operacional já possui conferência. Vínculo duplicado bloqueado.');
+ const id='link_'+Date.now().toString(36)+'_'+Math.random().toString(36).slice(2,10);
+ let started=false;
+ try{
+   db.run('BEGIN IMMEDIATE');started=true;
+   db.run('INSERT INTO module_links (id,module_id,entity_id,obra_id,frente_id,source,criado_em) VALUES (?,?,?,?,?,?,?)',
+     [id,MEASUREMENT_LINK,dados.entityId,dados.obraId,null,dados.source,new Date().toISOString()]);
+   registrarHistorico(db,dados.obraId,'conciliacao_medicao',current.batchId,'referencia_vinculada',detalhes);
+   db.run('COMMIT');started=false;
+ }catch(error){
+   if(started)try{db.run('ROLLBACK');}catch{}
+   throw error;
+ }
+ salvarBanco(db);
+ return id;
 }
 
 export function listarHistorico(db, obraId) { return linhas(db, 'SELECT * FROM historico_obra WHERE obra_id = ? ORDER BY criado_em DESC LIMIT 50', [obraId]); }
