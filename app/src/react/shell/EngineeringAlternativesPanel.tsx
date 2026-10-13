@@ -5,18 +5,19 @@ import { EngineeringPlot } from './EngineeringPlot';
 
 type Constraint={path:string;operator:'<='|'>=';limit:number};
 type Props={calculator:string;entry:{fields:[string,string,number][];fn:(a:any)=>any};
- inputs:Record<string,number>;output:any;onAlternatives:(items:any[])=>void;onApply:(inputs:Record<string,number>)=>void};
-export function EngineeringAlternativesPanel({calculator,entry,inputs,output,onAlternatives,onApply}:Props){
-  const rows=listarResultadosTecnicos(output).filter(r=>typeof r.value==='number'&&Number.isFinite(r.value));
+ inputs:Record<string,number>;output:any;preferredMetric?:string;onAlternatives:(items:any[])=>void;onApply:(inputs:Record<string,number>)=>void};
+export function EngineeringAlternativesPanel({calculator,entry,inputs,output,preferredMetric,onAlternatives,onApply}:Props){
+  const rows=listarResultadosTecnicos(output).filter(r=>typeof r.value==='number'&&Number.isFinite(r.value)&&!r.path.startsWith('entrada.'));
   const pathPrefix=output?.resultados?'resultados.':'';
   const [variable,setVariable]=React.useState(entry.fields[0]?.[0]||'');
   const start=Number(inputs[variable]||1);
   const [min,setMin]=React.useState(Math.max(0,start*.7));
   const [max,setMax]=React.useState(Math.max(1,start*1.3));
   const [objective,setObjective]=React.useState<'minimo'|'maximo'>('minimo');
-  const [path,setPath]=React.useState(pathPrefix+(rows[0]?.path||''));
+  const initial=rows.find(r=>pathPrefix+r.path===preferredMetric)||rows[0];
+  const [path,setPath]=React.useState(pathPrefix+(initial?.path||''));
   const [operator,setOperator]=React.useState<'<='|'>='>('<=');
-  const [limit,setLimit]=React.useState(Number(rows[0]?.value||0));
+  const [limit,setLimit]=React.useState(Number(initial?.value||0));
   const [extra,setExtra]=React.useState(false);
   const [path2,setPath2]=React.useState(pathPrefix+(rows[1]?.path||rows[0]?.path||''));
   const [operator2,setOperator2]=React.useState<'<='|'>='>('<=');

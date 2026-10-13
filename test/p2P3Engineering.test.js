@@ -70,3 +70,15 @@ test('P3 comparação aplica motor original, oráculo e restrições a todas as 
  assert.equal(comparison[1].avaliacao.viavel,true);
  assert.equal(comparison[0].resultados.esforcos.momento,87.5);
 });
+
+test('P2 modelo pode ser vinculado sem análise, mas não aceita GUID originado apenas de conflito não associado',()=>{
+ const p=project();
+ assert.throws(()=>prepararVinculoBim({project:p,modeloId:'m-2',elementoRef:'G-2'}),/Elemento não comprovado/i);
+ assert.equal(prepararVinculoBim({project:p,modeloId:'m-2'}).analiseId,null);
+});
+test('P3 opção de maximizar escolhe candidato na fronteira inversa da restrição',()=>{
+ const r=buscarDimensionamentoInverso({definition:entry,calculatorId:'vigaBiapoiada',inputs:args,variableKey:'vaoM',min:3,max:6,constraints:limit,objetivo:'maximo'});
+ assert.equal(r.status,'viavel_amostrado');
+ assert.ok(r.candidato.x>4 && r.candidato.x<5);
+ assert.ok(r.candidato.avaliacao.viavel);
+});

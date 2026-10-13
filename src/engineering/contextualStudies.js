@@ -32,7 +32,7 @@ export function prepararVinculoBim({project,modeloId,analiseId='',conflitoChave=
   const analysis=analiseId?(project.analises||[]).find(a=>a.id===analiseId):null;
   if(analiseId&&!analysis)throw Error('Análise não pertence ao estudo BIM.');
   if(analysis){
-    const ids=[analysis.modelo_a_id,analysis.modelo_b_id,...(()=>{try{return JSON.parse(analysis.modelos_json||'[]');}catch{return []}})()].filter(v=>typeof v==='string');
+    const ids=[analysis.modelo_a_id,analysis.modelo_b_id,...(()=>{try{const parsed=JSON.parse(analysis.modelos_json||'[]');return Array.isArray(parsed)?parsed:[]}catch{return []}})()].filter(v=>typeof v==='string');
     if(!ids.includes(model.id))throw Error('Modelo não participou da análise selecionada.');
   }
   const conflict=conflitoChave?(analysis?.conflitos||[]).find(c=>c.chave===conflitoChave):null;

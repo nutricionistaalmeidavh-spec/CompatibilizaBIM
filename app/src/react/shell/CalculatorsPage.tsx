@@ -87,7 +87,7 @@ export function CalculatorsPage({db, obraId, studyId, onSelectStudy, onSaved}:{d
       <summary><strong>{group.label}</strong><span>{group.ids.length} cálculos</span></summary>
       <div className="cbim-react-card-grid">{group.ids.map((id:string)=><button className={calculator===id?'selected':''} key={id} onClick={()=>select(id)}>{catalog[id]?.label}</button>)}</div>
     </details>)}</div>
-    {entry && <form onSubmit={execute} className="cbim-react-panel"><h2>{entry.label}</h2><div className="cbim-react-form-grid">{entry.fields.map(([key,label])=><label key={key}>{label}<input type="number" step="any" required value={values[key]??''} onChange={e=>setValues(current=>({...current,[key]:Number(e.target.value)}))}/></label>)}</div>
+    {entry && <form onSubmit={execute} className="cbim-react-panel"><h2>{entry.label}</h2><div className="cbim-react-form-grid">{entry.fields.map(([key,label])=><label key={key}>{label}<input type="number" step="any" required value={values[key]??''} onChange={e=>{setValues(current=>({...current,[key]:Number(e.target.value)}));setResult(null);setAlternatives([]);}}/></label>)}</div>
       <button type="submit">Calcular e validar</button></form>}
     {error&&<p role="status">{error}</p>}
     {result&&<section className="cbim-react-panel" aria-label="Resultado de cálculo">
@@ -96,10 +96,10 @@ export function CalculatorsPage({db, obraId, studyId, onSelectStudy, onSaved}:{d
       <p role="status">Oráculo: {result.validation.metodo}. {result.validation.verificacoes.length} teste(s) independente(s) · Estado normativo: {result.validation.normaPendente?'Revisão obrigatória':'Perfil declarado; revisão técnica obrigatória'}.</p>
       <p className="studio-muted">{(result.validation.avisos||[]).join(' ')}</p>
 <CalculationStudy key={calculator} calculator={calculator} entry={entry} result={result}/>
-      {calculator==='orcamentoCronograma'
+      {!result.validation.ok?<p className="cbim-react-error">Engenharia assistida indisponível: corrija os resultados rejeitados pelo verificador.</p>:calculator==='orcamentoCronograma'
         ?<p className="studio-muted">O dimensionamento inverso não é aplicável ao cronograma composto: períodos e etapas exigem um solucionador específico.</p>
         :<EngineeringAlternativesPanel key={calculator+'-'+JSON.stringify(result.inputs)} calculator={calculator} entry={entry}
-           inputs={result.inputs} output={result.output} onAlternatives={setAlternatives}
+           inputs={result.inputs} output={result.output} preferredMetric={result.validation.verificacoes?.[0]?.campo} onAlternatives={setAlternatives}
            onApply={(inputs)=>{setValues(inputs);setResult(null);setAlternatives([]);setError('Parâmetros carregados. Execute novamente o cálculo e a validação para registrá-los.');}}/>}
       {project&&<BimStudyLink key={project.id+'-'+calculator} db={db} obraId={obraId} project={project} calculator={calculator} entry={entry}
         result={result} alternatives={alternatives} onSaved={onSaved}/>}

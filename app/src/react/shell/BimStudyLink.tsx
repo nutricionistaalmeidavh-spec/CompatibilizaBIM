@@ -25,7 +25,7 @@ export function BimStudyLink({db,obraId,project,calculator,entry,result,alternat
       const id=salvarEstudoEngenhariaBim(db,{
         projetoId:project.id,obraId,modeloId,analiseId,conflitoChave:conflictKey,elementoRef,
         calculadoraTipo:calculator,titulo:entry.label,entradas:result.inputs,resultados:result.output,
-        alternativas,note,nota:note
+        alternativas,nota:note
       });
       setNotice('Estudo preliminar registrado no projeto BIM. ID: '+id);
       setError('');onSaved();
