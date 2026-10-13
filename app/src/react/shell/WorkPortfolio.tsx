@@ -5,7 +5,7 @@ type PortfolioProps={
   works:any[];obraId:string|null;selectWork:(id:string|null)=>void;
   onNewWork:()=>void;newWork:boolean;onNavigate?:(route:string)=>void
 };
-const normalize=(s:any)=>String(s||'').toLocaleLowerCase('pt-BR').normalize('NFD').replace(/[\\u0300-\\u036f]/g,'').replace(/[^a-z0-9]+/g,'_');
+const normalize=(s:any)=>String(s||'').toLocaleLowerCase('pt-BR').normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-z0-9]+/g,'_');
 const group=(status:any)=>{
  const key=normalize(status);
  if(['concluida','concluido','encerrada','finalizada','entregue'].includes(key))return 'concluidas';
