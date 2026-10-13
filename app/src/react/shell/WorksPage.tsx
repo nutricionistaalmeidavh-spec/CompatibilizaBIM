@@ -1,4 +1,6 @@
 import React from 'react';
+import {SchemaFields,EngineeringTable,EngineeringFeedback} from '../components/EngineeringUI';
+import {WORK_FIELDS} from '../../../../src/ui/studioPresentation.js';
 import {WorkCloseoutPanel} from './WorkCloseoutPanel';
 import {Metric} from '../components/ui';
 import {engineeringNumber} from '../../../../src/domain/engineeringPresentation.js';
@@ -28,6 +30,7 @@ export function WorksPage({db,obraId,scope={},selectWork,onChange,onNavigate}:Pr
   const [newWork,setNewWork]=React.useState(false);
   const [task,setTask]=React.useState('etapa');
   const [error,setError]=React.useState('');
+  const [notice,setNotice]=React.useState('');
   const [saving,setSaving]=React.useState(false);
   const works=listarObras(db);
   const work=obraId?buscarObra(db,obraId):null;
@@ -37,7 +40,7 @@ export function WorksPage({db,obraId,scope={},selectWork,onChange,onNavigate}:Pr
   const allRdos=works.reduce((s:number,w:any)=>s+Number(w.rdos_total||0),0);
   const avgProgress=works.length?works.reduce((s:number,w:any)=>s+Number(w.percentual_concluido||0),0)/works.length:0;
   const materialsCost=work?.materiais?.reduce((s:number,m:any)=>s+Number(m.quantidade_realizada||0)*Number(m.custo_unitario||0),0)||0;
-  const perform=(op:()=>void):boolean=>{try{op();setError('');onChange();return true;}catch(e:any){setError(e.message||String(e));return false;}};
+  const perform=(op:()=>void):boolean=>{try{op();setError('');setNotice('Registro salvo na obra selecionada.');onChange();return true;}catch(e:any){setError(e.message||String(e));return false;}};
   const create=(event:React.FormEvent<HTMLFormElement>)=>{
     event.preventDefault();const d=new FormData(event.currentTarget);
     perform(()=>{
@@ -60,7 +63,7 @@ export function WorksPage({db,obraId,scope={},selectWork,onChange,onNavigate}:Pr
         if(!(file instanceof File)||!file.size)throw Error('Selecione um arquivo para anexar.');
         salvarDocumento(db,work.id,{nome:nome||file.name,tipo:file.type||'application/octet-stream',dadosBase64:await encodeFile(file)});
       }
-      form.reset();setError('');onChange();
+      form.reset();setError('');setNotice('Registro salvo na obra selecionada.');onChange();
     }catch(e:any){setError(e.message||String(e));}
     finally{setSaving(false);}
   };
@@ -97,9 +100,11 @@ export function WorksPage({db,obraId,scope={},selectWork,onChange,onNavigate}:Pr
       <button onClick={()=>setNewWork(v=>!v)}>{newWork?'Cancelar':'+ Nova obra'}</button>
       {onNavigate&&<><button onClick={()=>onNavigate('Operação')}>Operação</button><button onClick={()=>onNavigate('RDO')}>Diário de obra</button><button onClick={()=>onNavigate('Cálculos')}>Calculadoras</button><button onClick={()=>onNavigate('BIM')}>Compatibilização</button></>}
     </div>
-    {error&&<p role="alert">{error}</p>}
-    {newWork&&<form className="cbim-react-panel cbim-react-form-grid" onSubmit={create}>
-      <label>Código<input name="codigo" required/></label><label>Nome<input name="nome" required/></label><label>Cliente<input name="cliente"/></label><label>Endereço<input name="endereco"/></label><label>Responsável técnico<input name="responsavel"/></label><button type="submit">Criar obra</button>
+    {error&&<EngineeringFeedback tone="danger" title="Não foi possível concluir">{error}</EngineeringFeedback>}
+    {notice&&!error&&<EngineeringFeedback tone="success" title={notice}/>}
+    {saving&&<EngineeringFeedback title="Salvando registro" busy>Validando os dados e anexos locais.</EngineeringFeedback>}
+    {newWork&&<form className="cbim-react-panel" onSubmit={create}>
+      <h2>Nova obra</h2><SchemaFields fields={WORK_FIELDS}/><button type="submit">Criar obra</button>
     </form>}
     <div className="cbim-react-card-grid">{works.map((w:any)=><button key={w.id} className={obraId===w.id?'selected':''} onClick={()=>selectWork(w.id)}><b>{w.nome}</b><small>{w.codigo} · {w.status} · {engineeringNumber(w.percentual_concluido)}% concluído · {w.progresso_metodo}</small><small>{w.rdos_total} RDO · {w.pendencias_abertas} pendências</small></button>)}</div>
     {work&&<>
@@ -125,7 +130,14 @@ export function WorksPage({db,obraId,scope={},selectWork,onChange,onNavigate}:Pr
         {onNavigate&&<button onClick={()=>onNavigate('Cálculos')}>Novo cálculo</button>}</div>
       <div className="cbim-react-panel"><h2>Materiais e custos</h2>{work.materiais?.length?work.materiais.map((m:any)=><article key={m.id}><b>{m.material}</b> · {m.quantidade_realizada} {m.unidade} · {money(Number(m.quantidade_realizada||0)*Number(m.custo_unitario||0))}</article>):<p>Nenhum material cadastrado.</p>}</div>
       <div className="cbim-react-panel"><h2>Documentos locais</h2>{work.documentos?.length?work.documentos.map((d:any)=><article key={d.id}><b>{d.nome}</b> · <small>{d.tipo||'arquivo'} · {d.criado_em||''}</small> <button onClick={()=>downloadAttachment(d)}>Baixar arquivo</button></article>):<p>Nenhum documento cadastrado.</p>}</div>
-      <div className="cbim-react-panel"><h2>Histórico da obra</h2>{history.length?history.map((h:any)=><article key={h.id||h.criado_em}><b>{h.acao}</b> · {h.entidade} · <small>{h.criado_em||h.data||''}</small></article>):<p>Nenhuma ação registrada.</p>}</div>
+      <div className="cbim-react-panel"><h2>Histórico da obra</h2>
+      <EngineeringTable label="Eventos da obra" rows={history} rowKey={(h:any)=>String(h.id||h.criado_em||h.data)}
+        empty="Nenhuma ação registrada." columns={[
+          {key:'action',header:'Ação',cell:(h:any)=><strong>{h.acao}</strong>},
+          {key:'entity',header:'Entidade',cell:(h:any)=>h.entidade||'—'},
+          {key:'date',header:'Data',cell:(h:any)=>h.criado_em||h.data||'—'}
+        ]}/>
+      </div>
     </>}
   </section>;
 }
