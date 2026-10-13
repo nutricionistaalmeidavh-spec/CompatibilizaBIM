@@ -190,3 +190,6 @@
 .cbim-p4-attestation input{flex:0 0 auto;margin-top:5px}
 .cbim-p4-preview{background:#f4f8fd;border:1px solid #d2dfed;border-radius:9px;padding:13px;overflow-wrap:anywhere}
 .cbim-p4-quantities{display:grid;gap:11px}
+
+/* P0/P1: searchable local engineering file explorer; presentation only. */
+.cbim-file-explorer{display:grid;gap:8px;margin:12px 0}.cbim-file-explorer article{display:flex;flex-direction:column;gap:4px;border:1px solid #d1dfe9;border-radius:8px;padding:12px;background:#f9fbfe;word-break:break-word}.cbim-file-explorer small{color:#516a82}

@@ -1,5 +1,5 @@
 import test from 'node:test';import assert from 'node:assert/strict';
-import { modelFormat,checkImportFile,readCbimElements,contentFingerprint } from '../app/src/react/shell/importContract.js';
+import { modelFormat,checkImportFile,readCbimElements,contentFingerprint,sha256Identity } from '../app/src/react/shell/importContract.js';
 test('F2 routes IFC/CBIM/DXF/DWG files explicitly and rejects unknown inputs',()=>{
  for(const [name,fmt] of [['a.dwg','dwg'],['a.dxf','dxf'],['a.ifc','ifc'],['a.cbim.json','json']])assert.equal(modelFormat(name),fmt);
  assert.equal(checkImportFile({name:'model.dxf',size:100}), 'dxf');
@@ -14,4 +14,10 @@ test('F2 incomplete JSON is not silently recorded as valid empty CBIM',()=>{
 test('F2 a change beyond first 4096 bytes changes local identity',()=>{
  const a=Buffer.alloc(5000); const b=Buffer.from(a);b[4999]=1;
  assert.notEqual(contentFingerprint(a),contentFingerprint(b));
+});
+
+test('P2 imported model identities are SHA-256 over the entire file',async()=>{
+ const a=await sha256Identity(Buffer.from('abc'));
+ assert.equal(a,'sha256:ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad');
+ assert.notEqual(a,await sha256Identity(Buffer.from('abd')));
 });
