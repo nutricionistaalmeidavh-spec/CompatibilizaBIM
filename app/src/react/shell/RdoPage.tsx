@@ -99,7 +99,7 @@ export function RdoPage({db,obraId,scope={},onChange,target,onNavigate}:{db:any;
   };
   if(!work)return <section className="cbim-react-section"><h1>Diário de obra</h1><p>Selecione uma obra para consultar e registrar RDOs.</p></section>;
   return <section className="cbim-react-section"><h1>RDO · {work.nome}</h1><p>Diário completo, fotos, aprovação e PDF usando os mesmos dados persistidos na aplicação anterior.</p>
-    {(scope.periodo?.inicio||scope.periodo?.fim)&&<p className="studio-muted">Exibindo somente RDOs dentro do período selecionado. Um novo registro fora desse período ficará salvo, mas não aparecerá nesta lista.</p>}
+    {(scope.periodo?.inicio||scope.periodo?.fim)&&<p className="studio-muted">{target?.kind==='rdo-competencia'?'A consulta de origem abaixo mostra RDOs da competência solicitada mesmo fora do filtro geral; o filtro continua valendo nas demais telas.':'Exibindo somente RDOs dentro do período selecionado. Um novo registro fora desse período ficará salvo, mas não aparecerá nesta lista.'}</p>}
     {scope.frenteId&&<p role="status" className="cbim-react-panel">RDOs existentes não possuem vínculo canônico com frente; a seleção de frente não filtra esses registros. O filtro de datas continua aplicado.</p>}
     {target?.kind==='rdo-competencia'&&<div className="cbim-react-panel cbim-journey-focus" role="status">
      <h2>Evidências da competência {target.period}</h2>
