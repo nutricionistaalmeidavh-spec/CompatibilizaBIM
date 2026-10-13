@@ -62,3 +62,11 @@ test('motion respects OS reduced-motion preference',()=>{
  assert.match(css,/prefers-reduced-motion:reduce/);
  assert.match(css,/cbim-route-appear/);
 });
+
+test('real BIM fixture is imported before the canonical calculation-to-model scenario',()=>{
+  const smoke=read('scripts/qa/reactBrowserSmoke.cjs');
+  assert.ok(smoke.indexOf("getByLabel('Importar IFC / CBIM JSON').setInputFiles")>0);
+  assert.ok(smoke.indexOf("getByLabel('Importar IFC / CBIM JSON').setInputFiles")<
+    smoke.indexOf("getByLabel('Modelo de origem').selectOption"));
+  assert.match(smoke,/G-QA-001/);
+});

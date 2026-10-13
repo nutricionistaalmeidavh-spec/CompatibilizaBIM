@@ -54,6 +54,21 @@ const {chromium}=require('../../app/node_modules/playwright');
     await page.getByRole('button',{name:'Vincular estudo à obra atual'}).click();
     await page.getByText(/Estudo vinculado à obra/).first().waitFor();
     await page.getByRole('navigation',{name:'Caminho atual'}).getByText('BIM').waitFor();
+    // A BIM study without a model cannot offer a Model/Element selector. Import a
+    // real CBIM JSON fixture via the same UI path used by engineers before linking a calculation.
+    const qaModel={
+      schema:'CBIM',schema_version:'0.2.0',
+      elements:[{id:'G-QA-001',name:'Tubulação hidráulica de QA',type:'pipe',
+        diameter:0.05,path:[{x:0,y:0,z:0},{x:2,y:0,z:0}],confidence:1,
+        review_state:'confirmed',properties:{}}]
+    };
+    await page.getByLabel('Importar IFC / CBIM JSON').setInputFiles({
+      name:'qa-struct.cbim.json',mimeType:'application/json',
+      buffer:Buffer.from(JSON.stringify(qaModel))
+    });
+    await page.getByText(/Modelo CBIM JSON incorporado/).waitFor();
+    await page.getByRole('heading',{name:/Estudo P2 QA · 1 modelos/}).waitFor();
+
     await page.getByRole('button',{name:'Coordenação',exact:true}).click();
     await page.getByRole('heading',{name:/Coordenação.*Federação e conflitos/}).waitFor();
     assert.equal(await page.getByRole('heading',{name:/Quantitativos 5D, cronograma 4D e medições/}).count(),0,'No duplicate 4D panel in coordination step');

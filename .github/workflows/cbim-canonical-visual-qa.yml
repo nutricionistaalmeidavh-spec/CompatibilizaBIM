@@ -68,3 +68,5 @@ jobs:
           fi
 
 # Validate merged engineering journey and Studio React UI with branch-only QA.
+
+# Real CBIM model fixture now precedes the linked calculation end-to-end scenario.
