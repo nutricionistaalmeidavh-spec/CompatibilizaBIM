@@ -30,6 +30,7 @@ h1{font-size:18px;margin:0 0 6px}.muted{color:#9ea9b6;font-size:12px}.group{marg
 button,.row{width:100%;box-sizing:border-box;border:1px solid #303844;background:#20262e;color:#eef2f6;border-radius:7px;padding:8px 10px;margin:4px 0;text-align:left;cursor:pointer}
 button:hover,.row:hover{background:#28313b}.toolbar{display:flex;gap:6px}.toolbar button{width:auto;flex:1}.badge{display:inline-block;padding:2px 6px;border-radius:999px;background:#303844;font-size:11px;margin-left:5px}
 label{font-size:12px;display:flex;gap:8px;align-items:center;margin:6px 0}input[type=range]{width:100%}.stage{position:relative;min-width:0}canvas{display:block;width:100%;height:100%}
+body.cbim-embedded #app{grid-template-columns:minmax(0,1fr)}body.cbim-embedded .panel{display:none}
 #status{position:absolute;left:12px;bottom:12px;background:#171b21dd;border:1px solid #303844;border-radius:7px;padding:8px 10px;font-size:12px;pointer-events:none}.selected{outline:1px solid #8ec5ff}
 </style>
 </head>
@@ -54,6 +55,8 @@ const locP=gl.getAttribLocation(prog,'p'),locM=gl.getUniformLocation(prog,'mvp')
 const colors={Architecture:[0.65,0.72,0.8],Structure:[0.72,0.72,0.68],MEP:[0.35,0.7,0.95],Unknown:[0.7,0.7,0.7]};const statusColors={not_started:[.42,.45,.5],planned:[.28,.58,.95],in_progress:[1,.66,.12],completed:[.2,.75,.38],late:[.95,.23,.22]};let stateByGuid={};
 const uintExt=gl.getExtension('OES_element_index_uint');const objs=data.elements.map(e=>{const vb=gl.createBuffer();gl.bindBuffer(gl.ARRAY_BUFFER,vb);gl.bufferData(gl.ARRAY_BUFFER,new Float32Array(e.vertices),gl.STATIC_DRAW);let maxIndex=0;for(const n of e.triangles)if(n>maxIndex)maxIndex=n;const use32=maxIndex>65535;if(use32&&!uintExt)throw new Error('Modelo exige índices de 32 bits, mas OES_element_index_uint não está disponível.');const ib=gl.createBuffer();gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER,ib);gl.bufferData(gl.ELEMENT_ARRAY_BUFFER,use32?new Uint32Array(e.triangles):new Uint16Array(e.triangles),gl.STATIC_DRAW);return{e,vb,ib,count:e.triangles.length,indexType:use32?gl.UNSIGNED_INT:gl.UNSIGNED_SHORT,visible:true}});
 let opacity=1,selected=new Set(),target=[0,0,0],yaw=.8,pitch=.45,dist=Math.max(10,diag(data.bounds)*1.7);
+if(window.parent!==window)document.body.classList.add('cbim-embedded');
+
 function diag(b){const a=b.minimum,c=b.maximum;return Math.hypot(c[0]-a[0],c[1]-a[1],c[2]-a[2])||10}
 function mul(a,b){const o=new Array(16).fill(0);for(let r=0;r<4;r++)for(let c=0;c<4;c++)for(let k=0;k<4;k++)o[c*4+r]+=a[k*4+r]*b[c*4+k];return o}
 function perspective(f,a,n,z){const t=1/Math.tan(f/2),q=1/(n-z);return[t/a,0,0,0,0,t,0,0,0,0,(z+n)*q,-1,0,0,2*z*n*q,0]}
@@ -66,9 +69,24 @@ function focusBounds(b){target=[(b.minimum[0]+b.maximum[0])/2,(b.minimum[1]+b.ma
 function selectGuid(g){selected=new Set([g]);const o=objs.find(x=>x.e.global_id===g);if(o)focusBounds(o.e.bounds);refreshSelected()}
 function focusClash(c){selected=new Set([c.a_global_id,c.b_global_id]);target=c.point.slice();const matches=objs.filter(x=>selected.has(x.e.global_id));if(matches.length){const mins=[Infinity,Infinity,Infinity],maxs=[-Infinity,-Infinity,-Infinity];for(const o of matches){for(let i=0;i<3;i++){mins[i]=Math.min(mins[i],o.e.bounds.minimum[i]);maxs[i]=Math.max(maxs[i],o.e.bounds.maximum[i])}}dist=Math.max(2,diag({minimum:mins,maximum:maxs})*2)}render();refreshSelected()}
 function refreshSelected(){document.querySelectorAll('.row').forEach(x=>x.classList.toggle('selected',selected.has(x.dataset.guid)))}
+const notifySelection=(guids)=>{if(window.parent!==window)window.parent.postMessage({type:'cbim-viewer-selection',guids},'*')};
+window.addEventListener('message',event=>{
+ if(event.source!==window.parent||event.data?.type!=='cbim-viewer-focus')return;
+ const ids=Array.isArray(event.data.guids)?event.data.guids.filter(x=>typeof x==='string'&&x.length<=128).slice(0,2):[];
+ selected=new Set(ids);
+ const matches=objs.filter(x=>selected.has(x.e.global_id));
+ if(matches.length){
+  const mn=[Infinity,Infinity,Infinity],mx=[-Infinity,-Infinity,-Infinity];
+  for(const obj of matches)for(let i=0;i<3;i++){mn[i]=Math.min(mn[i],obj.e.bounds.minimum[i]);mx[i]=Math.max(mx[i],obj.e.bounds.maximum[i]);}
+  focusBounds({minimum:mn,maximum:mx});
+ }else if(!ids.length){target=[0,0,0];dist=Math.max(10,diag(data.bounds)*1.7);render();}
+ refreshSelected();
+});
+if(window.parent!==window)window.parent.postMessage({type:'cbim-viewer-ready'},'*');
+
 const disc=document.getElementById('disciplines');for(const d of data.disciplines){const l=document.createElement('label'),i=document.createElement('input');i.type='checkbox';i.checked=true;i.onchange=()=>{objs.filter(o=>o.e.discipline===d).forEach(o=>o.visible=i.checked);render()};l.append(i,document.createTextNode(d));disc.append(l)}
-const clashes=document.getElementById('clashes');data.clashes.forEach((c,i)=>{const b=document.createElement('button');b.className='row';b.append(document.createTextNode(`#${i+1} ${c.rule_name}`));const badge=document.createElement('span');badge.className='badge';badge.textContent=c.severity;b.append(badge);b.onclick=()=>focusClash(c);clashes.append(b)});if(!data.clashes.length){const empty=document.createElement('div');empty.className='muted';empty.textContent='Nenhum clash carregado.';clashes.append(empty)};
-const elements=document.getElementById('elements');data.elements.slice(0,500).forEach(e=>{const b=document.createElement('button');b.className='row';b.dataset.guid=e.global_id;b.textContent=`${e.ifc_class} · ${e.name||e.global_id||'sem GUID'}`;b.onclick=()=>selectGuid(e.global_id);elements.append(b)});if(data.elements.length>500)elements.insertAdjacentHTML('beforeend',`<div class="muted">Mostrando 500 de ${data.elements.length} elementos.</div>`);
+const clashes=document.getElementById('clashes');data.clashes.forEach((c,i)=>{const b=document.createElement('button');b.className='row';b.append(document.createTextNode(`#${i+1} ${c.rule_name}`));const badge=document.createElement('span');badge.className='badge';badge.textContent=c.severity;b.append(badge);b.onclick=()=>{focusClash(c);notifySelection([c.a_global_id,c.b_global_id])};clashes.append(b)});if(!data.clashes.length){const empty=document.createElement('div');empty.className='muted';empty.textContent='Nenhum clash carregado.';clashes.append(empty)};
+const elements=document.getElementById('elements');data.elements.slice(0,500).forEach(e=>{const b=document.createElement('button');b.className='row';b.dataset.guid=e.global_id;b.textContent=`${e.ifc_class} · ${e.name||e.global_id||'sem GUID'}`;b.onclick=()=>{selectGuid(e.global_id);notifySelection([e.global_id])};elements.append(b)});if(data.elements.length>500)elements.insertAdjacentHTML('beforeend',`<div class="muted">Mostrando 500 de ${data.elements.length} elementos.</div>`);
 if(Array.isArray(data.timeline)&&data.timeline.length){const g=document.getElementById('timeline-group'),sl=document.getElementById('timeline'),dt=document.getElementById('timeline-date'),sm=document.getElementById('timeline-summary');g.hidden=false;sl.max=String(data.timeline.length-1);function applyTimeline(i){const row=data.timeline[i]||data.timeline[0];stateByGuid=row.state_by_guid||{};dt.textContent=row.date;const o=row.overall||{};sm.textContent=`Previsto ${Number(o.planned_progress||0).toFixed(1)}% · Real ${Number(o.actual_progress||0).toFixed(1)}% · Desvio ${Number(o.variance_percent||0).toFixed(1)} p.p.`;render()}sl.oninput=e=>applyTimeline(Number(e.target.value));applyTimeline(0)};document.getElementById('opacity').oninput=e=>{opacity=Number(e.target.value);render()};document.querySelector('[data-action="fit"]').onclick=()=>{target=[0,0,0];dist=Math.max(10,diag(data.bounds)*1.7);render()};
 document.querySelector('[data-action="viewpoint"]').onclick=()=>{const blob=new Blob([JSON.stringify({origin:data.origin,target,yaw,pitch,distance:dist,selected:[...selected]},null,2)],{type:'application/json'}),a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='viewpoint.json';a.click();URL.revokeObjectURL(a.href)};
 let drag=false,last=[0,0],pan=false;canvas.onmousedown=e=>{drag=true;last=[e.clientX,e.clientY];pan=e.shiftKey};window.onmouseup=()=>drag=false;window.onmousemove=e=>{if(!drag)return;const dx=e.clientX-last[0],dy=e.clientY-last[1];last=[e.clientX,e.clientY];if(pan){const s=dist*.0015;target[0]-=dx*s;target[2]+=dy*s}else{yaw-=dx*.008;pitch=Math.max(-1.45,Math.min(1.45,pitch+dy*.008))}render()};canvas.onwheel=e=>{e.preventDefault();dist*=Math.exp(e.deltaY*.001);dist=Math.max(.2,dist);render()};window.onresize=render;render();

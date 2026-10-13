@@ -22,6 +22,7 @@ if (trustedApp) {
       p2: (request) => ipcRenderer.invoke('bim:p2', request),
       generateViewer: (files, output) => ipcRenderer.invoke('bim:generate-viewer', files, output),
       generateViewerBase64: (files) => ipcRenderer.invoke('bim:generate-viewer-base64', files),
+      renderInlineViewer: (files) => ipcRenderer.invoke('bim:render-inline-viewer-base64', files),
       clashBase64: (files, options) => ipcRenderer.invoke('bim:clash-base64', files, options),
       convertDwgBase64: (file) => ipcRenderer.invoke('bim:convert-dwg-base64', file),
       openStudio: (workspacePath) => ipcRenderer.invoke('cbim:open-studio', workspacePath),
