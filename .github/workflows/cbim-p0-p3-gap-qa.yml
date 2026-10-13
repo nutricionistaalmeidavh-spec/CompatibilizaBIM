@@ -58,3 +58,5 @@ jobs:
 # Rerun after fixing static reusable-component test location.
 
 # Final regression: check presentation components at their own source locations.
+
+# One-shot final QA: SHA-256 source imports and source-bound issue search.

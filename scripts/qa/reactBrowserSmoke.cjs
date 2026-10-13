@@ -70,6 +70,8 @@ const {chromium}=require('../../app/node_modules/playwright');
     await page.getByRole('heading',{name:/Estudo P2 QA · 1 modelos/}).waitFor();
     await page.getByLabel('Buscar modelos do estudo').fill('qa-struct');
     await page.getByText('1 de 1 arquivo(s) encontrados no estudo.').waitFor();
+    await page.getByText(/SHA-256 verificado na importação/).waitFor();
+
     await page.getByLabel('Buscar modelos do estudo').fill('inexistente');
     await page.getByText('Nenhum modelo encontrado. Limpe o filtro para visualizar os demais.').waitFor();
     await page.getByLabel('Buscar modelos do estudo').fill('');
@@ -77,6 +79,10 @@ const {chromium}=require('../../app/node_modules/playwright');
 
     await page.getByRole('button',{name:'Coordenação',exact:true}).click();
     await page.getByRole('heading',{name:/Coordenação.*Federação e conflitos/}).waitFor();
+    await page.getByLabel('Pesquisar conflitos BIM').fill('GUID-SEM-RESULTADO');
+    await page.getByText('0 pendência(s) coincidem com os filtros de estado e pesquisa.').waitFor();
+    await page.getByLabel('Pesquisar conflitos BIM').fill('');
+
     assert.equal(await page.getByRole('heading',{name:/Quantitativos 5D, cronograma 4D e medições/}).count(),0,'No duplicate 4D panel in coordination step');
     await screenshots('p1-coordenacao-estudo');
     await page.getByRole('button',{name:'Revisão CBIM',exact:true}).click();
