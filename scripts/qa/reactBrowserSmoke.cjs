@@ -87,6 +87,16 @@ const {chromium}=require('../../app/node_modules/playwright');
     await page.getByRole('button',{name:'Calcular e validar'}).click();
     await page.getByRole('heading',{name:/Verificação matemática parcial aprovada/}).waitFor();
     assert.ok(await page.getByRole('button',{name:'Memória PDF'}).isVisible());
+    // P2/P3: an existing BIM study remains selected without silently assigning any model.
+    await page.getByRole('heading',{name:'Dimensionamento inverso e comparação de alternativas'}).waitFor();
+    await page.getByRole('button',{name:'Buscar candidato viável'}).click();
+    await page.getByRole('heading',{name:'Candidato encontrado'}).waitFor();
+    await page.getByRole('button',{name:'Comparar cenários'}).click();
+    await page.getByText('Situação inicial',{exact:true}).waitFor();
+    await page.getByText('Alternativa manual',{exact:true}).waitFor();
+    await page.getByRole('heading',{name:'Registrar memória no estudo BIM'}).waitFor();
+    await page.getByText('Importe primeiro um modelo no módulo BIM').waitFor();
+    await screenshots('p2-p3-engenharia-assistida');
     await section('Estruturas','Estruturas · modelos globais');
     await section('Operação','Operação de obra');
     await page.locator('form input[name="nome"]').first().fill('Frente QA');
