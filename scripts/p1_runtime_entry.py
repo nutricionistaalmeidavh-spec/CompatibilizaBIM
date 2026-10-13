@@ -42,6 +42,8 @@ def main(argv: list[str] | None = None) -> int:
         from compatibilizabim_core.validation.cli import main as cli
     elif command == 'validate-dxf':
         from compatibilizabim_core.validation.dxf_cli import main as cli
+    elif command == 'math-study':
+        from compatibilizabim.engineering_math import main as cli
     elif command == 'p2':
         from compatibilizabim.p2_workflow import main as cli
     elif command == 'studio':

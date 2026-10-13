@@ -140,3 +140,35 @@
 .cbim-journey-focus .cbim-react-toolbar{margin-top:9px}
 .cbim-journey-bar button:focus-visible,.cbim-journey-focus button:focus-visible{outline:3px solid #6fa8e3;outline-offset:2px}
 @media(max-width:700px){.cbim-journey-bar{align-items:stretch;flex-direction:column}.cbim-journey-bar button{text-align:left}}
+
+/* Engineering P0/P1: readable technical records and responsive SVG charts */
+.cbim-math-results{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:9px;margin:14px 0 20px}
+.cbim-math-result{display:flex;flex-direction:column;gap:5px;min-width:0;padding:12px;background:#f6f9fc;border:1px solid #d8e2ed;border-radius:9px}
+.cbim-math-result span{font-size:12px;color:#4a6080;overflow-wrap:anywhere}
+.cbim-math-result strong{font-size:17px;font-variant-numeric:tabular-nums;color:#132b45;overflow-wrap:anywhere}
+.cbim-math-output h3,.cbim-math-sensitivity h3{font-size:16px;margin:22px 0 5px}
+.cbim-math-chart{border:1px solid #d7e1eb;border-radius:10px;padding:12px;background:#fff;margin:12px 0}
+.cbim-math-chart figcaption{display:flex;align-items:baseline;justify-content:space-between;flex-wrap:wrap;gap:8px;color:#193954}
+.cbim-math-chart figcaption small,.cbim-math-chart>small{color:#567084;font-size:11px}
+.cbim-math-chart svg{width:100%;display:block;height:auto}
+.cbim-math-table{max-height:220px;overflow:auto}
+.cbim-math-table table{border-collapse:collapse;width:100%;font-size:13px}
+.cbim-math-table th,.cbim-math-table td{padding:8px 12px;border-bottom:1px solid #e2e8f0;text-align:left}
+.cbim-math-workbench code{white-space:pre-wrap;overflow-wrap:anywhere;background:#f0f5fa;padding:5px 7px}
+.cbim-math-workbench form button{align-self:end}
+@media(max-width:650px){.cbim-math-results{grid-template-columns:1fr 1fr}.cbim-math-chart{padding:6px}}
+@media(max-width:460px){.cbim-math-results{grid-template-columns:1fr}}
+
+/* P2/P3 — BIM evidence and assisted engineering share the existing studio design tokens. */
+.cbim-math-assisted,.cbim-bim-study{margin:20px 0;padding:16px 0;border-top:1px solid var(--cbim-line,#d7e1eb)}
+.cbim-math-assisted h3,.cbim-bim-study h3{font-size:17px;color:#1e3652;margin:0 0 8px}
+.cbim-assisted-feedback{background:#f5f8fc;border:1px solid #d6e1ef;border-radius:9px;padding:14px;margin:14px 0}
+.cbim-assisted-feedback h4{margin:0 0 8px}
+.cbim-assisted-check{align-self:end;min-height:44px}
+.cbim-math-context{margin:12px 0 18px}
+.cbim-bim-history{display:grid;gap:9px;margin-top:14px}
+.cbim-bim-history>article{border:1px solid #d6e1eb;border-radius:9px;padding:13px;display:grid;grid-template-columns:minmax(0,1fr) auto;gap:12px;align-items:start}
+.cbim-bim-history>article small{display:block;font-size:12px;color:#4d657b;margin-top:5px;overflow-wrap:anywhere}
+.cbim-bim-history-detail{grid-column:1/-1;border-top:1px solid #e2e8f0;padding-top:10px}
+.cbim-bim-study textarea{max-width:100%}
+@media(max-width:650px){.cbim-bim-history>article{grid-template-columns:1fr}.cbim-bim-history-detail{grid-column:1}}

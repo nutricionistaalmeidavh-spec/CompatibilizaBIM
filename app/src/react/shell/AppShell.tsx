@@ -149,7 +149,7 @@ export function AppShell(){
       </nav>}
       {active==='Obras'&&<WorksPage db={db} obraId={workId} scope={scope} selectWork={selectWork} onChange={refresh} onNavigate={navigateTo}/>}
       {active==='BIM'&&<BimPage db={db} obraId={workId} version={version} onChange={refresh} studyId={context.projetoBimId||''} onSelectStudy={id=>updateContext({projetoBimId:id||null})} target={focus} onNavigate={navigateTo}/>}
-      {active==='Cálculos'&&<CalculatorsPage db={db} obraId={workId} onSaved={refresh}/>}
+      {active==='Cálculos'&&<CalculatorsPage db={db} obraId={workId} studyId={context.projetoBimId||''} onSelectStudy={id=>updateContext({projetoBimId:id||null})} onSaved={refresh}/>}
       {active==='Qualidade'&&<QualityPage db={db} version={version} onNavigate={navigateTo}/>}
       {active==='Estruturas'&&<StructuralPage db={db} obraId={workId} onChange={refresh}/>}
       {active==='RDO'&&<RdoPage db={db} obraId={workId} scope={scope} onChange={refresh} target={focus} onNavigate={navigateTo}/>}

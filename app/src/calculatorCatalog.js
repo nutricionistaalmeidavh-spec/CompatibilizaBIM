@@ -49,6 +49,6 @@ CALCULADORAS.protensao = { label: 'Protensão — força efetiva', fn: calcularP
 CALCULADORAS.alvenariaEstrutural = { label: 'Alvenaria estrutural', fn: calcularAlvenariaEstrutural, fields: [['comprimento','Comprimento (m)',5],['altura','Altura (m)',3],['espessura','Espessura (m)',0.14],['cargaVertical','Carga vertical (kN)',100],['resistenciaBloco','Resistência (kPa)',200]] };
 CALCULADORAS.elementoPremoldado = { label: 'Elemento pré-moldado', fn: calcularElementoPremoldado, fields: [['comprimento','Comprimento (m)',2],['largura','Largura (m)',0.2],['altura','Altura (m)',0.3],['densidade','Peso específico (kN/m³)',25]] };
 CALCULADORAS.ancoragem = { label: 'Ancoragem', fn: calcularAncoragem, fields: [['forcaKN','Força (kN)',10],['resistenciaAcoMPa','Resistência do aço (MPa)',400],['areaAcoMm2','Área de aço (mm²)',100],['coeficienteSeguranca','Coeficiente de segurança',1.5]] };
-CALCULATOR_GROUPS.find((group) => group.id === 'concreto')?.ids.push('alvenariaEstrutural', 'elementoPremoldado');
-CALCULATOR_GROUPS.find((group) => group.id === 'fundacoes')?.ids.push('ancoragem');
+CALCULATOR_GROUPS.find((group) => group.id === 'concreto')?.ids.push('alvenariaEstrutural', 'elementoPremoldado', 'paredeConcreto', 'pilarAvancado');
+CALCULATOR_GROUPS.find((group) => group.id === 'fundacoes')?.ids.push('ancoragem', 'fundacaoIntegrada');
 CALCULATOR_GROUPS.find((group) => group.id === 'gestao')?.ids.push('detalhamentoArmadura', 'listaAco', 'quadroFormas', 'protensao');

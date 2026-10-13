@@ -422,3 +422,29 @@ CREATE TABLE IF NOT EXISTS module_links (
   criado_em TEXT NOT NULL
 );
 CREATE INDEX IF NOT EXISTS idx_module_links_obra ON module_links(obra_id, criado_em DESC);
+
+
+-- P2/P3: a single canonical record for a contextual engineering study.
+-- Legacy calculos remain untouched (they require obra_id); independent BIM studies work offline.
+CREATE TABLE IF NOT EXISTS estudos_engenharia_bim (
+  id TEXT PRIMARY KEY,
+  projeto_id TEXT NOT NULL REFERENCES bim_projetos(id) ON DELETE RESTRICT,
+  obra_id TEXT REFERENCES obras(id) ON DELETE SET NULL,
+  modelo_id TEXT NOT NULL REFERENCES bim_modelos_avulsos(id) ON DELETE RESTRICT,
+  analise_id TEXT REFERENCES bim_analises_avulsas(id) ON DELETE RESTRICT,
+  conflito_chave TEXT,
+  elemento_ref TEXT,
+  calculadora_tipo TEXT NOT NULL,
+  titulo TEXT NOT NULL,
+  contexto_json TEXT NOT NULL,
+  entradas_json TEXT NOT NULL,
+  resultados_json TEXT NOT NULL,
+  validacao_json TEXT NOT NULL,
+  alternativas_json TEXT NOT NULL DEFAULT '[]',
+  nota TEXT NOT NULL DEFAULT '',
+  status TEXT NOT NULL DEFAULT 'preliminar' CHECK(status = 'preliminar'),
+  criado_em TEXT NOT NULL
+);
+CREATE INDEX IF NOT EXISTS idx_estudos_engenharia_projeto ON estudos_engenharia_bim(projeto_id,criado_em DESC);
+CREATE INDEX IF NOT EXISTS idx_estudos_engenharia_conflito ON estudos_engenharia_bim(analise_id,conflito_chave);
+CREATE INDEX IF NOT EXISTS idx_estudos_engenharia_modelo ON estudos_engenharia_bim(modelo_id,elemento_ref);

@@ -100,6 +100,45 @@ ipcMain.handle('bim:convert-dwg-base64', async (event, input) => cbimApplication
   onProgress: (progress) => { if (!event.sender.isDestroyed()) event.sender.send('bim:progress', progress); }
 }));
 ipcMain.handle('bim:cancel', async () => { const cbim = await cbimApplication.execute('CancelConversion', {}); if (!activeBimProcess) return cbim; activeBimProcess.kill(); activeBimProcess = null; return true; });
+
+function runEngineeringMath(request) {
+  return new Promise((resolve,reject) => {
+    if(!request || typeof request !== 'object' || typeof request.expression !== 'string' ||
+       request.expression.length > 160 || !['analyze','differentiate','integrate','solve'].includes(request.operation))
+      return reject(new Error('Requisição matemática inválida.'));
+    const projectRoot=path.join(__dirname,'..','..');
+    const resources=app.isPackaged?process.resourcesPath:projectRoot;
+    const exe=path.join(resources,'runtime','cbim-runtime.exe');
+    const packaged=process.platform==='win32'&&fs.existsSync(exe);
+    const python=packaged?exe:(process.env.PYTHON||'python');
+    const args=packaged?['math-study']:['-m','compatibilizabim.engineering_math'];
+    const moduleRoot=fs.existsSync(path.join(resources,'modules'))?path.join(resources,'modules'):path.join(projectRoot,'modules');
+    const child=spawn(python,args,{
+      cwd:moduleRoot,windowsHide:true,stdio:['pipe','pipe','pipe'],
+      env:{...process.env,PYTHONPATH:[moduleRoot,process.env.PYTHONPATH||''].filter(Boolean).join(path.delimiter)}
+    });
+    let stdout='',stderr='',completed=false;
+    const finish=(err,value)=>{
+      if(completed)return;completed=true;clearTimeout(timer);
+      if(err)reject(err);else resolve(value);
+    };
+    const timer=setTimeout(()=>{child.kill();finish(new Error('Cálculo excedeu 12 segundos.'));},12000);
+    child.stdout.on('data',chunk=>{
+      stdout+=chunk.toString('utf8');
+      if(stdout.length>100000){child.kill();finish(new Error('Saída matemática excede limite.'));}
+    });
+    child.stderr.on('data',chunk=>{stderr=(stderr+chunk.toString('utf8')).slice(-3000);});
+    child.on('error',err=>finish(err));
+    child.on('close',code=>{
+      if(code!==0)return finish(new Error(stderr.trim()||'Falha no motor matemático local.'));
+      try{finish(null,JSON.parse(stdout));}catch{finish(new Error('Retorno matemático inválido.'));}
+    });
+    child.stdin.on('error',()=>{});
+    child.stdin.end(JSON.stringify(request));
+  });
+}
+ipcMain.handle('math:calculate',(_event,request)=>runEngineeringMath(request));
+
 app.whenReady().then(async () => {
   const window = new BrowserWindow({ width: 1440, height: 900, webPreferences: { preload: path.join(__dirname, 'preload.cjs'), contextIsolation: true, nodeIntegration: false, sandbox: true } });
   const dev = process.env.VITE_DEV_SERVER_URL; if (dev) await window.loadURL(dev); else await window.loadFile(path.join(__dirname, '..', 'dist', 'index.html'));

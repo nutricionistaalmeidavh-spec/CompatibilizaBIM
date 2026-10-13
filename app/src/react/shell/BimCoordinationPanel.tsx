@@ -1,7 +1,7 @@
 import React from 'react';
 import {clashDistance} from '../../../../src/domain/engineeringPresentation.js';
 import {federarModelos,reconciliarConflitos,validarDecisaoConflito,compararRevisoesConflitos} from '../../../../src/bim/p2Coordination.js';
-import {salvarAnaliseBimProjeto,registrarDecisaoConflitoBimProjeto,listarEventosConflitosBimProjeto} from '../../../../storage/sqliteStore.js';
+import {salvarAnaliseBimProjeto,registrarDecisaoConflitoBimProjeto,listarEventosConflitosBimProjeto,listarEstudosEngenhariaBim} from '../../../../storage/sqliteStore.js';
 type Props={db:any;project:any;onChange:()=>void};
 const runtime=()=> (globalThis as any).engineeringStorage?.bim;
 const bytes=(base64:string)=>Uint8Array.from(atob(base64),c=>c.charCodeAt(0));
@@ -10,6 +10,7 @@ function fileDownload(filename:string,buffer:Uint8Array,type:string){
 }
 export function BimCoordinationPanel({db,project,onChange}:Props){
  const models=project.modelos||[],analyses=project.analises||[];
+ const studies=listarEstudosEngenhariaBim(db,project.id);
  const [chosen,setChosen]=React.useState<string[]>([]);
  const [mode,setMode]=React.useState('intersection'),[tolerance,setTolerance]=React.useState('0.002'),[clearance,setClearance]=React.useState('0.05');
  const [filter,setFilter]=React.useState('todos'),[busy,setBusy]=React.useState(false),[error,setError]=React.useState(''),[notice,setNotice]=React.useState('');
@@ -78,6 +79,9 @@ export function BimCoordinationPanel({db,project,onChange}:Props){
      <strong>{c.aGlobalId||'Elemento A'} × {c.bGlobalId||'Elemento B'}</strong>
      <small>{(c.origens||[]).join(' ↔ ')} · {c.status||'aberto'} · {clashDistance(c.distanciaM)}</small>
      {c.revisaoAlterada&&<p role="status">Modelos alterados; decisão anterior não transferida.</p>}
+     {(()=>{const linked=studies.filter((study:any)=>study.analise_id===latest.id&&study.conflito_chave===c.chave);
+        return linked.length?<p className="studio-muted"><strong>{linked.length} memória(s) técnica(s) preliminar(es)</strong> · mais recente: {linked[0].titulo} · revisão registrada {linked[0].contexto.revisao}. Não resolve a pendência automaticamente.</p>:null;
+     })()}
      <button onClick={()=>{setEditing(editing===c.chave?'':c.chave);setStatus(c.status||'em_revisao');setAssignee(c.responsavel||'');setDue(c.prazo||'');setReason(c.motivo||'');}}>Registrar decisão</button>
      {editing===c.chave&&<form onSubmit={e=>{e.preventDefault();saveDecision(c);}} className="cbim-react-form-grid">
        <label>Estado<select value={status} onChange={e=>setStatus(e.target.value)}><option value="aberto">Aberto</option><option value="em_revisao">Em revisão</option><option value="resolvido">Resolvido por decisão</option><option value="ignorado">Ignorado</option></select></label>
