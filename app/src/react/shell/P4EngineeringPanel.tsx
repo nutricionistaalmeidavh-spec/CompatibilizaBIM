@@ -79,7 +79,7 @@ export function P4EngineeringPanel({db,estudo,projeto,onSaved}:Props){
  };
  const pdf=()=>{
    try{
-     const output=gerarMemoriaBimPdf({estudo,projeto,impactos});
+     const output=gerarMemoriaBimPdf({estudo,projeto,impactos:impacts});
      file('memoria-bim-'+estudo.id+'.pdf',output);
      setError('');
    }catch(e:any){setError(e.message||String(e));}
