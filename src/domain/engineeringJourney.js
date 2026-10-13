@@ -30,3 +30,19 @@ export function quantityVarianceMessage(value,unit=''){
  const formatted=new Intl.NumberFormat('pt-BR',{maximumFractionDigits:5}).format(Math.abs(diff));
  return 'Diferença: BIM '+(diff>0?'acima':'abaixo')+' da medição operacional em '+formatted+' '+String(unit||'unidade não declarada')+'. Não é valor financeiro.';
 }
+
+export function resolveJourneyStudy(studies=[],currentStudyId='',requestedStudyId='',workId=''){
+ const explicit=String(requestedStudyId||'');
+ const id=explicit||String(currentStudyId||'');
+ if(!id)return null;
+ const study=studies.find(row=>row.id===id);
+ if(!study){
+  if(explicit)throw Error('Estudo BIM de origem não encontrado.');
+  return null;
+ }
+ if(study.obra_id&&workId&&study.obra_id!==workId){
+  if(explicit)throw Error('Estudo de origem vinculado a outra obra. Confira o contexto selecionado.');
+  return null;
+ }
+ return id;
+}
