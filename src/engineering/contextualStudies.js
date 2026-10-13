@@ -15,7 +15,7 @@ export function opcoesElementosBim(project, modeloId, analiseId='') {
       if(typeof ref==='string'&&ref.trim()) options.set(ref,{ref,label:element.nome||element.name||ref,origem:'modelo'});
     }
   }
-  const analyses=(project.analises||[]).filter(a=>!analiseId||a.id===analiseId);
+  const analyses=analiseId?(project.analises||[]).filter(a=>a.id===analiseId):[];
   for(const analysis of analyses)for(const conflict of analysis.conflitos||[]) {
     const pair=conflict.modelos||[];
     const ref=pair[0]===modeloId?conflict.aGlobalId:pair[1]===modeloId?conflict.bGlobalId:null;
