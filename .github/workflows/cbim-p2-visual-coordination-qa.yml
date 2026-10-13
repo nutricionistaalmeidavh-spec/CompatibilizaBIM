@@ -1,0 +1,59 @@
+name: CompatibilizaBIM P2 Real 3D Coordination QA
+on:
+  push:
+    branches:
+      - feat/p2-bim-visual-coordination-react-20261013
+    paths:
+      - .github/workflows/cbim-p2-visual-coordination-qa.yml
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  react-and-node:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Install pinned React desktop runtime
+        run: |
+          npm ci --prefix app
+          ln -s app/node_modules node_modules
+      - name: Full native and node regression suite
+        run: npm test
+      - name: Build React production
+        run: npm run build --prefix app
+      - name: Install Chromium
+        run: |
+          npm install --no-save --prefix app playwright@1.56.0
+          ./app/node_modules/.bin/playwright install --with-deps chromium
+      - name: Existing engineering journey regression
+        run: |
+          npm run preview --prefix app -- --host 127.0.0.1 --port 5173 > /tmp/cbim-preview.log 2>&1 &
+          node scripts/qa/reactBrowserSmoke.cjs || { cat /tmp/cbim-preview.log; exit 1; }
+      - name: New P2 visual coordination Playwright QA
+        run: node scripts/qa/reactCoordinationVisual.cjs
+      - name: Save actual screenshots
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: CBIM-P2-Real-Coordination-React-QA
+          path: test/react-qa-artifacts/*.png
+          if-no-files-found: warn
+          retention-days: 14
+  ifc-python:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install IFC regression deps
+        run: python -m pip install -r modules/compatibilizabim-requirements.txt pytest
+      - name: IfcOpenShell P2 regression tests
+        env:
+          PYTHONPATH: modules
+        run: python -m pytest -q modules/compatibilizabim/tests/test_p2_workflow.py modules/compatibilizabim/tests/test_ifc_query.py

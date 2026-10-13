@@ -101,6 +101,32 @@ function runBimPython(args) {
 ipcMain.handle('bim:p2', (_event, request) => p2Request(request, { documentsDir: app.getPath('documents'), runPython: runBimPython }));
 ipcMain.handle('bim:generate-viewer', (_event, files, output) => runBimPython(['-m', 'compatibilizabim.viewer_cli', ...(files || []), '--out', output]));
 ipcMain.handle('bim:generate-viewer-base64', async (_event, files) => { const root = path.join(app.getPath('documents'), 'Engenharia360', 'BIM', 'models'); fs.mkdirSync(root, { recursive: true }); const paths = []; for (const file of files || []) { const target = path.join(root, `${Date.now()}-${path.basename(file.name).replace(/[^a-zA-Z0-9._-]/g, '_')}`); fs.writeFileSync(target, Buffer.from(String(file.base64), 'base64')); paths.push(target); } const output = path.join(root, `../viewer-${Date.now()}.html`); await runBimPython(['-m', 'compatibilizabim.viewer_cli', ...paths, '--out', output]); await shell.openPath(output); return { output, paths }; });
+// Isolated inline viewer generation: preserve the native IfcOpenShell mesh renderer,
+ // but never navigate away from the canonical React application.
+ipcMain.handle('bim:render-inline-viewer-base64', async (_event, files) => {
+  if (!Array.isArray(files) || files.length < 1 || files.length > 12) throw Error('Selecione entre 1 e 12 arquivos IFC.');
+  const temp = fs.mkdtempSync(path.join(app.getPath('temp'), 'cbim-inline-viewer-'));
+  try {
+    const sources=[];
+    for (const [index,file] of files.entries()) {
+      if (!file || typeof file.name !== 'string' || !/\.ifc$/i.test(file.name) ||
+          typeof file.base64 !== 'string' || file.base64.length > 90_000_000 ||
+          !/^[A-Za-z0-9+/]+={0,2}$/.test(file.base64)) throw Error('Arquivo IFC inválido ou acima do limite.');
+      const buf=Buffer.from(file.base64,'base64');
+      if (buf.length < 20 || buf.length > 64*1024*1024 || buf.toString('base64') !== file.base64 ||
+          !buf.subarray(0,512).toString('latin1').includes('ISO-10303-21')) throw Error('Fonte IFC não passou na validação STEP.');
+      const cleaned=path.basename(file.name).replace(/[^a-zA-Z0-9._-]/g,'_');
+      const source=path.join(temp,index+'-'+cleaned);
+      fs.writeFileSync(source,buf,{flag:'wx',mode:0o600});
+      sources.push(source);
+    }
+    const output=path.join(temp,'viewer.html');
+    await runBimPython(['-m','compatibilizabim.viewer_cli',...sources,'--out',output,'--max-elements','2500']);
+    const stat=fs.statSync(output);
+    if(stat.size>24*1024*1024)throw Error('Visualização IFC excedeu 24 MiB. Use um modelo reduzido ou o visualizador geométrico externo.');
+    return {html:fs.readFileSync(output,'utf8'),source:'ifcopenshell_real',maxElementsPerFile:2500};
+  } finally {fs.rmSync(temp,{recursive:true,force:true});}
+});
 ipcMain.handle('bim:clash-base64', async (event, files, options = {}) => { event.sender.send('bim:progress', { percent: 10, stage: 'Preparando modelos IFC' }); const root = path.join(app.getPath('documents'), 'Engenharia360', 'BIM', 'models'); fs.mkdirSync(root, { recursive: true }); const paths = []; for (const file of files || []) { const target = path.join(root, `${Date.now()}-${path.basename(file.name).replace(/[^a-zA-Z0-9._-]/g, '_')}`); fs.writeFileSync(target, Buffer.from(String(file.base64), 'base64')); paths.push(target); } event.sender.send('bim:progress', { percent: 30, stage: 'Processando geometria com IfcOpenShell' }); const result = await runBimPython(['-m', 'compatibilizabim.bridge_cli', paths[0], paths[1], '--mode', options.mode || 'intersection', '--tolerance', String(options.tolerance ?? .002), '--clearance', String(options.clearance ?? .05)]); event.sender.send('bim:progress', { percent: 100, stage: 'Análise concluída' }); return JSON.parse(result.stdout.trim()); });
 ipcMain.handle('bim:clash', (_event, fileA, fileB, options = {}) => runBimPython([fileA, fileB, '--mode', options.mode || 'intersection', '--tolerance', String(options.tolerance ?? .002), '--clearance', String(options.clearance ?? .05), '--out', options.out || path.join(app.getPath('documents'), 'Engenharia360', 'bim-reports')]));
 ipcMain.handle('cbim:conversion-jobs', () => cbimConversionQueue.snapshot());

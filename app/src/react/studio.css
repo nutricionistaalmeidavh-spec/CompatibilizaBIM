@@ -306,3 +306,59 @@ body{background:var(--cbim-page)}
 .cbim-portfolio-search{flex-wrap:wrap}.cbim-portfolio-heading h1{font-size:25px}
 }
 @media(max-width:560px){.cbim-portfolio-kpis{grid-template-columns:1fr 1fr;gap:8px}.cbim-portfolio-kpi{padding:10px;gap:6px;min-height:100px}.cbim-portfolio-kpi strong{font-size:23px}.cbim-portfolio-kpi-icon{width:30px;height:30px}.cbim-portfolio-heading{flex-direction:column}}
+
+
+/* P2 visual BIM coordination: real IFC meshes or honest CBIM bbox, never generated geometry. */
+.cbim-coordination{max-width:none!important;padding:18px!important;background:#f7faff!important}
+.cbim-coordination-intro{display:flex;align-items:flex-start;justify-content:space-between;gap:14px;margin-bottom:12px}
+.cbim-coordination-overline{font-size:10px;letter-spacing:.11em;font-weight:800;color:#2a66d2;margin:0 0 5px!important}
+.cbim-coordination h2{font-size:19px!important;color:#11264b;margin:0 0 6px!important}
+.cbim-coordination>p{max-width:1050px;font-size:12px;color:#64748b}
+.cbim-coordination-engine{font-size:11px;font-weight:700;color:#155bd9;padding:7px 10px;background:#e5efff;border:1px solid #d5e3fa;border-radius:7px;white-space:nowrap}
+.cbim-coordination-kpis{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin:14px 0 18px}
+.cbim-coordination-kpis article{display:flex;flex-direction:column;gap:4px;border:1px solid #e0e8f4;border-radius:10px;background:white;padding:14px 16px;box-shadow:0 3px 10px #112b5010}
+.cbim-coordination-kpis article span{font-size:11px;font-weight:650;color:#536886}
+.cbim-coordination-kpis article strong{font-size:24px;letter-spacing:-.03em;color:#0c2450;font-variant-numeric:tabular-nums}
+.cbim-coordination-kpis article small{font-size:10px;color:#8191a6}
+.cbim-coordination-settings{border:1px solid #d9e4f4;border-radius:10px;background:#fff;margin:12px 0 16px}
+.cbim-coordination-settings>summary{padding:12px 14px;cursor:pointer;color:#1555bd;font-size:12px;font-weight:700}
+.cbim-coordination-settings>.p2-model-list,.cbim-coordination-settings>.cbim-react-form-grid,.cbim-coordination-settings>.cbim-react-toolbar{margin:12px 14px}
+.cbim-coordination-split{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(365px,1fr);gap:14px;align-items:start;min-height:560px}
+.cbim-coordination-viewport,.cbim-coordination-issues{min-width:0;border:1px solid #dfe8f5;background:#fff;border-radius:12px;overflow:hidden;box-shadow:0 5px 18px #17294a12}
+.cbim-coordination-panel-head{padding:13px 14px;display:flex;justify-content:space-between;align-items:center;gap:12px;border-bottom:1px solid #edf1f8;background:#fff}
+.cbim-coordination-panel-head h3{font-size:15px;margin:0 0 5px;border:0;padding:0;color:#112649;line-height:1.2}
+.cbim-coordination-panel-head small{font-size:11px;color:#70819d;line-height:1.35}
+.cbim-react-section .cbim-coordination-panel-head button{font-size:11px;font-weight:650;background:#155bef;color:#fff;border:1px solid #155bef;border-radius:8px;white-space:nowrap}
+.cbim-coordination-frame{position:relative;background:#0d1725;min-height:450px;height:clamp(420px,54vh,680px);overflow:hidden}
+.cbim-coordination-frame iframe{display:block;width:100%;height:100%;border:0;background:#0d1725}
+.cbim-coordination-frame-empty{display:grid;align-content:center;justify-items:center;max-width:350px;text-align:center;min-height:450px;margin:auto;padding:28px;color:#e4eeff}
+.cbim-coordination-frame-empty strong{font-size:17px;color:#f1f6ff}
+.cbim-coordination-frame-empty p{font-size:12px;color:#b9c8db;line-height:1.6}
+.cbim-coordination-frame-progress{position:absolute;bottom:16px;left:14px;right:14px;color:white;background:#123b73ed;padding:11px;border-radius:8px;font-size:12px}
+.cbim-coordination-viewport-footer{display:flex;gap:8px;align-items:center;justify-content:space-between;padding:10px 14px;background:#f8fafd;border-top:1px solid #e6edf7}
+.cbim-coordination-viewport-footer span{font-size:10px;color:#56708f;line-height:1.4}
+.cbim-react-section .cbim-coordination-viewport-footer button{padding:6px 9px;font-size:11px;white-space:nowrap}
+.cbim-coordination-models{display:flex;gap:7px;overflow-x:auto;padding:11px 12px}
+.cbim-coordination-models>div{flex:0 0 160px;padding:9px 10px;border:1px solid #dce6f5;background:#f8fbff;border-radius:8px;min-width:0}
+.cbim-coordination-models strong{font-size:11px;display:block;overflow-wrap:anywhere;color:#243952}
+.cbim-coordination-models small{font-size:10px;display:block;margin-top:3px;color:#6b7d96}
+.cbim-coordination-geometry-note{border-top:1px solid #e6edf7;margin:0!important;padding:11px 14px;font-size:11px;color:#65768e;line-height:1.5}
+.cbim-coordination-issues{max-height:none}
+.cbim-coordination-issues>label{padding:0 12px;font-size:11px;color:#4c6080;margin:9px 0}
+.cbim-coordination-issues>label select,.cbim-coordination-issues>label input{font-size:12px;min-height:34px}
+.cbim-coordination-issues>p{margin:10px 13px;font-size:11px;color:#5c728f}
+.cbim-coordination-issues .p2-issues{padding:0 10px;max-height:clamp(360px,57vh,680px);overflow:auto;overscroll-behavior:contain}
+.cbim-coordination-issues .p2-issue{margin:7px 0;padding:12px;background:#fff;border:1px solid #e2e9f4;border-radius:9px}
+.cbim-coordination-issues .p2-issue.is-selected{border-color:#4283ed;background:#f0f6ff;box-shadow:inset 3px 0 0 #155bef}
+.cbim-coordination-issues .p2-issue strong{font-size:11px;color:#142749;overflow-wrap:anywhere}
+.cbim-coordination-issues .p2-issue small{font-size:10px;color:#576e8d;line-height:1.5;margin:4px 0}
+.cbim-react-section .cbim-issue-focus{background:#e7efff;color:#1254cf;border:1px solid #cadcf8;font-weight:650;font-size:11px;margin-right:6px}
+.cbim-coordination-issues .p2-issue form{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;max-width:100%}
+.cbim-coordination-issues .p2-issue form label:last-of-type{grid-column:1/-1}
+.cbim-coordination-guid{word-break:break-all}
+.cbim-coordination-warning{padding:10px 12px;background:#fff3db;color:#865916!important;border-left:3px solid #e8ac3a}
+.cbim-coordination-pagination{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:12px 14px;border-top:1px solid #e6edf6;font-size:11px;color:#63748e}
+.cbim-coordination-pagination>div{display:flex;gap:7px}
+.cbim-react-section .cbim-coordination-pagination button{padding:7px 9px;font-size:11px}
+@media(max-width:1150px){.cbim-coordination-split{grid-template-columns:minmax(0,1fr)}.cbim-coordination-frame{height:480px}}
+@media(max-width:650px){.cbim-coordination-kpis{grid-template-columns:repeat(2,minmax(0,1fr))}.cbim-coordination-intro{flex-direction:column}.cbim-coordination-split{display:block}.cbim-coordination-issues{margin-top:14px}.cbim-coordination-frame{height:400px;min-height:380px}.cbim-coordination-issues .p2-issue form{grid-template-columns:1fr}}
