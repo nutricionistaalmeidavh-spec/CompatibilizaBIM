@@ -85,6 +85,35 @@ class P2Service:
                     'generated_at':q.get('generated_at'),
                     'models':q.get('models',[]),
                     'revision_sha256':q.get('revision_sha256',{})}
+        if action=='guid_lookup':
+            search=str(params.get('search') or '').strip().casefold()
+            if len(search)<2 or len(search)>120:
+                raise ValueError('Pesquise ao menos 2 caracteres de GUID, elemento ou arquivo IFC.')
+            offset=params.get('offset',0)
+            limit=params.get('limit',40)
+            if not isinstance(offset,int) or offset<0 or offset>500000 or not isinstance(limit,int) or not 1<=limit<=60:
+                raise ValueError('Paginação de GUID inválida.')
+            rows=_read(self.qpath).get('records',[])
+            matches={}
+            for row in rows:
+                guid=str(row.get('global_id') or '')
+                if not guid or row.get('source')=='geometry_fallback':
+                    continue
+                identity=(guid,str(row.get('source_file') or ''))
+                if identity in matches:
+                    continue
+                if search in ' '.join(str(row.get(key) or '') for key in (
+                    'global_id','element_name','source_file','ifc_class','storey')).casefold():
+                    matches[identity]={
+                        'global_id':guid,
+                        'element_name':str(row.get('element_name') or ''),
+                        'ifc_class':str(row.get('ifc_class') or ''),
+                        'source_file':str(row.get('source_file') or ''),
+                        'storey':str(row.get('storey') or ''),
+                    }
+            entries=sorted(matches.values(),key=lambda x:(x['global_id'],x['source_file']))
+            return {'entries':entries[offset:offset+limit],'total':len(entries),'offset':offset,'limit':limit,
+                    'revision_sha256':_read(self.qpath).get('revision_sha256',{})}
         if action=='budget_report':
             return _read(self.bpath)
         if action=='ifc_query':
@@ -162,6 +191,13 @@ class P2Service:
                predecessors=params.get('predecessors',[]),discipline=params.get('discipline'),
                storey=params.get('storey'),composition_code=params.get('composition_code'))
             return {'activity_id':a.activity_id}
+        if action=='reschedule':
+            activity=self.schedule.reschedule_activity(
+                str(params.get('activity_id','')),str(params.get('start_date','')),
+                str(params.get('end_date','')),
+                predecessors=params.get('predecessors'))
+            return {'activity_id':activity.activity_id,'start_date':activity.start_date,
+                    'end_date':activity.end_date,'predecessors':list(activity.predecessors)}
         if action=='link':
             guids=list(params.get('guids') or [])
             if not guids or not set(guids).issubset(self._known_guids()):

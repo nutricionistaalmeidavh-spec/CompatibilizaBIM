@@ -201,6 +201,55 @@ class ScheduleService:
             progress_history=history,
         ))
 
+    def reschedule_activity(
+        self, activity_id: str, start_date: str, end_date: str,
+        *, predecessors: Sequence[str] | None = None,
+    ) -> Activity:
+        """Modify the canonical schedule only after validating the whole dependency graph."""
+        schedule = self.store.load()
+        by_id = {row.activity_id: row for row in schedule.activities}
+        current = by_id.get(str(activity_id))
+        if current is None:
+            raise KeyError(f"Atividade não encontrada: {activity_id}")
+        start = _date(start_date, "start_date")
+        end = _date(end_date, "end_date")
+        if end < start:
+            raise ValueError("Data final anterior à inicial; cronograma preservado.")
+        preds = current.predecessors if predecessors is None else tuple(
+            dict.fromkeys(str(value).strip() for value in predecessors if str(value).strip())
+        )
+        if current.activity_id in preds:
+            raise ValueError("Atividade não pode depender de si mesma.")
+        if any(pred not in by_id for pred in preds):
+            raise ValueError("Predecessora inexistente; cronograma preservado.")
+        updated = replace(current, start_date=start.isoformat(), end_date=end.isoformat(), predecessors=preds)
+        by_id[current.activity_id] = updated
+        # Also evaluate successors: a new end date may invalidate another activity.
+        for row in by_id.values():
+            for pred in row.predecessors:
+                if pred not in by_id:
+                    raise ValueError("Predecessora inexistente no cronograma.")
+                if _date(row.start_date, "start_date") < _date(by_id[pred].end_date, "end_date"):
+                    # Legacy overlapping dependencies are tolerated unless this edit touches the relationship.
+                    if row.activity_id == current.activity_id or pred == current.activity_id:
+                        raise ValueError("Dependência violada: início anterior ao término da predecessora.")
+        pending: set[str] = set()
+        visited: set[str] = set()
+        def walk(key: str) -> None:
+            if key in pending:
+                raise ValueError("Dependências cíclicas: alteração não salva.")
+            if key in visited:
+                return
+            pending.add(key)
+            for predecessor in by_id[key].predecessors:
+                walk(predecessor)
+            pending.remove(key)
+            visited.add(key)
+        for key in by_id:
+            walk(key)
+        self.store.save(Schedule(tuple(by_id[row.activity_id] for row in schedule.activities)))
+        return updated
+
     def _get(self, activity_id: str) -> Activity:
         for activity in self.store.load().activities:
             if activity.activity_id == activity_id:

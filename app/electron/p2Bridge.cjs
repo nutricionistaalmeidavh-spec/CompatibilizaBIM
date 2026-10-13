@@ -1,6 +1,6 @@
 'use strict';
 const fs=require('node:fs'), path=require('node:path'), crypto=require('node:crypto');
-const allowed=new Set(['status','quantities','quantity_records','export_quantities','pricebook','budget','budget_report','export_budget','import_schedule','activity','link','progress','simulate','measurements','measure','approve','reject','finance','bcf','ifc_query']);
+const allowed=new Set(['status','quantities','quantity_records','guid_lookup','export_quantities','pricebook','budget','budget_report','export_budget','import_schedule','activity','reschedule','link','progress','simulate','measurements','measure','approve','reject','finance','bcf','ifc_query']);
 function validateP2Request(request){
  if(!request||typeof request!=='object')throw Error('Requisição BIM P2 inválida');
  const {projectId,action}=request;
@@ -16,6 +16,18 @@ function validateP2Request(request){
    if(params.text!==undefined&&(typeof params.text!=='string'||params.text.length>120))throw Error('Filtro IFC inválido');
    if(params.limit!==undefined&&(!Number.isInteger(params.limit)||params.limit<1||params.limit>100))throw Error('Limite IFC inválido');
    if(params.offset!==undefined&&(!Number.isInteger(params.offset)||params.offset<0||params.offset>5000))throw Error('Página IFC inválida');
+ }
+ if(action==='guid_lookup'){
+   if(typeof params.search!=='string'||params.search.trim().length<2||params.search.length>120)throw Error('Busca IFC exige 2–120 caracteres.');
+   if(params.limit!==undefined&&(!Number.isInteger(params.limit)||params.limit<1||params.limit>60))throw Error('Limite GUID inválido.');
+   if(params.offset!==undefined&&(!Number.isInteger(params.offset)||params.offset<0||params.offset>500000))throw Error('Página GUID inválida.');
+ }
+ if(action==='reschedule'){
+   if(typeof params.activity_id!=='string'||!params.activity_id.trim()||params.activity_id.length>128)throw Error('Código de atividade inválido.');
+   if(!/^\d{4}-\d{2}-\d{2}$/.test(params.start_date||'')||!/^\d{4}-\d{2}-\d{2}$/.test(params.end_date||''))
+      throw Error('Datas do cronograma inválidas.');
+   if(params.predecessors!==undefined&&(!Array.isArray(params.predecessors)||params.predecessors.length>200||
+     params.predecessors.some(x=>typeof x!=='string'||x.length>128)))throw Error('Dependências inválidas.');
  }
  if(action==='quantities'){
    const models=params.models;
