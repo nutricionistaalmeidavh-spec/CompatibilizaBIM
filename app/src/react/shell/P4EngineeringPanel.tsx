@@ -38,10 +38,21 @@ export function P4EngineeringPanel({db,estudo,projeto,onSaved}:Props){
      const api=bridge();if(!api)throw Error('QTO e orçamento precisam do motor desktop 4D/5D.');
      const stat=await api({projectId:projeto.id,action:'status',params:{}});
      if(!stat.quantities)throw Error('Extraia os quantitativos IFC na etapa BIM → 4D/5D antes de realizar esta associação.');
-     const q=await api({projectId:projeto.id,action:'quantity_records',params:{}});
+     const original=(projeto.modelos||[]).find((m:any)=>m.id===estudo.contexto.modeloId);
+     if(!original?.arquivo_base64||!String(original.arquivo_nome||'').toLowerCase().endsWith('.ifc'))
+       throw Error('Para comparar QTO com SHA-256, use um IFC original armazenado no estudo BIM.');
+     if(!globalThis.crypto?.subtle)throw Error('SHA-256 não está disponível neste contexto de execução.');
+     if(original.arquivo_base64.length>90_000_000)throw Error('IFC acima do limite de verificação local de 64 MiB.');
+     const bytes=Uint8Array.from(atob(original.arquivo_base64),(v:string)=>v.charCodeAt(0));
+     const digest=new Uint8Array(await globalThis.crypto.subtle.digest('SHA-256',bytes));
+     const localSha=Array.from(digest).map(v=>v.toString(16).padStart(2,'0')).join('');
+     const q=await api({projectId:projeto.id,action:'quantity_records',params:{globalId:estudo.contexto.elementoRef}});
      if(!Array.isArray(q?.records))throw Error('Motor 5D não retornou linhas QTO rastreáveis.');
+     const sourceSha=q.revision_sha256?.[original.arquivo_nome];
+     if(String(sourceSha||'').toLowerCase()!==localSha)
+       throw Error('QTO vinculado a revisão diferente do IFC salvo. Reextraia o QTO desse IFC antes de estimar custos.');
      const cost=stat.budget?await api({projectId:projeto.id,action:'budget_report',params:{}}):null;
-     setQuant(q);setBudget(cost);setKey('');setNewQuantity('');setConfirmed(false);
+     setQuant({...q,modelo_sha256_calculado:localSha});setBudget(cost);setKey('');setNewQuantity('');setConfirmed(false);
      setNotice(cost?'QTO e orçamento carregados do motor local.':'QTO carregado. Não há orçamento precificado; valores monetários permanecerão indisponíveis.');
    }catch(e:any){setError(e.message||String(e));setQuant(null);setBudget(null);}
    finally{setBusy(false);}
@@ -102,7 +113,7 @@ export function P4EngineeringPanel({db,estudo,projeto,onSaved}:Props){
        onChange={e=>{setAssumption(e.target.value);setPreview(null);}}
        placeholder="Explique como a nova quantidade foi derivada; a simulação não modifica a geometria"/></label>
      <label className="cbim-p4-attestation"><input type="checkbox" checked={confirmed} onChange={e=>{setConfirmed(e.target.checked);setPreview(null);}}/>
-       Conferi que o QTO carregado corresponde ao IFC e à revisão {estudo.contexto.revisao} deste registro (o motor QTO não fornece o hash desta revisão).</label>
+       Confirmo que revisei a hipótese técnica e a quantidade proposta. A correspondência entre o QTO e a revisão IFC {estudo.contexto.revisao} foi verificada por SHA-256.</label>
      <div className="cbim-react-toolbar">
        <button type="button" disabled={!selected||!confirmed||!assumption.trim()||!newQuantity.trim()} onClick={calculate}>Simular impacto preliminar</button>
      </div>

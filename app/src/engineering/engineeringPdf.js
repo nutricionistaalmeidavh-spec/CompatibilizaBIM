@@ -43,7 +43,7 @@ export function gerarMemoriaBimPdf({estudo,projeto,impactos=[]}={}){
      const imp=entry.snapshot||entry;
      sections['Simulação 5D '+(index+1)]=[
       kv('Registro de impacto',entry.id||'sem ID'),
-      kv('GUID QTO',imp.qtoFonte?.guid),kv('Fonte QTO',imp.qtoFonte?.arquivo),
+      kv('GUID QTO',imp.qtoFonte?.guid),kv('Fonte QTO',imp.qtoFonte?.arquivo),kv('SHA-256 QTO/IFC',imp.qtoFonte?.sha256),
       kv('Grandeza',imp.qtoFonte?.quantidade),
       kv('Quantidade anterior',formatarValorTecnico(imp.quantidadeOriginal)+' '+text(imp.unidade)),
       kv('Quantidade proposta',formatarValorTecnico(imp.quantidadeProposta)+' '+text(imp.unidade)),

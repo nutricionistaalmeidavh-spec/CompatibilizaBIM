@@ -16,8 +16,8 @@ O histórico também aparece em **BIM → 4D/5D**, abaixo do orçamento e da con
 
 - `engineeringStorage.bim.p2` consulta as ações `status`, `quantity_records` e `budget_report` do motor Python 4D/5D. Não se cria motor paralelo, serviço HTTP ou conta.
 - QTO apenas quando `source === 'ifc_qto'`; `geometry_fallback` nunca habilita preço ou estudo de impacto.
-- O registro QTO deve possuir o GUID exato do estudo, `source_file` igual ao IFC do modelo, e esse IFC deve constar no relatório QTO. Não se converte bbox/manifesto em quantidade real.
-- O contrato QTO disponível não fornece hash de arquivo/revisão. Por isso o usuário confirma **expressamente** que os quantitativos correspondem à revisão registrada. O PDF documenta esta limitação, sem afirmar verificação automática do hash.
+- O registro QTO deve possuir o GUID exato do estudo e `source_file` igual ao IFC do modelo. A ação `quantity_records` aceita o filtro `globalId`, permitindo recuperar o GUID mesmo que ele não apareça nas primeiras 800 linhas da visão geral. O SHA-256 registrado em `revision_sha256` deve corresponder integralmente aos bytes originais do modelo. Não se converte bbox/manifesto em quantidade real.
+- O contrato QTO do motor **fornece** `revision_sha256` por arquivo IFC. O Studio calcula SHA-256 sobre os bytes originais `arquivo_base64` preservados no SQLite e só libera a simulação quando a assinatura coincide com a origem do QTO. A confirmação humana refere-se às **hipóteses e quantidades propostas**, não à identidade do arquivo. A identidade e o SHA-256 constam no snapshot e no PDF.
 - O preço unitário é derivado exclusivamente de linha única e compatível do orçamento 5D local, com unidade, classe, disciplina, pavimento, tipo e quantidade idênticos. Não distribui o custo de um grupo pelo número de elementos.
 - O delta é `(quantidadeProposta - quantidadeOriginal) * final_unit_cost` e utiliza custo unitário **final** (perdas e BDI já contemplados pelo motor 5D), sem aplicar BDI novamente.
 - Sem tabela de preços, sem correspondência única ou sem competência/fonte de preço BRL: custo é `null`, nunca zero presumido. Quantidade física pode ser registrada sem preço.
