@@ -548,3 +548,86 @@ body{background:var(--cbim-page)}
 .cbim-5d-recon-card .cbim-react-form-grid button{font-size:11px;background:#155bef;border-color:#155bef;color:#fff}
 @media(max-width:1050px){.cbim-5d-kpis,.cbim-5d-recon-kpis{grid-template-columns:repeat(2,minmax(0,1fr))}.cbim-5d-editor{grid-template-columns:repeat(2,minmax(0,1fr))}.cbim-5d-recon-comparison{grid-template-columns:1fr}}
 @media(max-width:620px){.cbim-5d-hero{padding:15px}.cbim-5d-kpis,.cbim-5d-recon-kpis{gap:7px}.cbim-5d-kpis article,.cbim-5d-recon-kpis article{padding:11px}.cbim-5d-search{flex-direction:column;align-items:stretch}.cbim-5d-editor{grid-template-columns:1fr}.cbim-5d-calc-preview,.cbim-5d-finance-kpis{grid-template-columns:1fr}.cbim-5d-batch-lines>div{grid-template-columns:1fr}.cbim-5d-batch-lines>div>div{border-bottom:1px solid #e8eff7;padding-bottom:5px}}
+
+
+/* P5 | Unified premium engineering information architecture. All metrics are canonical projections. */
+.cbim-p5-module{max-width:none!important;color:#192d4c;padding-bottom:35px}
+.cbim-p5-module .cbim-p5-hero{display:flex;justify-content:space-between;align-items:center;gap:18px;border-radius:14px;min-height:154px;padding:24px 27px;background:linear-gradient(112deg,#102746 0%,#153866 64%,#214f8e 100%);color:white;box-shadow:0 7px 22px #0e2d5d17}
+.cbim-p5-eyebrow{font-size:10px;font-weight:850;letter-spacing:.14em;color:#9fc5ff;line-height:1.6}
+.cbim-p5-hero h1{color:#fff!important;margin:7px 0 7px;font-size:clamp(22px,2.1vw,29px);letter-spacing:-.03em;line-height:1.16}
+.cbim-p5-hero p{color:#c5d8f2;font-size:12px;line-height:1.6;max-width:720px;margin:0}
+.cbim-p5-hero-aside{align-self:center;display:flex;align-items:center;justify-content:flex-end;gap:8px;flex-wrap:wrap;max-width:35%}
+.cbim-p5-hero-meta{display:block;border:1px solid #97bff64d;background:#ffffff13;color:#dcecff;padding:9px 12px;border-radius:8px;font-weight:650;font-size:11px;text-align:right;max-width:100%;overflow-wrap:anywhere}
+.cbim-p5-hero-aside .ui-status{max-width:none;font-size:11px}
+.cbim-p5-kpis{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin:15px 0 19px}
+.cbim-p5-kpi{min-width:0;display:flex;flex-direction:column;gap:6px;background:#fff;border:1px solid #dfe7f3;border-radius:12px;padding:15px 16px 14px;box-shadow:0 3px 14px #172a4c09;border-top:3px solid #2164e5}
+.cbim-p5-kpi.tone-green{border-top-color:#12a273}.cbim-p5-kpi.tone-purple{border-top-color:#7962e7}.cbim-p5-kpi.tone-amber{border-top-color:#d99925}
+.cbim-p5-kpi>span{font-size:11px;font-weight:700;color:#637690}
+.cbim-p5-kpi>strong{font-size:clamp(17px,1.7vw,26px);line-height:1.12;font-weight:780;letter-spacing:-.023em;color:#102d54;overflow-wrap:anywhere;min-height:23px}
+.cbim-p5-kpi>small{font-size:10px;color:#8191a6;line-height:1.35}
+.cbim-p5-module>.cbim-react-panel,.cbim-p5-module>form.cbim-react-panel,.cbim-p5-module>div.cbim-react-panel{background:#fff;border:1px solid #dfe7f2;border-radius:13px;box-shadow:0 4px 16px #142f4f0c;margin:13px 0;padding:19px 20px}
+.cbim-p5-module .cbim-react-panel h2{font-size:16px;letter-spacing:-.015em;color:#17365c}
+.cbim-p5-module .cbim-react-panel h3{color:#264367}
+.cbim-p5-module .cbim-react-panel>p,.cbim-p5-module .cbim-react-panel>article{line-height:1.5}
+.cbim-p5-module .cbim-react-panel>article{padding:13px 14px;border:1px solid #e5edf8;border-radius:9px;margin:8px 0;background:#fafcff}
+.cbim-p5-module .cbim-react-panel>article b{color:#193b69}
+.cbim-p5-module .cbim-react-form-grid{gap:12px 16px}
+.cbim-p5-module label{color:#526784;font-size:11px;font-weight:650;line-height:1.5}
+.cbim-p5-module input:not([type=checkbox]),.cbim-p5-module select,.cbim-p5-module textarea{max-width:100%;background:#fff;border:1px solid #d5e1f1;border-radius:8px;color:#183b64;padding:9px 11px;font-size:12px;min-height:37px}
+.cbim-p5-module textarea{min-height:86px}
+.cbim-p5-module input:focus-visible,.cbim-p5-module select:focus-visible,.cbim-p5-module textarea:focus-visible{outline:2px solid #5292f1;outline-offset:1px}
+.cbim-p5-module .cbim-react-panel button:not(:disabled):hover{filter:brightness(.97)}
+.cbim-p5-module button:focus-visible{outline:3px solid #80aeff!important;outline-offset:2px}
+.cbim-p5-module>nav.cbim-react-toolbar{display:flex;gap:5px;align-items:center;border:1px solid #dfe8f5;border-radius:11px;background:#fff;padding:7px;margin:8px 0 17px;overflow-x:auto;box-shadow:0 2px 10px #12314b0a}
+.cbim-p5-module>nav.cbim-react-toolbar button{flex:0 0 auto;min-height:38px;color:#4d6381;font-size:12px;padding:8px 14px;border:0;background:transparent;border-radius:8px;white-space:nowrap;font-weight:700}
+.cbim-p5-module>nav.cbim-react-toolbar button.selected,.cbim-p5-module>nav.cbim-react-toolbar button[aria-pressed=true]{color:#fff;background:#155bef;box-shadow:0 2px 8px #155bef2b}
+.cbim-p5-module>nav.cbim-react-toolbar button:hover:not(.selected){background:#eef5ff}
+.cbim-p5-module>.cbim-react-toolbar{display:flex;align-items:flex-end;flex-wrap:wrap;gap:8px;padding:10px 0}
+.cbim-p5-module>.cbim-react-toolbar>button:first-of-type{background:#155bef;border-color:#155bef;color:#fff;font-weight:750}
+.cbim-p5-module .cbim-react-metrics{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:11px;margin:13px 0}
+.cbim-p5-module .cbim-react-metrics article{margin:0;background:#fff;border:1px solid #e0e9f6;padding:15px;border-radius:10px;box-shadow:0 3px 11px #1837570d;font-weight:650;color:#233c5f}
+.cbim-p5-module .ui-metric{background:#f8fbff;border:1px solid #e4ecf9;border-radius:10px}
+.cbim-p5-module .ui-metric strong{color:#1b4c86;font-variant-numeric:tabular-nums}
+.cbim-p5-module .studio-muted{color:#71839a;font-size:11px;line-height:1.6}
+.cbim-p5-module pre{max-height:430px;overflow:auto;background:#101f33;color:#e0ecff;padding:15px;border-radius:9px;font-size:11px}
+.cbim-p5-tools-search,.cbim-p5-record-filters{display:flex;align-items:end;gap:12px;flex-wrap:wrap;padding:13px 15px;background:#fff;border:1px solid #dfe9f5;border-radius:10px;margin:13px 0}
+.cbim-p5-search{flex:1 1 280px}
+.cbim-p5-search span{display:block;color:#5a718d;font-size:11px;font-weight:700;margin-bottom:5px}
+.cbim-p5-search input{width:100%;border:1px solid #d5e2f0;padding:10px 12px;border-radius:8px}
+.cbim-p5-tools-search>span{font-size:11px;color:#6c819a;margin-bottom:12px}
+.cbim-p5-record-filters>label:last-child{flex:0 1 210px}
+.cbim-p5-record-filters select{display:block;width:100%;margin-top:5px}
+.cbim-p5-empty{padding:22px 14px;font-size:12px;color:#71849e;background:#f7faff;border-radius:9px;border:1px dashed #cedaeb}
+.cbim-p5-calculators .cbim-react-calc-groups{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:13px;margin:17px 0}
+.cbim-p5-calculators .cbim-react-calc-groups details{border:1px solid #dce6f4;border-radius:12px;background:#fff;box-shadow:0 4px 13px #17325008;min-width:0;overflow:hidden;margin:0}
+.cbim-p5-calculators .cbim-react-calc-groups summary{cursor:pointer;display:flex;justify-content:space-between;gap:8px;padding:16px 17px;color:#213e65;background:#f9fbff;min-height:53px}
+.cbim-p5-calculators .cbim-react-calc-groups summary span{white-space:nowrap;font-size:11px;color:#6880a1}
+.cbim-p5-calculators .cbim-react-calc-groups .cbim-react-card-grid{padding:12px;display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:8px}
+.cbim-p5-calculators .cbim-react-calc-groups .cbim-react-card-grid button{min-height:50px;padding:9px 10px;background:#f5f8fe;color:#234773;text-align:left;border:1px solid #dfe8f7;border-radius:8px;font-size:11px;line-height:1.4}
+.cbim-p5-calculators .cbim-react-calc-groups .cbim-react-card-grid button.selected{background:#dceafd;border-color:#3576eb;color:#1145a0;box-shadow:inset 3px 0 #155bef}
+.cbim-p5-structural .cbim-p5-model-view svg{width:100%;max-height:480px}
+.cbim-p5-structural .cbim-p5-model-view h2{margin-bottom:5px}
+.cbim-p5-structural .cbim-react-form-grid{grid-template-columns:repeat(auto-fit,minmax(160px,1fr))}
+.cbim-p5-structural .cbim-react-toolbar{gap:8px}
+.cbim-p5-quality .cbim-closeout-metrics{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:11px}
+.cbim-p5-quality .cbim-quality-findings article,.cbim-p5-quality .cbim-quality-gates article{border:1px solid #e1eaf4;border-radius:10px;background:#fff;padding:13px;margin:8px 0}
+.cbim-p5-operations .cbim-react-panel:has(.cbim-react-form-grid){border-left:3px solid #d4e5fb}
+.cbim-p5-rdo .cbim-p5-records>article{border-left:3px solid #2b6de1}
+.cbim-p5-rdo .cbim-rdo-editor-meta{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:12px}
+.cbim-p5-rdo .cbim-rdo-editor-meta label{min-width:0}
+.cbim-p5-rdo .cbim-rdo-editor-meta input{display:block;width:100%}
+.cbim-p5-finance .cbim-react-panel>article{border-left:3px solid #75a4e8}
+.cbim-p5-finance .cbim-react-panel>article p{margin:5px 0 0;color:#7d90a9;font-size:11px}
+@media(max-width:1100px){.cbim-p5-kpis{grid-template-columns:repeat(2,minmax(0,1fr))}.cbim-p5-calculators .cbim-react-calc-groups{grid-template-columns:1fr}}
+@media(max-width:650px){.cbim-p5-module .cbim-p5-hero{padding:17px 16px;min-height:0;flex-direction:column;align-items:stretch}.cbim-p5-hero-aside{max-width:none;justify-content:flex-start}.cbim-p5-kpis{gap:8px}.cbim-p5-kpi{padding:12px 11px}.cbim-p5-kpi>strong{font-size:18px}.cbim-p5-module>.cbim-react-panel{padding:13px 12px}.cbim-p5-module>nav.cbim-react-toolbar button{padding:7px 10px;font-size:11px}.cbim-p5-record-filters>label:last-child{flex:1 1 100%}}
+
+
+/* P5 mobile hit-target repair: nav groups must not overlap neighboring routes. */
+@media(max-width:850px){
+ .cbim-react-app>.studio-sidebar{display:flex;overflow-x:auto;overflow-y:hidden;gap:9px;min-height:58px;align-items:center;scrollbar-width:thin;scroll-snap-type:x proximity}
+ .cbim-react-app .studio-sidebar .studio-nav-group,
+ .cbim-react-app .studio-sidebar .studio-nav-group+.studio-nav-group{display:flex;flex:0 0 auto;gap:7px;min-width:max-content;overflow:visible;position:relative}
+ .cbim-react-app .studio-sidebar .studio-nav-group button{width:auto;flex:0 0 auto;min-width:max-content;position:relative;white-space:nowrap;scroll-snap-align:start;min-height:42px;margin:0;padding:9px 13px}
+ .cbim-react-app .studio-sidebar .studio-nav-symbol{pointer-events:none}
+ .cbim-react-app .studio-sidebar .studio-backup-tools{flex:0 0 auto;min-width:max-content}
+}

@@ -1,0 +1,63 @@
+name: CompatibilizaBIM P5 Premium Six Modules QA
+on:
+  push:
+    branches:
+      - feat/p5-premium-six-engineering-modules-20261013
+    paths:
+      - .github/workflows/cbim-p5-six-modules-qa.yml
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  react-and-node:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Pinned React desktop dependencies
+        run: |
+          npm ci --prefix app
+          ln -s app/node_modules node_modules
+      - name: Domain, canonical and P5 unit tests
+        run: npm test
+      - name: Production React build
+        run: npm run build --prefix app
+      - name: Install browser
+        run: |
+          npm install --no-save --prefix app playwright@1.56.0
+          ./app/node_modules/.bin/playwright install --with-deps chromium
+      - name: Existing end-to-end engineer journey
+        run: |
+          npm run preview --prefix app -- --host 127.0.0.1 --port 5173 > /tmp/cbim-p5-preview.log 2>&1 &
+          node scripts/qa/reactBrowserSmoke.cjs || { cat /tmp/cbim-p5-preview.log; exit 1; }
+      - name: All six P5 screens real screenshots desktop and mobile
+        run: node scripts/qa/reactSixModulesP5.cjs
+      - name: Store browser QA captures
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: CBIM-P5-Six-Modules-Real-React-QA
+          path: test/react-qa-artifacts/*.png
+          if-no-files-found: warn
+          retention-days: 14
+  python-ifc:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: IFC regression dependencies
+        run: python -m pip install -r modules/compatibilizabim-requirements.txt pytest
+      - name: Python P2/P3/P4 and IFC engine contracts
+        env:
+          PYTHONPATH: modules
+        run: python -m pytest -q modules/compatibilizabim/tests/test_p2_workflow.py modules/compatibilizabim/tests/test_p3_gantt.py modules/compatibilizabim/tests/test_p4_measurements.py modules/compatibilizabim/tests/test_ifc_query.py
+
+# QA checkpoint 2: eliminate repeated financial KPIs, preserve scope-aware verification.
+
+# QA checkpoint 3: mobile horizontal nav hit targets must not overlap.

@@ -1,5 +1,6 @@
 
 import React from 'react';
+import {ModuleHero,ModuleKpis,ModuleSearch} from './EngineeringModuleLayout';
 import {EngineeringConfirmDialog,EngineeringFeedback} from '../components/EngineeringUI';
 import {RdoFieldRows} from './RdoFieldRows';
 import {SectionHeading} from '../components/ui';
@@ -30,6 +31,8 @@ export function RdoPage({db,obraId,scope={},onChange,target,onNavigate}:{db:any;
   const [error,setError]=React.useState('');
   const [busy,setBusy]=React.useState(false);
   const [approver,setApprover]=React.useState('');
+  const [listSearch,setListSearch]=React.useState('');
+  const [listStatus,setListStatus]=React.useState('todos');
   const [confirmAction,setConfirmAction]=React.useState<{mode:'approve'|'delete';id:string;date:string}|null>(null);
   const work=obraId?buscarObra(db,obraId):null;
   const rdos=filterScopedRecords(work?.rdos||[],{periodo:scope.periodo||{}},{dateField:'data'});
@@ -37,6 +40,10 @@ export function RdoPage({db,obraId,scope={},onChange,target,onNavigate}:{db:any;
   const focusedRdo=target?.kind==='rdo'?resolveSourceRecord(work?.rdos||[],rdos,target.id):{record:null,outsideScope:false};
   const showRdos=target?.kind==='rdo-competencia'?contextualRdos:(focusedRdo.outsideScope?[focusedRdo.record,...rdos]:rdos);
   const relatedMeasures=target?.kind==='rdo-competencia'&&obraId?listarMedicoes(db,obraId).filter((m:any)=>m.periodo===target.period):[];
+  const approvedRdos=rdos.filter((r:any)=>r.status_aprovacao==='aprovado').length;
+  const photosCount=rdos.reduce((total:number,r:any)=>total+(r.fotos?.length||0),0);
+  const filteredRdos=showRdos.filter((r:any)=>(listStatus==='todos'||(listStatus==='aprovados'?r.status_aprovacao==='aprovado':r.status_aprovacao!=='aprovado'))&&
+    (!listSearch.trim()||[r.data,r.responsavel,r.observacoes,...(r.servicosExecutados||[]).map((s:any)=>s.descricao)].some(v=>String(v||'').toLocaleLowerCase('pt-BR').includes(listSearch.trim().toLocaleLowerCase('pt-BR')))));
   const createDate=()=>scope.periodo?.fim||scope.periodo?.inicio||localToday();
   const choose=(r:any|null)=>{setEditing(r?.id||'new');setForm(r?readRdoDraft(r):createRdoDraft(createDate()));setError('');};
   const useLast=(r:any)=>{setEditing('new');setForm(duplicateRdoContext(r,createDate()));setError('');};
@@ -104,7 +111,16 @@ export function RdoPage({db,obraId,scope={},onChange,target,onNavigate}:{db:any;
     }catch(e:any){setError('Falha ao gerar PDF com imagens: '+(e.message||String(e)));}
   };
   if(!work)return <section className="cbim-react-section"><h1>Diário de obra</h1><p>Selecione uma obra para consultar e registrar RDOs.</p></section>;
-  return <section className="cbim-react-section"><h1>RDO · {work.nome}</h1><p>Diário completo, fotos, aprovação e PDF usando os mesmos dados persistidos na aplicação anterior.</p>
+  return <section className="cbim-react-section cbim-p5-module cbim-p5-rdo" data-testid="cbim-p5-rdo">
+    <ModuleHero area="OBRA / REGISTROS DE CAMPO" title={'RDO · '+work.nome}
+      description="Diário de obra, equipes, serviços, evidências fotográficas e aprovação definitiva, com PDF de origem local."
+      meta="Registros e fotos no SQLite"/>
+    <ModuleKpis items={[
+      {label:'RDOs no período',value:rdos.length,source:'Período visível da obra'},
+      {label:'Aprovados',value:approvedRdos,source:'Imutáveis; correção por retificação',tone:'green'},
+      {label:'Aguardando aprovação',value:rdos.length-approvedRdos,source:'Rascunhos ou não aprovados',tone:'amber'},
+      {label:'Fotografias registradas',value:photosCount,source:'Evidências dos RDOs no período',tone:'purple'}
+    ]}/>
     {(scope.periodo?.inicio||scope.periodo?.fim)&&<p className="studio-muted">{target?.kind==='rdo-competencia'?'A consulta de origem abaixo mostra RDOs da competência solicitada mesmo fora do filtro geral; o filtro continua valendo nas demais telas.':'Exibindo somente RDOs dentro do período selecionado. Um novo registro fora desse período ficará salvo, mas não aparecerá nesta lista.'}</p>}
     {scope.frenteId&&<p role="status" className="cbim-react-panel">RDOs existentes não possuem vínculo canônico com frente; a seleção de frente não filtra esses registros. O filtro de datas continua aplicado.</p>}
     {target?.kind==='rdo-competencia'&&<div className="cbim-react-panel cbim-journey-focus" role="status">
@@ -137,15 +153,20 @@ export function RdoPage({db,obraId,scope={},onChange,target,onNavigate}:{db:any;
       </div>
       <div className="cbim-react-toolbar cbim-rdo-actions"><button type="submit" disabled={busy}>{busy?'Salvando…':'Salvar RDO'}</button><button type="button" onClick={()=>setEditing(null)}>Cancelar</button></div>
     </form>}
-    <div className="cbim-react-panel"><h2>Registros ({showRdos.length})</h2>
-      {showRdos.map((r:any)=><article key={r.id} className={target?.kind==='rdo'&&target.id===r.id?'cbim-journey-focus':''}><b>{r.data} · {r.responsavel}</b><p>{r.status_aprovacao||'rascunho'} · {r.servicosExecutados?.length||0} serviços · {r.fotos?.length||0} fotos</p>
+    <div className="cbim-react-panel cbim-p5-records"><h2>Registros ({filteredRdos.length})</h2>
+      <div className="cbim-p5-record-filters"><ModuleSearch label="Pesquisar RDOs" value={listSearch} onChange={setListSearch}
+         placeholder="Data, responsável, serviço ou observação…"/>
+        <label>Estado<select aria-label="Filtrar estado dos RDOs" value={listStatus} onChange={e=>setListStatus(e.target.value)}>
+          <option value="todos">Todos</option><option value="aprovados">Aprovados</option><option value="pendentes">Não aprovados</option>
+        </select></label></div>
+      {filteredRdos.map((r:any)=><article key={r.id} className={target?.kind==='rdo'&&target.id===r.id?'cbim-journey-focus':''}><b>{r.data} · {r.responsavel}</b><p>{r.status_aprovacao||'rascunho'} · {r.servicosExecutados?.length||0} serviços · {r.fotos?.length||0} fotos</p>
        {(r.fotos||[]).length>0&&<details><summary>Ver evidências fotográficas ({r.fotos.length})</summary><div className="cbim-react-card-grid">{r.fotos.map((p:any,i:number)=><figure key={i}>{String(p.uri||'').startsWith('data:image/')?<img alt={p.legenda||'Foto de campo '+(i+1)} src={p.uri} loading="lazy" style={{width:'100%',maxHeight:220,objectFit:'contain'}}/>:<p>Foto externa antiga: {p.uri}</p>}<figcaption>{p.legenda||'Sem legenda'} · {p.local||'Sem local'}</figcaption></figure>)}</div></details>}
         <div className="cbim-react-toolbar">
           {onNavigate&&<button type="button" onClick={()=>onNavigate('Financeiro',{kind:'contas-competencia',period:String(r.data).slice(0,7),obraId,studyId:target?.studyId||''})}>Contas da competência (vencimento)</button>}
           {r.status_aprovacao!=='aprovado'&&<button onClick={()=>choose(r)}>Editar</button>}{r.status_aprovacao==='aprovado'&&<button type="button" onClick={()=>rectify(r)}>Criar retificação</button>}<button onClick={()=>{void pdf(r);}}>PDF com fotos</button>{r.status_aprovacao!=='aprovado'&&<button onClick={()=>remove(r)}>Excluir</button>}
           {r.status_aprovacao!=='aprovado'&&<><label>Nome do aprovador<input value={approver} onChange={e=>setApprover(e.target.value)}/></label><button disabled={!approver.trim()} onClick={()=>approval(r)}>Aprovar</button></>}</div>
       </article>)}
-      {!showRdos.length&&<p>Nenhum RDO cadastrado para o contexto solicitado.</p>}
+      {!filteredRdos.length&&<p className="cbim-p5-empty">{showRdos.length?'Nenhum RDO corresponde à pesquisa ou ao filtro.':'Nenhum RDO cadastrado para o contexto solicitado.'}</p>}
     </div>    <EngineeringConfirmDialog open={!!confirmAction}
       title={confirmAction?.mode==='delete'?'Excluir RDO definitivamente?':'Aprovar RDO definitivamente?'}
       danger={confirmAction?.mode==='delete'} typedPhrase={confirmAction?.mode==='delete'?'EXCLUIR':undefined}
