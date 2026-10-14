@@ -1,4 +1,5 @@
 import React from 'react';
+import {ModuleHero,ModuleKpis} from './EngineeringModuleLayout';
 import {listarResumosQualidadeObras,listarProjetosBim,listarModuleLinks} from '../../../../storage/sqliteStore.js';
 import {REVIEW_LINK} from '../../../../src/domain/p1Traceability.js';
 import {createEngineeringDiagnostic,createPilotEvidenceChecklist,createSanitizedReleaseExport} from '../../../../src/domain/p3ReleaseReadiness.js';
@@ -21,12 +22,16 @@ export function QualityPage({db,version,onNavigate}:Props){
  },[db,version]);
  const pilot=createPilotEvidenceChecklist();
  const stats=diagnostic.summary;
- return <section className="cbim-react-section cbim-quality" aria-label="Centro de qualidade e homologação">
-  <div className="cbim-quality-heading">
-   <div><span className="eyebrow">P3 · F7–F9</span><h1>Qualidade e homologação</h1>
-    <p>Conferência operacional e matemática dos registros locais, sem duplicação do motor CBIM ou das fontes de dados.</p></div>
-   <Status tone="warning">Preview QA · não homologado</Status>
-  </div>
+ return <section className="cbim-react-section cbim-quality cbim-p5-module cbim-p5-quality" data-testid="cbim-p5-quality" aria-label="Centro de qualidade e homologação">
+  <ModuleHero area="ENGENHARIA / VERIFICAÇÃO" title="Qualidade e homologação"
+    description="Diagnóstico de evidências locais e pendências verificáveis, mantendo o limite entre testes de software e aceite técnico."
+    ><Status tone="warning">Preview QA · não homologado</Status></ModuleHero>
+  <ModuleKpis items={[
+   {label:'Obras examinadas',value:stats.workCount,source:'Todas as obras locais'},
+   {label:'RDOs aprovados',value:stats.approvedRdoCount,source:'Registros aprovados · SQLite',tone:'green'},
+   {label:'Pendências abertas',value:stats.openIssueCount,source:'Obras · execução',tone:'amber'},
+   {label:'Memórias sem validação',value:stats.unverifiedCalculationCount,source:'Não considerar aprovadas',tone:'purple'}
+  ]}/>
   <nav className="cbim-react-toolbar" aria-label="Áreas do centro de qualidade">
    {(['Diagnóstico','Homologação'] as const).map(x=><button type="button" key={x} aria-pressed={tab===x} className={tab===x?'selected':''} onClick={()=>setTab(x)}>{x}</button>)}
   </nav>

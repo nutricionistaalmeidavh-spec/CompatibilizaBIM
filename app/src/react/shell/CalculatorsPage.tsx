@@ -1,5 +1,6 @@
 
 import React from 'react';
+import {ModuleHero,ModuleKpis,ModuleSearch} from './EngineeringModuleLayout';
 import { CalculationStudy } from './CalculationStudy';
 import { MathWorkbench } from './MathWorkbench';
 import { EngineeringAlternativesPanel } from './EngineeringAlternativesPanel';
@@ -22,6 +23,7 @@ const catalog = CALCULADORAS as Record<string, CalcDefinition>;
 
 export function CalculatorsPage({db, obraId, studyId, onSelectStudy, onSaved}:{db:any;obraId:string|null;studyId:string;onSelectStudy:(id:string)=>void;onSaved:()=>void}) {
   const [calculator,setCalculator]=React.useState('');
+  const [toolSearch,setToolSearch]=React.useState('');
   const [values,setValues]=React.useState<Record<string,number>>({});
   const [result,setResult]=React.useState<any>(null);
   const [alternatives,setAlternatives]=React.useState<any[]>([]);
@@ -29,6 +31,9 @@ export function CalculatorsPage({db, obraId, studyId, onSelectStudy, onSaved}:{d
   const project=studyId?buscarProjetoBim(db,studyId):null;
   const [error,setError]=React.useState('');
   const entry=catalog[calculator];
+  const totalTools=Object.keys(catalog).length;
+  const term=toolSearch.trim().toLocaleLowerCase('pt-BR');
+  const visibleGroups=CALCULATOR_GROUPS.map((g:any)=>({...g,ids:g.ids.filter((id:string)=>!term||[catalog[id]?.label,id,g.label].some(value=>String(value||'').toLocaleLowerCase('pt-BR').includes(term)))})).filter((g:any)=>g.ids.length);
   const select=(id:string)=>{
     setCalculator(id);
     setValues(Object.fromEntries((catalog[id]?.fields || []).map(([key,,value])=>[key,value])));
@@ -74,8 +79,18 @@ export function CalculatorsPage({db, obraId, studyId, onSelectStudy, onSaved}:{d
       onSaved();setError('Memória de cálculo preliminar salva com a evidência matemática e ressalvas normativas.');
     } catch(e:any){setError(e.message);}
   };
-  return <section className="cbim-react-section">
-    <h1>Biblioteca de cálculos</h1><p>34 ferramentas com verificações independentes por equação ou dimensionalidade. Verificação matemática parcial não é homologação normativa, projeto executivo ou ART.</p>
+  return <section className="cbim-react-section cbim-p5-module cbim-p5-calculators" data-testid="cbim-p5-calculators">
+    <ModuleHero area="ENGENHARIA / CÁLCULOS" title="Biblioteca de cálculos"
+      description="Ferramentas técnicas com verificações independentes. Validação matemática parcial não significa homologação normativa, projeto executivo ou ART."
+      meta="Motores determinísticos · offline"/>
+    <ModuleKpis items={[
+      {label:'Ferramentas disponíveis',value:totalTools,source:'Catálogo local'},
+      {label:'Categorias',value:CALCULATOR_GROUPS.length,source:'Agrupamento do catálogo',tone:'purple'},
+      {label:'Calculadora ativa',value:entry?'1':'0',source:entry?entry.label:'Selecione uma ferramenta',tone:'green'},
+      {label:'Verificação atual',value:result?(result.validation.ok?'Parcial OK':'Rejeitada'):'Pendente',source:'Oráculo independente do resultado',tone:'amber'}
+    ]}/>
+    <div className="cbim-p5-tools-search"><ModuleSearch label="Encontrar calculadora" value={toolSearch} onChange={setToolSearch}
+       placeholder="Buscar por nome, categoria ou cálculo…"/><span>{visibleGroups.reduce((n:number,g:any)=>n+g.ids.length,0)} de {totalTools} ferramentas</span></div>
     <div className="cbim-react-panel cbim-math-context"><h2>Contexto dos cálculos</h2>
       <label>Estudo BIM (opcional; independente da obra)<select value={studyId||''} onChange={e=>{onSelectStudy(e.target.value);setResult(null);setAlternatives([]);}}>
         <option value="">Cálculo independente do BIM / memória da obra</option>
@@ -83,10 +98,11 @@ export function CalculatorsPage({db, obraId, studyId, onSelectStudy, onSaved}:{d
       </select></label>
       <p className="studio-muted">{project?'A vinculação a modelo, revisão, elemento e pendência será escolhida depois do cálculo.':'Selecione um estudo BIM para salvar memória contextualizada; sem estudo selecionado, o fluxo legado de obra permanece disponível.'}</p>
     </div>
-    <div className="cbim-react-calc-groups">{CALCULATOR_GROUPS.map((group:any,index:number)=><details key={group.id} open={index===0||group.ids.includes(calculator)||undefined}>
+    <div className="cbim-react-calc-groups">{visibleGroups.map((group:any,index:number)=><details key={group.id} open={!!term||index===0||group.ids.includes(calculator)||undefined}>
       <summary><strong>{group.label}</strong><span>{group.ids.length} cálculos</span></summary>
       <div className="cbim-react-card-grid">{group.ids.map((id:string)=><button className={calculator===id?'selected':''} key={id} onClick={()=>select(id)}>{catalog[id]?.label}</button>)}</div>
     </details>)}</div>
+    {!visibleGroups.length&&<p role="status" className="cbim-p5-empty">Nenhuma calculadora corresponde à pesquisa. Limpe o campo para ver o catálogo completo.</p>}
     {entry && <form onSubmit={execute} className="cbim-react-panel"><h2>{entry.label}</h2><div className="cbim-react-form-grid">{entry.fields.map(([key,label])=><label key={key}>{label}<input type="number" step="any" required value={values[key]??''} onChange={e=>{setValues(current=>({...current,[key]:Number(e.target.value)}));setResult(null);setAlternatives([]);}}/></label>)}</div>
       <button type="submit">Calcular e validar</button></form>}
     {error&&<p role="status">{error}</p>}

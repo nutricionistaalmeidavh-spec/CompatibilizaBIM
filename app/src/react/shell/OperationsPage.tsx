@@ -1,5 +1,6 @@
 
 import React from 'react';
+import {ModuleHero,ModuleKpis} from './EngineeringModuleLayout';
 import {EngineeringTable,SchemaFields,EngineeringConfirmDialog,EngineeringFeedback} from '../components/EngineeringUI';
 import {FRONT_FIELDS,SUBFRONT_FIELDS,CHECKLIST_FIELDS} from '../../../../src/ui/studioPresentation.js';
 import {PurchaseMaterialTraceability} from './PurchaseMaterialTraceability';
@@ -50,7 +51,16 @@ export function OperationsPage({db,obraId,scope={},onChange,target,onNavigate}:{
     if(mutate(()=>fn(values)))form.reset();
   };
   if(!obraId)return <section className="cbim-react-section"><h1>Operação</h1><p>Selecione uma obra no painel Obras para acessar frentes, medições, compras, contratos e orçamento.</p></section>;
-  return <section className="cbim-react-section"><h1>Operação de obra</h1><p>Fluxos persistidos nas tabelas canônicas do SQLite. Filtros de frente, competência e data são aplicados aos registros compatíveis.</p>
+  return <section className="cbim-react-section cbim-p5-module cbim-p5-operations" data-testid="cbim-p5-operations">
+    <ModuleHero area="OBRA / EXECUÇÃO E CONTROLE" title="Operação de obra"
+     description="Frentes, medições de serviço, compras e contratos. Cada registro mantém seu próprio ciclo de aprovação e origem SQLite."
+     meta={scope.frenteId?'Frente específica':scope.periodo?.inicio||scope.periodo?.fim?'Período filtrado':'Obra selecionada'}/>
+    <ModuleKpis items={[
+      {label:'Frentes no contexto',value:selectedFronts.length,source:'Frentes da obra e filtro'},
+      {label:'Medições aprovadas',value:measure.filter((m:any)=>m.status==='aprovada').length,source:'Somente registros aprovados',tone:'green'},
+      {label:'Pedidos de compra',value:buys.length,source:'Compras no recorte',tone:'purple'},
+      {label:'Itens orçamentários',value:budgets.length,source:'Registros locais filtrados',tone:'amber'}
+    ]}/>
     {scope.frenteId&&<p role="status" className="studio-muted">Frente selecionada: medições, compras e itens de orçamento mostram apenas essa frente. Contratos não possuem frente vinculada e ficam ocultos enquanto o filtro estiver ativo.</p>}
     {(scope.periodo?.inicio||scope.periodo?.fim)&&<p className="studio-muted">Período: competência de medição/orçamento, data do pedido de compra e vigência do contrato. Registros sem data aplicável não entram no recorte.</p>}
     <nav className="cbim-react-toolbar" aria-label="Módulos operacionais">{views.map(v=><button key={v} className={v===view?'selected':''} onClick={()=>setView(v)}>{v}</button>)}</nav>
@@ -75,11 +85,6 @@ export function OperationsPage({db,obraId,scope={},onChange,target,onNavigate}:{
         {key:'service',header:'Serviço e rastreabilidade',cell:(m:any)=><div className={target?.kind==='medicao'&&target.id===m.id?'cbim-journey-focus':''}>
           <strong>{m.descricao}</strong>
        {target?.kind==='medicao'&&target.id===m.id&&<p role="status">Registro operacional de origem · {m.id} · {m.quantidade} {m.unidade} × {currency(m.preco_unitario)}. A medição aprovada não equivale a receita recebida.</p>}
-       {onNavigate&&<div className="cbim-react-toolbar">
-         {bimLinks.find((link:any)=>link.operationalId===m.id)&&<button type="button" onClick={()=>{const link=bimLinks.find((l:any)=>l.operationalId===m.id);onNavigate('BIM',{kind:'bim-conciliacao',id:link.batchId,obraId,studyId:link.projectId,period:m.periodo});}}>Abrir conferência BIM</button>}
-         <button type="button" onClick={()=>onNavigate('RDO',{kind:'rdo-competencia',period:m.periodo,obraId,studyId:target?.studyId||'',origin:{kind:'medicao',id:m.id,obraId,period:m.periodo}})}>Ver RDOs da competência</button>
-         <button type="button" onClick={()=>onNavigate('Financeiro',{kind:'contas-competencia',period:m.periodo,obraId,studyId:target?.studyId||'',origin:{kind:'medicao',id:m.id,obraId,period:m.periodo}})}>Ver contas por vencimento</button>
-       </div>}
        {onNavigate&&<div className="cbim-react-toolbar">
          {bimLinks.find((link:any)=>link.operationalId===m.id)&&<button type="button" onClick={()=>{const link=bimLinks.find((l:any)=>l.operationalId===m.id);onNavigate('BIM',{kind:'bim-conciliacao',id:link.batchId,obraId,studyId:link.projectId,period:m.periodo});}}>Abrir conferência BIM</button>}
          <button type="button" onClick={()=>onNavigate('RDO',{kind:'rdo-competencia',period:m.periodo,obraId,studyId:target?.studyId||'',origin:{kind:'medicao',id:m.id,obraId,period:m.periodo}})}>Ver RDOs da competência</button>

@@ -1,4 +1,5 @@
 import React from 'react';
+import {ModuleHero,ModuleKpis} from './EngineeringModuleLayout';
 import {brlReais} from '../../../../src/factory/format.js';
 import {reconciliarFinanceiroObra} from '../../../../src/domain/financialReconciliation.js';
 import {filterScopedRecords,financialScopeRows} from '../../../../src/domain/workspaceScope.js';
@@ -35,9 +36,19 @@ export function FinancePage({db,obraId,scope={},onChange,target,onNavigate}:{db:
     event.preventDefault();const form=event.currentTarget,d=new FormData(form);
     try{fn(d);form.reset();setError('');onChange();}catch(e:any){setError(e.message||String(e));}
   };
-  return <section className="cbim-react-section">
-    <h1>Financeiro local</h1>
-    <p>{obraId?'Visão da obra selecionada':'Visão consolidada de lançamentos da empresa'} · valores registrados localmente, sem conciliação bancária ou DRE contábil homologada.</p>
+  return <section className="cbim-react-section cbim-p5-module cbim-p5-finance" data-testid="cbim-p5-finance">
+    <ModuleHero area="OBRA / CONTROLE FINANCEIRO" title="Financeiro local"
+     description={(obraId?'Visão da obra selecionada':'Visão consolidada dos lançamentos')+' · valores registrados no SQLite, sem conciliação bancária nem DRE contábil homologada.'}
+     meta={frontScoped?'Frente ativa · totais globais ocultos':obraId?'Visão da obra':'Visão consolidada'}/>
+    <ModuleKpis items={frontScoped?[
+      {label:'Medições aprovadas da frente',value:money(audit.medicoesAprovadas),source:'Não representa receita recebida'},
+      {label:'Compras pendentes da frente',value:money(audit.comprasPendentesPagamento),source:'Compromissos da frente',tone:'amber'}
+    ]:[
+      {label:'Receitas lançadas',value:money(receitas),source:'Não equivale a recebimento bancário'},
+      {label:'Despesas lançadas',value:money(despesas),source:'Movimentações registradas',tone:'amber'},
+      {label:'Resultado registrado',value:money(receitas-despesas),source:'Saldo previsto; não contábil',tone:'green'},
+      {label:'Folha prevista',value:money(payroll.reduce((sum:number,p:any)=>sum+Number(p.valor_bruto),0)),source:'Registros da competência',tone:'purple'}
+    ]}/>
     <nav className="cbim-react-toolbar" aria-label="Financeiro">{(['DRE','Contas','Folha'] as const).map(tab=><button key={tab} className={active===tab?'selected':''} onClick={()=>setActive(tab)}>{tab}</button>)}</nav>
     {error&&<p role="alert" className="cbim-react-error">{error}</p>}
     {target?.kind==='contas-competencia'&&<section className="cbim-react-panel cbim-journey-focus" aria-label="Conferência de contas por vencimento">
@@ -55,12 +66,7 @@ export function FinancePage({db,obraId,scope={},onChange,target,onNavigate}:{db:
     {!frontScoped&&obraId&&unallocated.length>0&&<p className="studio-muted">{unallocated.length} lançamento(s) sem obra vinculada ficam fora dos totais da obra. Estão disponíveis na visão consolidada sem obra selecionada.</p>}
     {active==='DRE'&&<>
       {!frontScoped&&<>
-        <div className="cbim-react-metrics">
-          <article>Receitas lançadas: {money(receitas)}</article>
-          <article>Despesas lançadas: {money(despesas)}</article>
-          <article>Resultado previsto (não contábil): {money(receitas-despesas)}</article>
-          <article>Folha prevista: {money(payroll.reduce((sum:number,p:any)=>sum+Number(p.valor_bruto),0))}</article>
-        </div>
+
         <div className="cbim-react-metrics">
           {obraId&&<><article>Contratado: {money(audit.contratado)}</article><article>Medições aprovadas (não recebidas): {money(audit.medicoesAprovadas)}</article></>}
           <article>Despesas pagas registradas: {money(audit.despesasPagas)}</article>

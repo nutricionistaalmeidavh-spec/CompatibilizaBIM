@@ -1,5 +1,6 @@
 
 import React from 'react';
+import {ModuleHero,ModuleKpis} from './EngineeringModuleLayout';
 import {
   listarModelosEstruturais,buscarModeloEstrutural,salvarModeloEstrutural,
   salvarPavimentoEstrutural,salvarNoEstrutural,salvarElementoEstrutural,salvarCargaEstrutural
@@ -64,7 +65,16 @@ export function StructuralPage({db,obraId,onChange}:{db:any;obraId:string|null;o
     catch(e:any){setError(e.message);}
   };
   if(!obraId)return <section className="cbim-react-section"><h1>Modelo estrutural</h1><p>Selecione uma obra para criar ou abrir um modelo estrutural.</p></section>;
-  return <section className="cbim-react-section"><h1>Estruturas · modelos globais</h1><p>Os dados, as análises 2D/3D e o manifesto do visualizador usam os mesmos motores e tabelas do produto original.</p>
+  return <section className="cbim-react-section cbim-p5-module cbim-p5-structural" data-testid="cbim-p5-structural">
+    <ModuleHero area="ENGENHARIA / MODELOS ESTRUTURAIS" title="Estruturas · modelos globais"
+      description="Modelagem por nós e barras, cargas verificáveis e análises 2D/3D. Visualizações não substituem dimensionamento normativo."
+      meta={model?'Modelo ativo · '+model.nome+' · '+model.unidade:models.length+' modelo(s) na obra'}/>
+    <ModuleKpis items={[
+      {label:'Modelos da obra',value:models.length,source:'Cadastros do SQLite'},
+      {label:'Pavimentos',value:model?.pavimentos?.length||0,source:model?'Modelo selecionado':'Selecione um modelo',tone:'purple'},
+      {label:'Nós / barras',value:(model?.nos?.length||0)+' / '+(model?.elementos?.length||0),source:'Entidades reais do modelo',tone:'green'},
+      {label:'Cargas registradas',value:model?.cargas?.length||0,source:'Casos de carga persistidos',tone:'amber'},
+    ]}/>
     <div className="cbim-react-toolbar"><label>Modelo<select value={id} onChange={e=>{setSelected(e.target.value);setAnalysis(null);}}><option value="">Selecione</option>{models.map((m:any)=><option key={m.id} value={m.id}>{m.nome} · v{m.versao}</option>)}</select></label><button onClick={()=>setAction('modelo')}>+ Novo modelo</button>
       {model&&<><button onClick={()=>setAction('pavimento')}>+ Pavimento</button><button onClick={()=>setAction('no')}>+ Nó</button><button onClick={()=>setAction('elemento')}>+ Elemento</button><button onClick={()=>setAction('carga')}>+ Carga</button><label>Caso de carga<select value={loadCase} onChange={e=>{setLoadCase(e.target.value as any);setAnalysis(null);}}><option value="permanente">Permanente</option><option value="variavel">Variável</option><option value="acidental">Acidental</option></select></label><button onClick={()=>compute('2d')}>Analisar 2D</button><button onClick={()=>compute('3d')}>Analisar 3D</button><button onClick={viewer}>Viewer</button></>}
     </div>
@@ -85,8 +95,8 @@ export function StructuralPage({db,obraId,onChange}:{db:any;obraId:string|null;o
         {(['e','a','i'] as const).map(key=><label key={key}>{({e:'E (módulo)',a:'Área',i:'Inércia'} as const)[key]}<input type="number" name={key} step="any" defaultValue={key === 'e' ? 200000000 : (key === 'a' ? 0.02 : 0.00008)}/></label>)}</>}
       </div><div className="cbim-react-toolbar"><button type="submit">Salvar</button><button type="button" onClick={()=>setAction('')}>Cancelar</button></div>
     </form>}
-    {model&&<><div className="cbim-react-panel"><h2>{model.nome} · {model.norma}</h2><Projection model={model}/></div>
-      <div className="cbim-react-metrics"><article>{model.pavimentos?.length||0} pavimentos</article><article>{model.nos?.length||0} nós</article><article>{model.elementos?.length||0} elementos</article><article>{model.cargas?.length||0} cargas</article></div>
+    {model&&<><div className="cbim-react-panel cbim-p5-model-view"><h2>{model.nome} · {model.norma}</h2><p className="studio-muted">Projeção dos nós e barras cadastrados. Não representa deformação calculada nem armaduras dimensionadas.</p><Projection model={model}/></div>
+
       <div className="cbim-react-panel"><h2>Cargas do modelo</h2>{model.cargas?.length?model.cargas.map((c:any)=><article key={c.id}><b>{c.descricao||c.tipo}</b> · {c.valor} {c.unidade} · {c.combinacao}</article>):<p>Nenhuma carga registrada.</p>}</div>
       {analysis&&<div className="cbim-react-panel"><h2>Análise estrutural {analysis.mode.toUpperCase()} — {analysis.result.loadCase}</h2><p>{analysis.result.appliedLoads.length} carga(s) de barra consideradas neste caso. As cargas nodais legadas pertencem ao caso permanente. Resultados linear-elásticos preliminares; combinações ELU/ELS e verificações normativas exigem avaliação do responsável técnico.</p><pre>{JSON.stringify(analysis.result,null,2)}</pre><button onClick={()=>download(JSON.stringify(analysis.result,null,2),'analise-estrutural-'+analysis.mode+'.json','application/json')}>Exportar relatório JSON</button></div>}
     </>}
