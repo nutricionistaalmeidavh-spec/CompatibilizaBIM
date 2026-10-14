@@ -76,7 +76,7 @@ export function FinancePage({db,obraId,scope={},onChange,target,onNavigate}:{db:
         </div>
         <p role="status" className="studio-muted">{audit.observacao} Receitas e despesas lançadas não são equivalentes a movimentos bancários.</p>
       </>}
-      {frontScoped&&<div className="cbim-react-metrics"><article>Medições aprovadas da frente: {money(audit.medicoesAprovadas)}</article><article>Compromissos de compra pendentes da frente: {money(audit.comprasPendentesPagamento)}</article></div>}
+
       {obraId&&<div className="cbim-react-panel"><h2>Fluxo de medições por frente</h2>
         <p className="studio-muted">Medições aprovadas são direitos a conferir; nenhuma medição gera recebimento financeiro automaticamente.</p>
         {onNavigate&&measures.filter((m:any)=>m.status==='aprovada').map((m:any)=><div className="cbim-react-toolbar" key={m.id}><span>{m.descricao} · {m.periodo} · {money(Number(m.quantidade)*Number(m.preco_unitario))} aprovado (não recebido)</span>
