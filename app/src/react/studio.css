@@ -620,3 +620,14 @@ body{background:var(--cbim-page)}
 .cbim-p5-finance .cbim-react-panel>article p{margin:5px 0 0;color:#7d90a9;font-size:11px}
 @media(max-width:1100px){.cbim-p5-kpis{grid-template-columns:repeat(2,minmax(0,1fr))}.cbim-p5-calculators .cbim-react-calc-groups{grid-template-columns:1fr}}
 @media(max-width:650px){.cbim-p5-module .cbim-p5-hero{padding:17px 16px;min-height:0;flex-direction:column;align-items:stretch}.cbim-p5-hero-aside{max-width:none;justify-content:flex-start}.cbim-p5-kpis{gap:8px}.cbim-p5-kpi{padding:12px 11px}.cbim-p5-kpi>strong{font-size:18px}.cbim-p5-module>.cbim-react-panel{padding:13px 12px}.cbim-p5-module>nav.cbim-react-toolbar button{padding:7px 10px;font-size:11px}.cbim-p5-record-filters>label:last-child{flex:1 1 100%}}
+
+
+/* P5 mobile hit-target repair: nav groups must not overlap neighboring routes. */
+@media(max-width:850px){
+ .cbim-react-app>.studio-sidebar{display:flex;overflow-x:auto;overflow-y:hidden;gap:9px;min-height:58px;align-items:center;scrollbar-width:thin;scroll-snap-type:x proximity}
+ .cbim-react-app .studio-sidebar .studio-nav-group,
+ .cbim-react-app .studio-sidebar .studio-nav-group+.studio-nav-group{display:flex;flex:0 0 auto;gap:7px;min-width:max-content;overflow:visible;position:relative}
+ .cbim-react-app .studio-sidebar .studio-nav-group button{width:auto;flex:0 0 auto;min-width:max-content;position:relative;white-space:nowrap;scroll-snap-align:start;min-height:42px;margin:0;padding:9px 13px}
+ .cbim-react-app .studio-sidebar .studio-nav-symbol{pointer-events:none}
+ .cbim-react-app .studio-sidebar .studio-backup-tools{flex:0 0 auto;min-width:max-content}
+}
