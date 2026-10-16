@@ -5,6 +5,15 @@ const { spawn } = require('node:child_process');
 
 const activeStudioSessions = new Set();
 const hostedStudioSessions = new WeakMap();
+const studioViewerSessions = new WeakMap();
+
+function studioWorkspaceForViewer(window) {
+  const session = window && studioViewerSessions.get(window);
+  if (!session || !window.webContents.getURL().startsWith(session.origin + '/')) {
+    throw new Error('Visualizador 3D disponível somente na revisão autenticada do Studio.');
+  }
+  return session.workspace;
+}
 
 function returnToMainWindow(window) {
   const session = window && hostedStudioSessions.get(window);
@@ -161,12 +170,14 @@ async function openStudioWindow({ workspacePath, documentsDir, appSourceDir, res
         };
         win.webContents.on('will-navigate', guard);
         win.webContents.setWindowOpenHandler(() => ({ action: 'deny' }));
-        win.on('closed', stop);
+        studioViewerSessions.set(win, { origin, workspace });
+        win.on('closed', () => { studioViewerSessions.delete(win); stop(); });
         if (hostWindow) {
           const restore = () => {
             const session = hostedStudioSessions.get(win);
             if (session) {
               hostedStudioSessions.delete(win);
+              studioViewerSessions.delete(win);
               win.webContents.removeListener('will-navigate', guard);
             }
             stop();
@@ -207,4 +218,4 @@ function stopAllStudios() {
   activeStudioSessions.clear();
 }
 
-module.exports = { resolveCbimWorkspace, listCbimWorkspaces, parseStudioReady, pythonStudioCommand, openStudioWindow, returnToMainWindow, studioLicenseArguments, stopAllStudios };
+module.exports = { resolveCbimWorkspace, listCbimWorkspaces, parseStudioReady, pythonStudioCommand, openStudioWindow, returnToMainWindow, studioWorkspaceForViewer, studioLicenseArguments, stopAllStudios };
