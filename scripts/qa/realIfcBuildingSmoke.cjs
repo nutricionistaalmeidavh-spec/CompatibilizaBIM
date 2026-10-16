@@ -27,6 +27,12 @@ assert.ok(solids.length > 30, 'IfcOpenShell must extract at least 30 real solid 
 assert.ok(triangleCount > 300, 'IfcOpenShell must triangulate the real building');
 assert.ok(span[0] > 3 && span[1] > 3 && span[2] > 2, 'Real geometry must span a 3D building-sized volume');
 assert.ok(new Set(solids.map(e=>e.ifc_class)).size >= 3,'Building should have several real IFC classes');
+assert.ok(solids.some(e=>e.ifc_class==='IfcSpace'),'Fixture should reproduce large IFC space volumes');
+assert.ok(solids.some(e=>e.ifc_class==='IfcOpeningElement'),'Fixture should reproduce openings');
+assert.match(viewer,/visible:!\\['IfcSpace','IfcOpeningElement'\\]\\.includes\\(e\\.ifc_class\\)/,
+  'Spaces and void volumes must remain available in the data but be hidden by default');
+assert.match(viewer,/classColors\\[o\\.e\\.ifc_class\\]/,
+  'Architectural classes need different colors instead of the old solid gray silhouette');
 
 const report = {
   source, filename:'Duplex.ifc', sha256:crypto.createHash('sha256').update(model).digest('hex'),
