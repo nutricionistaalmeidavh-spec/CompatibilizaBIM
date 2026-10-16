@@ -47,7 +47,7 @@ export function SpatialReview({elements,allElementIds=[],selected,onSelect}: Pro
   React.useEffect(() => {
     const listener = (event: MessageEvent) => {
       if (event.source !== frame.current?.contentWindow || !event.data || typeof event.data !== 'object') return;
-      if (event.data.type==='cbim-viewer-ready') setFrameReady(true);
+      if (event.data.type==='cbim-viewer-ready') {setFrameReady(true);setError('');}
       if (event.data.type!=='cbim-viewer-selection' || !Array.isArray(event.data.guids) || !ifc) return;
       const guid = event.data.guids.find((id: unknown) => typeof id==='string' && id.length<=128);
       if (!guid) return;
@@ -62,6 +62,14 @@ export function SpatialReview({elements,allElementIds=[],selected,onSelect}: Pro
     window.addEventListener('message',listener);
     return () => window.removeEventListener('message',listener);
   },[ifc,onSelect]);
+
+  React.useEffect(() => {
+    if (mode!=='ifc' || !ifc || frameReady || loading) return;
+    const timer = window.setTimeout(() => {
+      setError(current => current || 'O arquivo IFC foi gerado, mas a vista WebGL não confirmou a abertura. Confira o suporte gráfico e tente novamente.');
+    }, 15000);
+    return () => window.clearTimeout(timer);
+  },[mode,ifc,frameReady,loading]);
 
   const setProjection = (next: 'plan'|'isometric') => {
     setMode(next);setZoom(1);setPan({x:0,y:0});setSelectionInfo('');setFrameReady(false);
@@ -105,7 +113,7 @@ export function SpatialReview({elements,allElementIds=[],selected,onSelect}: Pro
       {mode==='ifc' ? <>
         {ifc?.ready && !loading && <iframe ref={frame} title="Modelo IFC real do projeto" className="studio-ifc-frame"
           sandbox="allow-scripts" referrerPolicy="no-referrer" src={'/api/studio-ifc-viewer?viewer_token='+encodeURIComponent(ifc.viewerToken)+'&rev='+ifc.version}
-          onLoad={()=>setFrameReady(true)}/>}
+          />}
         {loading&&<div className="review-geometry-empty" role="status" aria-live="polite">Extraindo malhas IFC no computador… A revisão e as correções permanecem preservadas.</div>}
         {!loading&&!ifc&&<div className="review-geometry-empty" role="status">
           <strong>Modelo IFC ainda não carregado</strong>
