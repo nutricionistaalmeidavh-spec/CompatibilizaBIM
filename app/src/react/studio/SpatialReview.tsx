@@ -9,6 +9,7 @@ type RealIfc = {
 type Props = {
   elements: any[]; allElementIds?: string[]; selected: string;
   activeProjection?: Projection; onProjectionChange?: (mode:Projection)=>void;
+  realIfc?: RealIfc|null; onRealIfcChange?: (viewer:RealIfc|null)=>void;
   onSelect: (id: string) => void
 };
 const colors: Record<string, string> = {
@@ -16,13 +17,15 @@ const colors: Record<string, string> = {
 };
 const bridge = () => (globalThis as any).studioNavigation?.renderStudioIfc;
 
-export function SpatialReview({elements,allElementIds=[],selected,onSelect,activeProjection,onProjectionChange}: Props) {
+export function SpatialReview({elements,allElementIds=[],selected,onSelect,activeProjection,onProjectionChange,realIfc,onRealIfcChange}: Props) {
   const [fallbackMode,setFallbackMode] = React.useState<Projection>('plan');
   const mode = activeProjection ?? fallbackMode;
   const setMode = onProjectionChange ?? setFallbackMode;
   const [zoom,setZoom] = React.useState(1);
   const [pan,setPan] = React.useState({x:0,y:0});
-  const [ifc,setIfc] = React.useState<RealIfc|null>(null);
+  const [localIfc,setLocalIfc] = React.useState<RealIfc|null>(null);
+  const ifc = onRealIfcChange ? realIfc ?? null : localIfc;
+  const setIfc = onRealIfcChange ?? setLocalIfc;
   const [loading,setLoading] = React.useState(false);
   const [error,setError] = React.useState('');
   const [selectionInfo,setSelectionInfo] = React.useState('');
