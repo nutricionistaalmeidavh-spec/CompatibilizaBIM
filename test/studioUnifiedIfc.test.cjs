@@ -42,6 +42,7 @@ test('studio viewer never reads IFC outside the authorized workspace or via syml
   const outside = path.join(documents, 'outside.ifc');
   fs.writeFileSync(outside, 'ISO-10303-21;');
   assert.throws(() => resolveStudioIfcSource(documents, documents), /Workspace/);
+  if (process.platform === 'win32') return; // Windows symlinks require developer-mode privileges.
   fs.symlinkSync(outside, path.join(job, 'external.ifc'));
   assert.throws(() => resolveStudioIfcSource(documents, workspace), /IFC/);
 }));
@@ -54,6 +55,11 @@ test('review offers 2D, axonometric 3D and local IFC mesh in one React surface',
   assert.match(review, /Axonométrica 3D/);
   assert.match(review, /3D real IFC/);
   assert.match(review, /sandbox="allow-scripts"/);
+  assert.match(review, /studio-ifc-viewer/);
   assert.match(main, /cbim:render-studio-ifc/);
   assert.match(preload, /renderStudioIfc/);
+  const server=fs.readFileSync(path.join(__dirname,'../integrations/cbim-2.1.0/compatibilizabim-core/src/compatibilizabim_core/desktop/server.py'),'utf8');
+  assert.match(server, /route.path == '\/api\/studio-ifc-viewer'/);
+  assert.match(server, /frame-src 'self'/);
+  assert.match(server, /viewer=True/);
 });
