@@ -279,6 +279,7 @@ const {chromium}=require('../../app/node_modules/playwright');
     await page.getByRole('button',{name:'Axonométrica 3D'}).click();
     await page.getByRole('group',{name:'Projeção axonométrica da geometria CBIM'}).waitFor();
     await page.getByRole('button',{name:/Selecionar pipe pipe-qa/}).click();
+    assert.equal(await page.getByRole('button',{name:'Axonométrica 3D'}).getAttribute('aria-pressed'),'true','Selecting a CBIM element must not reset the active projection');
     await page.getByRole('heading',{name:'Inspector'}).waitFor();
     const splitHandle=page.getByRole('separator',{name:'Ajustar largura entre visualizador e inspetor'});
     await splitHandle.waitFor();
