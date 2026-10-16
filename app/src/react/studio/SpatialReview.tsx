@@ -3,7 +3,7 @@ import { describeCoverage, extractVisualGeometry, layoutVisualGeometry } from '.
 
 type Projection = 'plan' | 'isometric' | 'ifc';
 type RealIfc = {
-  html: string; sourceFile: string; source: 'ifcopenshell_real';
+  ready: boolean; version: number; sourceFile: string; source: 'ifcopenshell_real';
   maxElementsPerFile: number; guidsById: Record<string, string>
 };
 type Props = {
@@ -64,7 +64,7 @@ export function SpatialReview({elements,allElementIds=[],selected,onSelect}: Pro
   },[ifc,onSelect]);
 
   const setProjection = (next: 'plan'|'isometric') => {
-    setMode(next);setZoom(1);setPan({x:0,y:0});setSelectionInfo('');
+    setMode(next);setZoom(1);setPan({x:0,y:0});setSelectionInfo('');setFrameReady(false);
   };
   const loadIfc = async (refresh = false) => {
     setMode('ifc');
@@ -77,8 +77,8 @@ export function SpatialReview({elements,allElementIds=[],selected,onSelect}: Pro
     inFlight.current=true;setLoading(true);setError('');setSelectionInfo('');
     try {
       const result = await render(allElementIds);
-      if (!result?.html || result.source!=='ifcopenshell_real') throw new Error('O motor local não confirmou a malha IFC.');
-      setIfc(result);setFrameReady(false);
+      if (!result?.ready || result.source!=='ifcopenshell_real') throw new Error('O motor local não confirmou a malha IFC.');
+      setIfc({...result,version:Date.now()});setFrameReady(false);
     } catch (err: any) {
       setError(err?.message||'Falha ao carregar as malhas IFC.');
       if (refresh) setIfc(null);
@@ -103,8 +103,8 @@ export function SpatialReview({elements,allElementIds=[],selected,onSelect}: Pro
     </div>
     <div className="review-geometry-surface">
       {mode==='ifc' ? <>
-        {ifc?.html && !loading && <iframe ref={frame} title="Modelo IFC real do projeto" className="studio-ifc-frame"
-          sandbox="allow-scripts" referrerPolicy="no-referrer" srcDoc={ifc.html}
+        {ifc?.ready && !loading && <iframe ref={frame} title="Modelo IFC real do projeto" className="studio-ifc-frame"
+          sandbox="allow-scripts" referrerPolicy="no-referrer" src={'/api/studio-ifc-viewer?rev='+ifc.version}
           onLoad={()=>setFrameReady(true)}/>}
         {loading&&<div className="review-geometry-empty" role="status" aria-live="polite">Extraindo malhas IFC no computador… A revisão e as correções permanecem preservadas.</div>}
         {!loading&&!ifc&&<div className="review-geometry-empty" role="status">
