@@ -62,4 +62,7 @@ test('review offers 2D, axonometric 3D and local IFC mesh in one React surface',
   assert.match(server, /route.path == '\/api\/studio-ifc-viewer'/);
   assert.match(server, /frame-src 'self'/);
   assert.match(server, /viewer=True/);
+  assert.match(server, /allow_viewer/);
+  assert.match(server, /compare_digest\(viewer_token, expected_viewer_token\)/);
+  assert.match(main, /viewerToken: studioViewerTokenForWindow/);
 });
