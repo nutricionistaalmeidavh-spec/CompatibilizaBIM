@@ -340,15 +340,19 @@ class DesktopApplication:
         application = self
 
         class Handler(BaseHTTPRequestHandler):
-            def _send(self, code: int, content_type: str, body: bytes, *, cookie: bool = False):
+            def _send(self, code: int, content_type: str, body: bytes, *, cookie: bool = False, viewer: bool = False):
                 self.send_response(code)
                 self.send_header('Content-Type', content_type)
                 self.send_header('Content-Length', str(len(body)))
                 self.send_header('Cache-Control', 'no-store')
                 self.send_header('X-Content-Type-Options', 'nosniff')
                 self.send_header('Referrer-Policy', 'no-referrer')
-                self.send_header('X-Frame-Options', 'DENY')
-                self.send_header('Content-Security-Policy', "default-src 'none'; connect-src 'self'; img-src data:; style-src 'self' 'unsafe-inline'; script-src 'self'")
+                if viewer:
+                    # Only the generated IFC iframe may execute inline WebGL; the React host keeps its strict CSP.
+                    self.send_header('Content-Security-Policy', "default-src 'none'; script-src 'unsafe-inline'; style-src 'unsafe-inline'; img-src data:; frame-ancestors 'self'")
+                else:
+                    self.send_header('X-Frame-Options', 'DENY')
+                    self.send_header('Content-Security-Policy', "default-src 'none'; connect-src 'self'; frame-src 'self'; img-src data:; style-src 'self' 'unsafe-inline'; script-src 'self'")
                 if cookie and application.session_token:
                     self.send_header('Set-Cookie', f'cbim_studio_session={application.session_token}; HttpOnly; SameSite=Strict; Path=/')
                 self.end_headers()
@@ -387,6 +391,14 @@ class DesktopApplication:
                         return self._send(404, 'text/plain', b'not found')
                     mime = mimetypes.guess_type(asset.name)[0] or 'application/octet-stream'
                     self._send(200, mime, asset.read_bytes())
+                elif route.path == '/api/studio-ifc-viewer':
+                    # Content is generated only by the trusted Electron command for this workspace.
+                    viewer_file = application.store.root / 'desktop' / 'studio-ifc-viewer.html'
+                    if (not viewer_file.is_file() or viewer_file.is_symlink() or
+                        viewer_file.stat().st_size > 24 * 1024 * 1024 or
+                        viewer_file.stat().st_size < 200):
+                        return self._send(404, 'text/plain', b'IFC viewer not available')
+                    self._send(200, 'text/html; charset=utf-8', viewer_file.read_bytes(), viewer=True)
                 elif route.path == '/api/studio-state':
                     self._json(200, application.studio_state_payload())
                 elif route.path == '/api/status':
