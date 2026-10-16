@@ -1,7 +1,8 @@
 const { app, BrowserWindow, ipcMain, shell, dialog } = require('electron');
 const fs = require('node:fs'); const path = require('node:path'); const { spawn } = require('node:child_process');
 const { convertDwg, cancelConversion } = require('./cbimRunner.cjs');
-const { openStudioWindow, returnToMainWindow, listCbimWorkspaces, stopAllStudios } = require('./studioWindow.cjs');
+const { openStudioWindow, returnToMainWindow, studioWorkspaceForViewer, studioViewerTokenForWindow, listCbimWorkspaces, stopAllStudios } = require('./studioWindow.cjs');
+const {cbimIfcGuid, resolveStudioIfcSource} = require('./studioIfc.cjs');
 const { createCbimApplication } = require('./cbimApplication.cjs');
 const { p2Request } = require('./p2Bridge.cjs');
 const { createJobQueue } = require('./cbimJobQueue.cjs');
@@ -127,6 +128,38 @@ ipcMain.handle('bim:render-inline-viewer-base64', async (_event, files) => {
     return {html:fs.readFileSync(output,'utf8'),source:'ifcopenshell_real',maxElementsPerFile:2500};
   } finally {fs.rmSync(temp,{recursive:true,force:true});}
 });
+// Restricted to the verified Studio session; never expose file paths, arbitrary IPC,
+// SQLite or broad native capabilities to a loopback review renderer.
+ipcMain.handle('cbim:render-studio-ifc', async (event, ids) => {
+  const window = BrowserWindow.fromWebContents(event.sender);
+  const workspace = studioWorkspaceForViewer(window);
+  if (!Array.isArray(ids) || ids.length > 10000 ||
+      ids.some(id => typeof id !== 'string' || !id || id.length > 512)) {
+    throw new Error('IDs CBIM inválidos para seleção geométrica.');
+  }
+  const source = resolveStudioIfcSource(app.getPath('documents'), workspace);
+  const desktop = path.join(workspace, 'desktop');
+  fs.mkdirSync(desktop, {recursive: true});
+  if (path.dirname(fs.realpathSync(desktop)) !== workspace) {
+    throw new Error('Diretório de visualização fora do workspace autorizado.');
+  }
+  const staged = path.join(desktop, '.studio-ifc-' + require('node:crypto').randomBytes(8).toString('hex') + '.html');
+  try {
+    await runBimPython(['-m', 'compatibilizabim.viewer_cli', source.path, '--out', staged, '--max-elements', '2500']);
+    const length = fs.statSync(staged).size;
+    if (length > 24 * 1024 * 1024 || length < 200) {
+      throw new Error('Malha IFC muito grande ou inválida para o Studio. Simplifique o IFC e tente novamente.');
+    }
+    fs.renameSync(staged, path.join(desktop, 'studio-ifc-viewer.html'));
+    const guidsById = Object.fromEntries([...new Set(ids)].map(id => [id, cbimIfcGuid(id)]));
+    return {ready: true, sourceFile: source.name, source:'ifcopenshell_real',
+      viewerToken: studioViewerTokenForWindow(window),
+      maxElementsPerFile:2500, guidsById};
+  } finally {
+    fs.rmSync(staged, {force: true});
+  }
+});
+
 ipcMain.handle('bim:clash-base64', async (event, files, options = {}) => { event.sender.send('bim:progress', { percent: 10, stage: 'Preparando modelos IFC' }); const root = path.join(app.getPath('documents'), 'Engenharia360', 'BIM', 'models'); fs.mkdirSync(root, { recursive: true }); const paths = []; for (const file of files || []) { const target = path.join(root, `${Date.now()}-${path.basename(file.name).replace(/[^a-zA-Z0-9._-]/g, '_')}`); fs.writeFileSync(target, Buffer.from(String(file.base64), 'base64')); paths.push(target); } event.sender.send('bim:progress', { percent: 30, stage: 'Processando geometria com IfcOpenShell' }); const result = await runBimPython(['-m', 'compatibilizabim.bridge_cli', paths[0], paths[1], '--mode', options.mode || 'intersection', '--tolerance', String(options.tolerance ?? .002), '--clearance', String(options.clearance ?? .05)]); event.sender.send('bim:progress', { percent: 100, stage: 'Análise concluída' }); return JSON.parse(result.stdout.trim()); });
 ipcMain.handle('bim:clash', (_event, fileA, fileB, options = {}) => runBimPython([fileA, fileB, '--mode', options.mode || 'intersection', '--tolerance', String(options.tolerance ?? .002), '--clearance', String(options.clearance ?? .05), '--out', options.out || path.join(app.getPath('documents'), 'Engenharia360', 'bim-reports')]));
 ipcMain.handle('cbim:conversion-jobs', () => cbimConversionQueue.snapshot());
