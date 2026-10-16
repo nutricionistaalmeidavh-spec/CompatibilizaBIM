@@ -283,6 +283,16 @@ const {chromium}=require('../../app/node_modules/playwright');
     const splitHandle=page.getByRole('separator',{name:'Ajustar largura entre visualizador e inspetor'});
     await splitHandle.waitFor();
     await screenshots('review-cbim-native-3d');
+    // The Vite-only QA has no privileged Electron bridge: the new real IFC mode
+    // must explain the missing desktop runtime and preserve the engineer's selection.
+    await page.getByRole('button',{name:'3D real IFC'}).click();
+    await page.getByText(/O 3D real IFC só está disponível na revisão aberta pelo aplicativo desktop/).waitFor();
+    await page.getByRole('heading',{name:'Inspector'}).waitFor();
+    await screenshots('review-real-ifc-offline-fallback');
+    await page.getByRole('button',{name:'Planta 2D'}).click();
+    await page.getByRole('group',{name:'Planta geométrica CBIM 2D'}).waitFor();
+    await page.getByRole('heading',{name:'Inspector'}).waitFor();
+    await screenshots('review-unified-2d-3d-modes');
     assert.deepEqual(errors,[],'Uncaught browser errors: '+errors.join('\n'));
     console.log('PASS: React-only main app, SQLite works, calculators, BIM, structural, operations, RDO, financial and history.');
   }finally{
