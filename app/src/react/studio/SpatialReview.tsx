@@ -3,7 +3,7 @@ import { describeCoverage, extractVisualGeometry, layoutVisualGeometry } from '.
 
 type Projection = 'plan' | 'isometric' | 'ifc';
 type RealIfc = {
-  ready: boolean; version: number; sourceFile: string; source: 'ifcopenshell_real';
+  ready: boolean; version: number; viewerToken: string; sourceFile: string; source: 'ifcopenshell_real';
   maxElementsPerFile: number; guidsById: Record<string, string>
 };
 type Props = {
@@ -77,7 +77,7 @@ export function SpatialReview({elements,allElementIds=[],selected,onSelect}: Pro
     inFlight.current=true;setLoading(true);setError('');setSelectionInfo('');
     try {
       const result = await render(allElementIds);
-      if (!result?.ready || result.source!=='ifcopenshell_real') throw new Error('O motor local não confirmou a malha IFC.');
+      if (!result?.ready || !result.viewerToken || result.source!=='ifcopenshell_real') throw new Error('O motor local não confirmou a malha IFC.');
       setIfc({...result,version:Date.now()});setFrameReady(false);
     } catch (err: any) {
       setError(err?.message||'Falha ao carregar as malhas IFC.');
@@ -104,7 +104,7 @@ export function SpatialReview({elements,allElementIds=[],selected,onSelect}: Pro
     <div className="review-geometry-surface">
       {mode==='ifc' ? <>
         {ifc?.ready && !loading && <iframe ref={frame} title="Modelo IFC real do projeto" className="studio-ifc-frame"
-          sandbox="allow-scripts" referrerPolicy="no-referrer" src={'/api/studio-ifc-viewer?rev='+ifc.version}
+          sandbox="allow-scripts" referrerPolicy="no-referrer" src={'/api/studio-ifc-viewer?viewer_token='+encodeURIComponent(ifc.viewerToken)+'&rev='+ifc.version}
           onLoad={()=>setFrameReady(true)}/>}
         {loading&&<div className="review-geometry-empty" role="status" aria-live="polite">Extraindo malhas IFC no computador… A revisão e as correções permanecem preservadas.</div>}
         {!loading&&!ifc&&<div className="review-geometry-empty" role="status">
