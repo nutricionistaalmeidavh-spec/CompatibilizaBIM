@@ -138,18 +138,24 @@ ipcMain.handle('cbim:render-studio-ifc', async (event, ids) => {
     throw new Error('IDs CBIM inválidos para seleção geométrica.');
   }
   const source = resolveStudioIfcSource(app.getPath('documents'), workspace);
-  const temp = fs.mkdtempSync(path.join(require('node:os').tmpdir(), 'cbim-studio-ifc-'));
+  const desktop = path.join(workspace, 'desktop');
+  fs.mkdirSync(desktop, {recursive: true});
+  if (path.dirname(fs.realpathSync(desktop)) !== workspace) {
+    throw new Error('Diretório de visualização fora do workspace autorizado.');
+  }
+  const staged = path.join(desktop, '.studio-ifc-' + require('node:crypto').randomBytes(8).toString('hex') + '.html');
   try {
-    const output = path.join(temp, 'viewer.html');
-    await runBimPython(['-m', 'compatibilizabim.viewer_cli', source.path, '--out', output, '--max-elements', '2500']);
-    if (fs.statSync(output).size > 24 * 1024 * 1024) {
-      throw new Error('Malha IFC muito grande para exibir no Studio. Simplifique o arquivo ou use o visualizador externo.');
+    await runBimPython(['-m', 'compatibilizabim.viewer_cli', source.path, '--out', staged, '--max-elements', '2500']);
+    const length = fs.statSync(staged).size;
+    if (length > 24 * 1024 * 1024 || length < 200) {
+      throw new Error('Malha IFC muito grande ou inválida para o Studio. Simplifique o IFC e tente novamente.');
     }
+    fs.renameSync(staged, path.join(desktop, 'studio-ifc-viewer.html'));
     const guidsById = Object.fromEntries([...new Set(ids)].map(id => [id, cbimIfcGuid(id)]));
-    return {html: fs.readFileSync(output, 'utf8'), sourceFile: source.name,
-      source: 'ifcopenshell_real', maxElementsPerFile: 2500, guidsById};
+    return {ready: true, sourceFile: source.name, source:'ifcopenshell_real',
+      maxElementsPerFile:2500, guidsById};
   } finally {
-    fs.rmSync(temp, {recursive: true, force: true});
+    fs.rmSync(staged, {force: true});
   }
 });
 
