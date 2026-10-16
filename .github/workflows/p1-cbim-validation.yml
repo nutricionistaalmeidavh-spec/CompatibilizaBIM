@@ -212,3 +212,63 @@ jobs:
           path: test/react-qa-artifacts/*.png
           if-no-files-found: warn
           retention-days: 7
+
+  real-public-building-ifc-qa:
+    # Explicit PR-label gate: never run/download external samples on each commit.
+    if: github.event_name == 'workflow_dispatch' || github.event.label.name == 'run-cbim-qa'
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          lfs: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Download public building IFC from source (no generated geometry fixture)
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p test/real-ifc-qa
+          curl --fail --location --show-error --retry 3 --max-time 120 \
+            'https://raw.githubusercontent.com/MadsHolten/BOT-Duplex-house/master/Model%20files/IFC/Duplex.ifc' \
+            --output test/real-ifc-qa/Duplex.ifc
+          test "$(wc -c < test/real-ifc-qa/Duplex.ifc)" -gt 500000
+          head -c 32 test/real-ifc-qa/Duplex.ifc | grep -q ISO-10303-21
+          sha256sum test/real-ifc-qa/Duplex.ifc
+      - name: Install native IfcOpenShell and triangulate the actual building
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m pip install 'ifcopenshell==0.8.5'
+          PYTHONPATH=modules python -m compatibilizabim.viewer_cli \
+            test/real-ifc-qa/Duplex.ifc \
+            --out test/real-ifc-qa/viewer.html --max-elements 2500
+          test -s test/real-ifc-qa/viewer.html
+      - name: Install React browser QA runtime
+        shell: bash
+        run: |
+          set -euo pipefail
+          npm ci --prefix app
+          npm install --no-save --prefix app playwright@1.56.0
+          ./app/node_modules/.bin/playwright install --with-deps chromium
+          npm run build --prefix app
+          npm run preview --prefix app -- --host 127.0.0.1 --port 5173 > /tmp/cbim-real-ifc-vite.log 2>&1 &
+          ./app/node_modules/.bin/wait-on http://127.0.0.1:5173
+      - name: Inspect actual IFC triangles and capture live WebGL and integrated Studio screenshots
+        run: node scripts/qa/realIfcBuildingSmoke.cjs
+      - name: Upload public IFC proof, screenshots, and extracted geometry metadata
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: CompatibilizaBIM-Real-Public-IFC-3D-QA
+          path: |
+            test/real-ifc-qa/*.png
+            test/real-ifc-qa/*.json
+            test/real-ifc-qa/viewer.html
+            test/real-ifc-qa/Duplex.ifc
+          if-no-files-found: warn
+          retention-days: 7
