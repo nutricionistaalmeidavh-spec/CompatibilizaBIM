@@ -15,6 +15,11 @@ function studioWorkspaceForViewer(window) {
   return session.workspace;
 }
 
+function studioViewerTokenForWindow(window) {
+  studioWorkspaceForViewer(window);
+  return studioViewerSessions.get(window).viewerToken;
+}
+
 function returnToMainWindow(window) {
   const session = window && hostedStudioSessions.get(window);
   if (!session) throw new Error('Não há revisão aberta nesta janela.');
@@ -170,7 +175,8 @@ async function openStudioWindow({ workspacePath, documentsDir, appSourceDir, res
         };
         win.webContents.on('will-navigate', guard);
         win.webContents.setWindowOpenHandler(() => ({ action: 'deny' }));
-        studioViewerSessions.set(win, { origin, workspace });
+        studioViewerSessions.set(win, {origin, workspace, viewerToken:
+          require('node:crypto').createHash('sha256').update('cbim-studio-ifc-viewer:' + ready.token).digest('hex')});
         win.on('closed', () => { studioViewerSessions.delete(win); stop(); });
         if (hostWindow) {
           const restore = () => {
@@ -218,4 +224,4 @@ function stopAllStudios() {
   activeStudioSessions.clear();
 }
 
-module.exports = { resolveCbimWorkspace, listCbimWorkspaces, parseStudioReady, pythonStudioCommand, openStudioWindow, returnToMainWindow, studioWorkspaceForViewer, studioLicenseArguments, stopAllStudios };
+module.exports = { resolveCbimWorkspace, listCbimWorkspaces, parseStudioReady, pythonStudioCommand, openStudioWindow, returnToMainWindow, studioWorkspaceForViewer, studioViewerTokenForWindow, studioLicenseArguments, stopAllStudios };
