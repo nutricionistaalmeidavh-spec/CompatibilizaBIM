@@ -34,7 +34,7 @@ test('studio viewer rejects missing, ambiguous, and invalid IFC sources', () => 
   fs.writeFileSync(path.join(job, 'b.ifc'), 'ISO-10303-21;');
   assert.throws(() => resolveStudioIfcSource(documents, workspace), /mais de um IFC/);
   fs.rmSync(path.join(job, 'b.ifc'));
-  fs.writeFileSync(path.join(job, 'a.ifc'), 'arquivo inválido');
+  fs.writeFileSync(path.join(job, 'a.ifc'), 'arquivo inválido com conteúdo sem header STEP');
   assert.throws(() => resolveStudioIfcSource(documents, workspace), /STEP/);
 }));
 
