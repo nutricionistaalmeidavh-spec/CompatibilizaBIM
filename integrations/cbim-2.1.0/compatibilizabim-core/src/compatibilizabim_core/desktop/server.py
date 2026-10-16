@@ -5,6 +5,7 @@ import mimetypes
 import os
 import tempfile
 import secrets
+import hashlib
 import threading
 import webbrowser
 from uuid import uuid4
@@ -378,7 +379,16 @@ class DesktopApplication:
                 if route.path == '/' and application.session_token:
                     provided = parse_qs(route.query).get('token', [''])[0]
                     allow_cookie = secrets.compare_digest(provided, application.session_token)
-                if not self._authorized() and not allow_cookie:
+                # The sandboxed iframe has an opaque origin and may omit SameSite
+                # cookies. This digest grants read-only access to this one viewer route.
+                viewer_token = parse_qs(route.query).get('viewer_token', [''])[0]
+                expected_viewer_token = hashlib.sha256(
+                    ('cbim-studio-ifc-viewer:' + (application.session_token or '')).encode('utf-8')
+                ).hexdigest()
+                allow_viewer = (route.path == '/api/studio-ifc-viewer' and
+                                application.session_token is not None and
+                                secrets.compare_digest(viewer_token, expected_viewer_token))
+                if not self._authorized() and not allow_cookie and not allow_viewer:
                     return self._json(403, {'error': 'A sessão do Studio não foi autenticada'})
                 if route.path == '/':
                     ui = application.react_ui_dir()
