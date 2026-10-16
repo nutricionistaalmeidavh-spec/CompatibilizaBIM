@@ -40,6 +40,7 @@ if (trustedApp) {
 } else if (locationInfo.protocol === 'http:' && locationInfo.hostname === '127.0.0.1') {
   // The main process checks this window's registered session and exact origin.
   contextBridge.exposeInMainWorld('studioNavigation', {
-    returnToApp: () => ipcRenderer.invoke('cbim:return-to-app')
+    returnToApp: () => ipcRenderer.invoke('cbim:return-to-app'),
+    renderStudioIfc: (elementIds) => ipcRenderer.invoke('cbim:render-studio-ifc', elementIds)
   });
 }
