@@ -1,7 +1,7 @@
 const { app, BrowserWindow, ipcMain, shell, dialog } = require('electron');
 const fs = require('node:fs'); const path = require('node:path'); const { spawn } = require('node:child_process');
 const { convertDwg, cancelConversion } = require('./cbimRunner.cjs');
-const { openStudioWindow, returnToMainWindow, studioWorkspaceForViewer, listCbimWorkspaces, stopAllStudios } = require('./studioWindow.cjs');
+const { openStudioWindow, returnToMainWindow, studioWorkspaceForViewer, studioViewerTokenForWindow, listCbimWorkspaces, stopAllStudios } = require('./studioWindow.cjs');
 const {cbimIfcGuid, resolveStudioIfcSource} = require('./studioIfc.cjs');
 const { createCbimApplication } = require('./cbimApplication.cjs');
 const { p2Request } = require('./p2Bridge.cjs');
@@ -153,6 +153,7 @@ ipcMain.handle('cbim:render-studio-ifc', async (event, ids) => {
     fs.renameSync(staged, path.join(desktop, 'studio-ifc-viewer.html'));
     const guidsById = Object.fromEntries([...new Set(ids)].map(id => [id, cbimIfcGuid(id)]));
     return {ready: true, sourceFile: source.name, source:'ifcopenshell_real',
+      viewerToken: studioViewerTokenForWindow(window),
       maxElementsPerFile:2500, guidsById};
   } finally {
     fs.rmSync(staged, {force: true});
